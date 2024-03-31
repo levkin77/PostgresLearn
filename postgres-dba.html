@@ -1,0 +1,1058 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-03-31T12:38:30.7050931"><title>Полезные скрипты Postgres-DBA | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"i1ugyun_47655","level":0,"title":"Список расширений установленных в текущей базе","anchor":"#i1ugyun_47655"},{"id":"i1ugyun_47657","level":0,"title":"Базы данных и дополнительная информация","anchor":"#i1ugyun_47657"},{"id":"i1ugyun_47769","level":0,"title":"Таблицы - размеры, индексы","anchor":"#i1ugyun_47769"},{"id":"i1ugyun_47836","level":0,"title":"Текущая активность с группировкой по базе","anchor":"#i1ugyun_47836"},{"id":"table-bloat-estimated","level":0,"title":"Table bloat (estimated)","anchor":"#table-bloat-estimated"},{"id":"b-tree-index-bloat","level":0,"title":"B-tree index bloat","anchor":"#b-tree-index-bloat"},{"id":"table-bloat","level":0,"title":"Table bloat","anchor":"#table-bloat"},{"id":"b-tree-indexes-bloat","level":0,"title":"B-tree indexes bloat","anchor":"#b-tree-indexes-bloat"},{"id":"tables-and-columns-without-stats","level":0,"title":"Tables and columns without stats","anchor":"#tables-and-columns-without-stats"},{"id":"i1ugyun_48203","level":0,"title":"Неиспользуемые и редко используемые индексы","anchor":"#i1ugyun_48203"},{"id":"i1ugyun_48240","level":0,"title":"Избыточные индексы","anchor":"#i1ugyun_48240"},{"id":"fk","level":0,"title":"FK и отсутствующие индексы","anchor":"#fk"},{"id":"i1ugyun_48286","level":0,"title":"Поиск невалидных индексы","anchor":"#i1ugyun_48286"},{"id":"lock-trees-light","level":0,"title":"Lock trees light версия","anchor":"#lock-trees-light"},{"id":"lock-trees","level":0,"title":"Lock trees полная версия","anchor":"#lock-trees"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Полезные скрипты Postgres-DBA | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-dba.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Полезные скрипты Postgres-DBA | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-dba.html#webpage",
+    "url": "writerside-documentation/postgres-dba.html",
+    "name": "Полезные скрипты Postgres-DBA | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-dba" data-main-title="Полезные скрипты Postgres-DBA" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="pjstgres-resourcesl.md|Ресурсы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-dba" id="postgres-dba.md">Полезные скрипты Postgres-DBA</h1><p id="i1ugyun_47654">Набор полезных скриптов для DBA. Многие из скриптов взяты с просторов интернета.</p><section class="chapter"><h2 id="i1ugyun_47655" data-toc="i1ugyun_47655">Список расширений установленных в текущей базе</h2><div class="code-block" data-lang="sql" data-disable-link-processing="true">select ae.name,
+       installed_version,
+       default_version,
+       case when installed_version &lt;&gt; default_version then 'OLD' end as is_old
+from pg_extension e
+         join pg_available_extensions ae on extname = ae.name
+order by ae.name;</div></section><section class="chapter"><h2 id="i1ugyun_47657" data-toc="i1ugyun_47657">Базы данных и дополнительная информация</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Databases: size, stats" data-disable-link-processing="true">--Databases: size, stats
+with data as (select d.oid,
+                     (select spcname from pg_tablespace where oid = dattablespace) as tblspace,
+                     d.datname                                                     as database_name,
+                     pg_catalog.pg_get_userbyid(d.datdba)                          as owner,
+                     has_database_privilege(d.datname, 'connect')                  as has_access,
+                     pg_database_size(d.datname)                                   as size,
+                     stats_reset,
+                     blks_hit,
+                     blks_read,
+                     xact_commit,
+                     xact_rollback,
+                     conflicts,
+                     deadlocks,
+                     temp_files,
+                     temp_bytes
+              from pg_catalog.pg_database d
+                       join pg_stat_database s on s.datid = d.oid),
+     data2 as (select null::oid          as oid,
+                      null               as tblspace,
+                      '*** TOTAL ***'    as database_name,
+                      null               as owner,
+                      true               as has_access,
+                      sum(size)          as size,
+                      null::timestamptz  as stats_reset,
+                      sum(blks_hit)      as blks_hit,
+                      sum(blks_read)     as blks_read,
+                      sum(xact_commit)   as xact_commit,
+                      sum(xact_rollback) as xact_rollback,
+                      sum(conflicts)     as conflicts,
+                      sum(deadlocks)     as deadlocks,
+                      sum(temp_files)    as temp_files,
+                      sum(temp_bytes)    as temp_bytes
+               from data
+               union all
+               select null::oid,
+                      null,
+                      null,
+                      null,
+                      true,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null
+               union all
+               select oid,
+                      tblspace,
+                      database_name,
+                      owner,
+                      has_access,
+                      size,
+                      stats_reset,
+                      blks_hit,
+                      blks_read,
+                      xact_commit,
+                      xact_rollback,
+                      conflicts,
+                      deadlocks,
+                      temp_files,
+                      temp_bytes
+               from data)
+select database_name || coalesce(' [' || nullif(tblspace, 'pg_default') || ']', '') as &quot;Database&quot;,
+       case
+           when has_access then
+               pg_size_pretty(size) || ' (' || round(
+                       100 * size::numeric / nullif(sum(size) over (partition by (oid is null)), 0),
+                       2
+                                               )::text || '%)'
+           else 'no access'
+           end                                                                      as &quot;Size&quot;,
+       (now() - stats_reset)::interval(0)::text                                     as &quot;Stats Age&quot;,
+       case
+           when blks_hit + blks_read &gt; 0 then
+               (round(blks_hit * 100::numeric / (blks_hit + blks_read), 2))::text || '%'
+           else null
+           end                                                                      as &quot;Cache eff.&quot;,
+       case
+           when xact_commit + xact_rollback &gt; 0 then
+               (round(xact_commit * 100::numeric / (xact_commit + xact_rollback), 2))::text || '%'
+           else null
+           end                                                                      as &quot;Committed&quot;,
+       conflicts                                                                    as &quot;Conflicts&quot;,
+       deadlocks                                                                    as &quot;Deadlocks&quot;,
+       temp_files::text || coalesce(' (' || pg_size_pretty(temp_bytes) || ')', '')  as &quot;Temp. Files&quot;
+from data2
+order by oid is null desc, size desc nulls last;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_47659" data-toc="i1ugyun_47659">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_47660"><thead><tr class="ijRowHead" id="i1ugyun_47661"><th id="i1ugyun_47662"><p>Database</p></th><th id="i1ugyun_47663"><p>Size</p></th><th id="i1ugyun_47664"><p>Stats Age</p></th><th id="i1ugyun_47665"><p>Cache eff.</p></th><th id="i1ugyun_47666"><p>Committed</p></th><th id="i1ugyun_47667"><p>Conflicts</p></th><th id="i1ugyun_47668"><p>Deadlocks</p></th><th id="i1ugyun_47669"><p>Temp. Files</p></th></tr></thead><tbody><tr id="i1ugyun_47670"><td id="i1ugyun_47671"><p>*** TOTAL ***</p></td><td id="i1ugyun_47672"><p>6008 MB (100.00%)</p></td><td id="i1ugyun_47673"><p>null</p></td><td id="i1ugyun_47674"><p>92.36%</p></td><td id="i1ugyun_47675"><p>99.96%</p></td><td id="i1ugyun_47676"><p>0</p></td><td id="i1ugyun_47677"><p>0</p></td><td id="i1ugyun_47678"><p>249 (7899 MB)</p></td></tr><tr id="i1ugyun_47679"><td id="i1ugyun_47680"><p>null</p></td><td id="i1ugyun_47681"><p>null</p></td><td id="i1ugyun_47682"><p>null</p></td><td id="i1ugyun_47683"><p>null</p></td><td id="i1ugyun_47684"><p>null</p></td><td id="i1ugyun_47685"><p>null</p></td><td id="i1ugyun_47686"><p>null</p></td><td id="i1ugyun_47687"><p>null</p></td></tr><tr id="i1ugyun_47688"><td id="i1ugyun_47689"><p>devtestindex</p></td><td id="i1ugyun_47690"><p>5939 MB (98.85%)</p></td><td id="i1ugyun_47691"><p>null</p></td><td id="i1ugyun_47692"><p>92.26%</p></td><td id="i1ugyun_47693"><p>99.85%</p></td><td id="i1ugyun_47694"><p>0</p></td><td id="i1ugyun_47695"><p>0</p></td><td id="i1ugyun_47696"><p>249 (7899 MB)</p></td></tr><tr id="i1ugyun_47697"><td id="i1ugyun_47698"><p>dvdrental</p></td><td id="i1ugyun_47699"><p>15 MB (0.25%)</p></td><td id="i1ugyun_47700"><p>null</p></td><td id="i1ugyun_47701"><p>99.85%</p></td><td id="i1ugyun_47702"><p>99.96%</p></td><td id="i1ugyun_47703"><p>0</p></td><td id="i1ugyun_47704"><p>0</p></td><td id="i1ugyun_47705"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47706"><td id="i1ugyun_47707"><p>testsasist</p></td><td id="i1ugyun_47708"><p>8668 kB (0.14%)</p></td><td id="i1ugyun_47709"><p>null</p></td><td id="i1ugyun_47710"><p>99.93%</p></td><td id="i1ugyun_47711"><p>99.99%</p></td><td id="i1ugyun_47712"><p>0</p></td><td id="i1ugyun_47713"><p>0</p></td><td id="i1ugyun_47714"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47715"><td id="i1ugyun_47716"><p>devtestdatatypes</p></td><td id="i1ugyun_47717"><p>7900 kB (0.13%)</p></td><td id="i1ugyun_47718"><p>null</p></td><td id="i1ugyun_47719"><p>99.81%</p></td><td id="i1ugyun_47720"><p>99.98%</p></td><td id="i1ugyun_47721"><p>0</p></td><td id="i1ugyun_47722"><p>0</p></td><td id="i1ugyun_47723"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47724"><td id="i1ugyun_47725"><p>devtesttablespace</p></td><td id="i1ugyun_47726"><p>7884 kB (0.13%)</p></td><td id="i1ugyun_47727"><p>null</p></td><td id="i1ugyun_47728"><p>99.84%</p></td><td id="i1ugyun_47729"><p>99.91%</p></td><td id="i1ugyun_47730"><p>0</p></td><td id="i1ugyun_47731"><p>0</p></td><td id="i1ugyun_47732"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47733"><td id="i1ugyun_47734"><p>template1</p></td><td id="i1ugyun_47735"><p>7868 kB (0.13%)</p></td><td id="i1ugyun_47736"><p>null</p></td><td id="i1ugyun_47737"><p>99.91%</p></td><td id="i1ugyun_47738"><p>100.00%</p></td><td id="i1ugyun_47739"><p>0</p></td><td id="i1ugyun_47740"><p>0</p></td><td id="i1ugyun_47741"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47742"><td id="i1ugyun_47743"><p>devlearnpg</p></td><td id="i1ugyun_47744"><p>7868 kB (0.13%)</p></td><td id="i1ugyun_47745"><p>null</p></td><td id="i1ugyun_47746"><p>100.00%</p></td><td id="i1ugyun_47747"><p>100.00%</p></td><td id="i1ugyun_47748"><p>0</p></td><td id="i1ugyun_47749"><p>0</p></td><td id="i1ugyun_47750"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47751"><td id="i1ugyun_47752"><p>postgres</p></td><td id="i1ugyun_47753"><p>7844 kB (0.13%)</p></td><td id="i1ugyun_47754"><p>null</p></td><td id="i1ugyun_47755"><p>99.80%</p></td><td id="i1ugyun_47756"><p>99.99%</p></td><td id="i1ugyun_47757"><p>0</p></td><td id="i1ugyun_47758"><p>0</p></td><td id="i1ugyun_47759"><p>0 (0 bytes)</p></td></tr><tr id="i1ugyun_47760"><td id="i1ugyun_47761"><p>template0</p></td><td id="i1ugyun_47762"><p>7673 kB (0.12%)</p></td><td id="i1ugyun_47763"><p>null</p></td><td id="i1ugyun_47764"><p>null</p></td><td id="i1ugyun_47765"><p>null</p></td><td id="i1ugyun_47766"><p>0</p></td><td id="i1ugyun_47767"><p>0</p></td><td id="i1ugyun_47768"><p>0 (0 bytes)</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i1ugyun_47769" data-toc="i1ugyun_47769">Таблицы - размеры, индексы</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Tables: table/index/TOAST size, number of rows" data-disable-link-processing="true">--Tables: table/index/TOAST size, number of rows
+
+with data as (select c.oid,
+                     (select spcname from pg_tablespace where oid = reltablespace) as tblspace,
+                     nspname                                                       as schema_name,
+                     relname                                                       as table_name,
+                     c.reltuples                                                   as row_estimate,
+                     pg_total_relation_size(c.oid)                                 as total_bytes,
+                     pg_indexes_size(c.oid)                                        as index_bytes,
+                     pg_total_relation_size(reltoastrelid)                         as toast_bytes,
+                     pg_total_relation_size(c.oid) - pg_indexes_size(c.oid) -
+                     coalesce(pg_total_relation_size(reltoastrelid), 0)            as table_bytes
+              from pg_class c
+                       left join pg_namespace n on n.oid = c.relnamespace
+              where relkind = 'r'
+                and nspname &lt;&gt; 'pg_catalog'),
+     data2 as (select null::oid         as oid,
+                      null              as tblspace,
+                      null              as schema_name,
+                      '*** TOTAL ***'   as table_name,
+                      sum(row_estimate) as row_estimate,
+                      sum(total_bytes)  as total_bytes,
+                      sum(index_bytes)  as index_bytes,
+                      sum(toast_bytes)  as toast_bytes,
+                      sum(table_bytes)  as table_bytes
+               from data
+               union all
+               select null::oid                                                      as oid,
+                      null,
+                      null                                                           as schema_name,
+                      '    tablespace: [' || coalesce(tblspace, 'pg_default') || ']' as table_name,
+                      sum(row_estimate)                                              as row_estimate,
+                      sum(total_bytes)                                               as total_bytes,
+                      sum(index_bytes)                                               as index_bytes,
+                      sum(toast_bytes)                                               as toast_bytes,
+                      sum(table_bytes)                                               as table_bytes
+               from data
+               where (select count(distinct coalesce(tblspace, 'pg_default')) from data) &gt;
+                     1 -- don't show this part if there are no custom tablespaces
+               group by tblspace
+               union all
+               select null::oid,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null
+               union all
+               select *
+               from data)
+select coalesce(nullif(schema_name, 'public') || '.', '') || table_name ||
+       coalesce(' [' || tblspace || ']', '')                  as &quot;Table&quot;,
+       '~' || case
+                  when row_estimate &gt; 10 ^ 12 then round(row_estimate::numeric / 10 ^ 12::numeric, 0)::text || 'T'
+                  when row_estimate &gt; 10 ^ 9 then round(row_estimate::numeric / 10 ^ 9::numeric, 0)::text || 'B'
+                  when row_estimate &gt; 10 ^ 6 then round(row_estimate::numeric / 10 ^ 6::numeric, 0)::text || 'M'
+                  when row_estimate &gt; 10 ^ 3 then round(row_estimate::numeric / 10 ^ 3::numeric, 0)::text || 'k'
+                  else row_estimate::text
+           end                                                as &quot;Rows&quot;,
+       pg_size_pretty(total_bytes) || ' (' || round(
+               100 * total_bytes::numeric /
+               nullif(sum(total_bytes) over (partition by (schema_name is null), left(table_name, 3) = '***'), 0),
+               2
+                                              )::text || '%)' as &quot;Total Size&quot;,
+       pg_size_pretty(table_bytes) || ' (' || round(
+               100 * table_bytes::numeric /
+               nullif(sum(table_bytes) over (partition by (schema_name is null), left(table_name, 3) = '***'), 0),
+               2
+                                              )::text || '%)' as &quot;Table Size&quot;,
+       pg_size_pretty(index_bytes) || ' (' || round(
+               100 * index_bytes::numeric /
+               nullif(sum(index_bytes) over (partition by (schema_name is null), left(table_name, 3) = '***'), 0),
+               2
+                                              )::text || '%)' as &quot;Index(es) Size&quot;,
+       pg_size_pretty(toast_bytes) || ' (' || round(
+               100 * toast_bytes::numeric /
+               nullif(sum(toast_bytes) over (partition by (schema_name is null), left(table_name, 3) = '***'), 0),
+               2
+                                              )::text || '%)' as &quot;TOAST Size&quot;
+from data2
+where schema_name is distinct from 'information_schema'
+order by oid is null desc, total_bytes desc nulls last;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_47771" data-toc="i1ugyun_47771">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_47772"><thead><tr class="ijRowHead" id="i1ugyun_47773"><th id="i1ugyun_47774"><p>Table</p></th><th id="i1ugyun_47775"><p>Rows</p></th><th id="i1ugyun_47776"><p>Total Size</p></th><th id="i1ugyun_47777"><p>Table Size</p></th><th id="i1ugyun_47778"><p>Index(es) Size</p></th><th id="i1ugyun_47779"><p>TOAST Size</p></th></tr></thead><tbody><tr id="i1ugyun_47780"><td id="i1ugyun_47781"><p>*** TOTAL ***</p></td><td id="i1ugyun_47782"><p>~50M</p></td><td id="i1ugyun_47783"><p>5931 MB (100.00%)</p></td><td id="i1ugyun_47784"><p>3973 MB (100.00%)</p></td><td id="i1ugyun_47785"><p>1003 MB (100.00%)</p></td><td id="i1ugyun_47786"><p>955 MB (100.00%)</p></td></tr><tr id="i1ugyun_47787"><td id="i1ugyun_47788"><p>null</p></td><td id="i1ugyun_47789"><p>null</p></td><td id="i1ugyun_47790"><p>null</p></td><td id="i1ugyun_47791"><p>null</p></td><td id="i1ugyun_47792"><p>null</p></td><td id="i1ugyun_47793"><p>null</p></td></tr><tr id="i1ugyun_47794"><td id="i1ugyun_47795"><p>testidx</p></td><td id="i1ugyun_47796"><p>~12M</p></td><td id="i1ugyun_47797"><p>1853 MB (31.25%)</p></td><td id="i1ugyun_47798"><p>1030 MB (25.94%)</p></td><td id="i1ugyun_47799"><p>504 MB (50.29%)</p></td><td id="i1ugyun_47800"><p>318 MB (33.32%)</p></td></tr><tr id="i1ugyun_47801"><td id="i1ugyun_47802"><p>teststat</p></td><td id="i1ugyun_47803"><p>~12M</p></td><td id="i1ugyun_47804"><p>1598 MB (26.95%)</p></td><td id="i1ugyun_47805"><p>1030 MB (25.94%)</p></td><td id="i1ugyun_47806"><p>249 MB (24.85%)</p></td><td id="i1ugyun_47807"><p>318 MB (33.34%)</p></td></tr><tr id="i1ugyun_47808"><td id="i1ugyun_47809"><p>testnoidx</p></td><td id="i1ugyun_47810"><p>~12M</p></td><td id="i1ugyun_47811"><p>1598 MB (26.95%)</p></td><td id="i1ugyun_47812"><p>1030 MB (25.94%)</p></td><td id="i1ugyun_47813"><p>249 MB (24.85%)</p></td><td id="i1ugyun_47814"><p>318 MB (33.34%)</p></td></tr><tr id="i1ugyun_47815"><td id="i1ugyun_47816"><p>t_agg</p></td><td id="i1ugyun_47817"><p>~10M</p></td><td id="i1ugyun_47818"><p>498 MB (8.39%)</p></td><td id="i1ugyun_47819"><p>498 MB (12.53%)</p></td><td id="i1ugyun_47820"><p>0 bytes (0.00%)</p></td><td id="i1ugyun_47821"><p>8192 bytes (0.00%)</p></td></tr><tr id="i1ugyun_47822"><td id="i1ugyun_47823"><p>testtbldata</p></td><td id="i1ugyun_47824"><p>~5M</p></td><td id="i1ugyun_47825"><p>384 MB (6.47%)</p></td><td id="i1ugyun_47826"><p>383 MB (9.65%)</p></td><td id="i1ugyun_47827"><p>0 bytes (0.00%)</p></td><td id="i1ugyun_47828"><p>8192 bytes (0.00%)</p></td></tr><tr id="i1ugyun_47829"><td id="i1ugyun_47830"><p>states</p></td><td id="i1ugyun_47831"><p>~3</p></td><td id="i1ugyun_47832"><p>56 kB (0.00%)</p></td><td id="i1ugyun_47833"><p>40 kB (0.00%)</p></td><td id="i1ugyun_47834"><p>16 kB (0.00%)</p></td><td id="i1ugyun_47835"><p>null</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i1ugyun_47836" data-toc="i1ugyun_47836">Текущая активность с группировкой по базе</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Current activity: count of current connections grouped by database, user name, state" data-disable-link-processing="true">--Current activity: count of current connections grouped by database, user name, state
+select
+    coalesce(usename, '** ALL users **') as &quot;User&quot;,
+    coalesce(datname, '** ALL databases **') as &quot;DB&quot;,
+    coalesce(state, '** ALL states **') as &quot;Current State&quot;,
+    count(*) as &quot;Count&quot;,
+    count(*) filter (where state_change &lt; now() - interval '1 minute') as &quot;State changed &gt;1m ago&quot;,
+    count(*) filter (where state_change &lt; now() - interval '1 hour') as &quot;State changed &gt;1h ago&quot;
+from pg_stat_activity
+group by grouping sets ((datname, usename, state), (usename, state), ())
+order by
+    usename is null desc,
+    datname is null desc,
+    2 asc,
+    3 asc,
+    count(*) desc
+;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_47838" data-toc="i1ugyun_47838">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_47839"><thead><tr class="ijRowHead" id="i1ugyun_47840"><th id="i1ugyun_47841"><p>User</p></th><th id="i1ugyun_47842"><p>DB</p></th><th id="i1ugyun_47843"><p>Current State</p></th><th id="i1ugyun_47844"><p>Count</p></th><th id="i1ugyun_47845"><p>State changed &gt;1m ago</p></th><th id="i1ugyun_47846"><p>State changed &gt;1h ago</p></th></tr></thead><tbody><tr id="i1ugyun_47847"><td id="i1ugyun_47848"><p>** ALL users **</p></td><td id="i1ugyun_47849"><p>** ALL databases **</p></td><td id="i1ugyun_47850"><p>** ALL states **</p></td><td id="i1ugyun_47851"><p>8</p></td><td id="i1ugyun_47852"><p>2</p></td><td id="i1ugyun_47853"><p>2</p></td></tr><tr id="i1ugyun_47854"><td id="i1ugyun_47855"><p>** ALL users **</p></td><td id="i1ugyun_47856"><p>** ALL databases **</p></td><td id="i1ugyun_47857"><p>** ALL states **</p></td><td id="i1ugyun_47858"><p>4</p></td><td id="i1ugyun_47859"><p>0</p></td><td id="i1ugyun_47860"><p>0</p></td></tr><tr id="i1ugyun_47861"><td id="i1ugyun_47862"><p>** ALL users **</p></td><td id="i1ugyun_47863"><p>** ALL databases **</p></td><td id="i1ugyun_47864"><p>** ALL states **</p></td><td id="i1ugyun_47865"><p>4</p></td><td id="i1ugyun_47866"><p>0</p></td><td id="i1ugyun_47867"><p>0</p></td></tr><tr id="i1ugyun_47868"><td id="i1ugyun_47869"><p>postgres</p></td><td id="i1ugyun_47870"><p>** ALL databases **</p></td><td id="i1ugyun_47871"><p>** ALL states **</p></td><td id="i1ugyun_47872"><p>1</p></td><td id="i1ugyun_47873"><p>0</p></td><td id="i1ugyun_47874"><p>0</p></td></tr><tr id="i1ugyun_47875"><td id="i1ugyun_47876"><p>postgres</p></td><td id="i1ugyun_47877"><p>** ALL databases **</p></td><td id="i1ugyun_47878"><p>** ALL states **</p></td><td id="i1ugyun_47879"><p>1</p></td><td id="i1ugyun_47880"><p>0</p></td><td id="i1ugyun_47881"><p>0</p></td></tr><tr id="i1ugyun_47882"><td id="i1ugyun_47883"><p>postgres</p></td><td id="i1ugyun_47884"><p>** ALL databases **</p></td><td id="i1ugyun_47885"><p>active</p></td><td id="i1ugyun_47886"><p>1</p></td><td id="i1ugyun_47887"><p>0</p></td><td id="i1ugyun_47888"><p>0</p></td></tr><tr id="i1ugyun_47889"><td id="i1ugyun_47890"><p>postgres</p></td><td id="i1ugyun_47891"><p>** ALL databases **</p></td><td id="i1ugyun_47892"><p>idle</p></td><td id="i1ugyun_47893"><p>2</p></td><td id="i1ugyun_47894"><p>2</p></td><td id="i1ugyun_47895"><p>2</p></td></tr><tr id="i1ugyun_47896"><td id="i1ugyun_47897"><p>postgres</p></td><td id="i1ugyun_47898"><p>devlearnpg</p></td><td id="i1ugyun_47899"><p>active</p></td><td id="i1ugyun_47900"><p>1</p></td><td id="i1ugyun_47901"><p>0</p></td><td id="i1ugyun_47902"><p>0</p></td></tr><tr id="i1ugyun_47903"><td id="i1ugyun_47904"><p>postgres</p></td><td id="i1ugyun_47905"><p>devtestindex</p></td><td id="i1ugyun_47906"><p>idle</p></td><td id="i1ugyun_47907"><p>1</p></td><td id="i1ugyun_47908"><p>1</p></td><td id="i1ugyun_47909"><p>1</p></td></tr><tr id="i1ugyun_47910"><td id="i1ugyun_47911"><p>postgres</p></td><td id="i1ugyun_47912"><p>devtesttablespace</p></td><td id="i1ugyun_47913"><p>idle</p></td><td id="i1ugyun_47914"><p>1</p></td><td id="i1ugyun_47915"><p>1</p></td><td id="i1ugyun_47916"><p>1</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="table-bloat-estimated" data-toc="table-bloat-estimated">Table bloat (estimated)</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Table bloat (estimated)" data-disable-link-processing="true">--Table bloat (estimated)
+
+--This SQL is derived from https://github.com/ioguix/pgsql-bloat-estimation/blob/master/table/table_bloat.sql
+
+/*
+* WARNING: executed with a non-superuser role, the query inspect only tables you are granted to read.
+* This query is compatible with PostgreSQL 9.0 and more
+*/
+
+/*
+Оригинал скрипта
+https://github.com/NikolayS/postgres_dba/
+*/
+
+with step1 as (
+    select
+        tbl.oid tblid,
+        ns.nspname as schema_name,
+        tbl.relname as table_name,
+        tbl.reltuples,
+        tbl.relpages as heappages,
+        coalesce(toast.relpages, 0) as toastpages,
+        coalesce(toast.reltuples, 0) as toasttuples,
+        coalesce(substring(array_to_string(tbl.reloptions, ' ') from '%fillfactor=#&quot;__#&quot;%' for '#')::int2, 100) as fillfactor,
+        current_setting('block_size')::numeric as bs,
+        case when version() ~ 'mingw32|64-bit|x86_64|ppc64|ia64|amd64' then 8 else 4 end as ma, -- NS: TODO: check it
+        24 as page_hdr,
+        23 + case when max(coalesce(null_frac, 0)) &gt; 0 then (7 + count(*)) / 8 else 0::int end
+            + case when bool_or(att.attname = 'oid' and att.attnum &lt; 0) then 4 else 0 end as tpl_hdr_size,
+        sum((1 - coalesce(s.null_frac, 0)) * coalesce(s.avg_width, 1024)) as tpl_data_size,
+        bool_or(att.atttypid = 'pg_catalog.name'::regtype)
+            or sum(case when att.attnum &gt; 0 then 1 else 0 end) &lt;&gt; count(s.attname) as is_na
+    from pg_attribute as att
+             join pg_class as tbl on att.attrelid = tbl.oid and tbl.relkind = 'r'
+             join pg_namespace as ns on ns.oid = tbl.relnamespace
+             join pg_stats as s on s.schemaname = ns.nspname and s.tablename = tbl.relname and not s.inherited and s.attname = att.attname
+             left join pg_class as toast on tbl.reltoastrelid = toast.oid
+    where not att.attisdropped and s.schemaname not in ('pg_catalog', 'information_schema')
+    group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    order by 2, 3
+), step2 as (
+    select
+        *,
+        (
+            4 + tpl_hdr_size + tpl_data_size + (2 * ma)
+                - case when tpl_hdr_size % ma = 0 then ma else tpl_hdr_size % ma end
+                - case when ceil(tpl_data_size)::int % ma = 0 then ma else ceil(tpl_data_size)::int % ma end
+            ) as tpl_size,
+        bs - page_hdr as size_per_block,
+        (heappages + toastpages) as tblpages
+    from step1
+), step3 as (
+    select
+        *,
+        ceil(reltuples / ((bs - page_hdr) / tpl_size)) + ceil(toasttuples / 4) as est_tblpages,
+        ceil(reltuples / ((bs - page_hdr) * fillfactor / (tpl_size * 100))) + ceil(toasttuples / 4) as est_tblpages_ff
+    -- , stattuple.pgstattuple(tblid) as pst
+    from step2
+), step4 as (
+    select
+        *,
+        tblpages * bs as real_size,
+        (tblpages - est_tblpages) * bs as extra_size,
+        case when tblpages - est_tblpages &gt; 0 then 100 * (tblpages - est_tblpages) / tblpages::float else 0 end as extra_ratio,
+        (tblpages - est_tblpages_ff) * bs as bloat_size,
+        case when tblpages - est_tblpages_ff &gt; 0 then 100 * (tblpages - est_tblpages_ff) / tblpages::float else 0 end as bloat_ratio
+    -- , (pst).free_percent + (pst).dead_tuple_percent as real_frag
+    from step3
+             left join pg_stat_user_tables su on su.relid = tblid
+    -- WHERE NOT is_na
+    --   AND tblpages*((pst).free_percent + (pst).dead_tuple_percent)::float4/100 &gt;= 1
+)
+select
+    case is_na when true then 'TRUE' else '' end as &quot;Is N/A&quot;,
+    coalesce(nullif(schema_name, 'public') || '.', '') || table_name as &quot;Table&quot;,
+    pg_size_pretty(real_size::numeric) as &quot;Size&quot;,
+    case
+        when extra_size::numeric &gt;= 0
+            then '~' || pg_size_pretty(extra_size::numeric)::text || ' (' || round(extra_ratio::numeric, 2)::text || '%)'
+        else null
+        end  as &quot;Extra&quot;,
+    case
+        when bloat_size::numeric &gt;= 0
+            then '~' || pg_size_pretty(bloat_size::numeric)::text || ' (' || round(bloat_ratio::numeric, 2)::text || '%)'
+        else null
+        end as &quot;Bloat estimate&quot;,
+    case
+        when (real_size - bloat_size)::numeric &gt;=0
+            then '~' || pg_size_pretty((real_size - bloat_size)::numeric)
+        else null
+        end as &quot;Live&quot;,
+    greatest(last_autovacuum, last_vacuum)::timestamp(0)::text
+        || case greatest(last_autovacuum, last_vacuum)
+               when last_autovacuum then ' (auto)'
+               else '' end as &quot;Last Vaccuum&quot;,
+    (
+        select
+            coalesce(substring(array_to_string(reloptions, ' ') from 'fillfactor=([0-9]+)')::smallint, 100)
+        from pg_class
+        where oid = tblid
+    ) as &quot;Fillfactor&quot;
+from step4
+order by bloat_size desc nulls last
+;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_47918" data-toc="i1ugyun_47918">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_47919"><thead><tr class="ijRowHead" id="i1ugyun_47920"><th id="i1ugyun_47921"><p>Is N/A</p></th><th id="i1ugyun_47922"><p>Table</p></th><th id="i1ugyun_47923"><p>Size</p></th><th id="i1ugyun_47924"><p>Extra</p></th><th id="i1ugyun_47925"><p>Bloat estimate</p></th><th id="i1ugyun_47926"><p>Live</p></th><th id="i1ugyun_47927"><p>Last Vaccuum</p></th><th id="i1ugyun_47928"><p>Fillfactor</p></th></tr></thead><tbody><tr id="i1ugyun_47929"><td id="i1ugyun_47930"></td><td id="i1ugyun_47931"><p>testtbldata</p></td><td id="i1ugyun_47932"><p>383 MB</p></td><td id="i1ugyun_47933"><p>~14 MB (3.75%)</p></td><td id="i1ugyun_47934"><p>~14 MB (3.75%)</p></td><td id="i1ugyun_47935"><p>~369 MB</p></td><td id="i1ugyun_47936"><p>2024-03-25 03:54:41</p></td><td id="i1ugyun_47937"><p>100</p></td></tr><tr id="i1ugyun_47938"><td id="i1ugyun_47939"></td><td id="i1ugyun_47940"><p>t_agg</p></td><td id="i1ugyun_47941"><p>498 MB</p></td><td id="i1ugyun_47942"><p>~256 kB (0.05%)</p></td><td id="i1ugyun_47943"><p>~256 kB (0.05%)</p></td><td id="i1ugyun_47944"><p>~497 MB</p></td><td id="i1ugyun_47945"><p>2024-03-23 02:59:13</p></td><td id="i1ugyun_47946"><p>100</p></td></tr><tr id="i1ugyun_47947"><td id="i1ugyun_47948"></td><td id="i1ugyun_47949"><p>states</p></td><td id="i1ugyun_47950"><p>8192 bytes</p></td><td id="i1ugyun_47951"><p>~0 bytes (0.00%)</p></td><td id="i1ugyun_47952"><p>~0 bytes (0.00%)</p></td><td id="i1ugyun_47953"><p>~8192 bytes</p></td><td id="i1ugyun_47954"><p>2024-03-23 02:59:13</p></td><td id="i1ugyun_47955"><p>100</p></td></tr><tr id="i1ugyun_47956"><td id="i1ugyun_47957"></td><td id="i1ugyun_47958"><p>teststat</p></td><td id="i1ugyun_47959"><p>1344 MB</p></td><td id="i1ugyun_47960"><p>null</p></td><td id="i1ugyun_47961"><p>null</p></td><td id="i1ugyun_47962"><p>~1401 MB</p></td><td id="i1ugyun_47963"><p>2024-03-23 02:59:07</p></td><td id="i1ugyun_47964"><p>100</p></td></tr><tr id="i1ugyun_47965"><td id="i1ugyun_47966"></td><td id="i1ugyun_47967"><p>testidx</p></td><td id="i1ugyun_47968"><p>1344 MB</p></td><td id="i1ugyun_47969"><p>null</p></td><td id="i1ugyun_47970"><p>null</p></td><td id="i1ugyun_47971"><p>~1402 MB</p></td><td id="i1ugyun_47972"><p>2024-03-23 02:58:46</p></td><td id="i1ugyun_47973"><p>100</p></td></tr><tr id="i1ugyun_47974"><td id="i1ugyun_47975"></td><td id="i1ugyun_47976"><p>testnoidx</p></td><td id="i1ugyun_47977"><p>1344 MB</p></td><td id="i1ugyun_47978"><p>null</p></td><td id="i1ugyun_47979"><p>null</p></td><td id="i1ugyun_47980"><p>~1403 MB</p></td><td id="i1ugyun_47981"><p>2024-03-23 02:58:56</p></td><td id="i1ugyun_47982"><p>100</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="b-tree-index-bloat" data-toc="b-tree-index-bloat">B-tree index bloat</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--B-tree index bloat (estimated)" data-disable-link-processing="true">--B-tree index bloat (estimated)
+
+-- enhanced version of https://github.com/ioguix/pgsql-bloat-estimation/blob/master/btree/btree_bloat.sql
+
+-- WARNING: executed with a non-superuser role, the query inspect only index on tables you are granted to read.
+-- WARNING: rows with is_na = 't' are known to have bad statistics (&quot;name&quot; type is not supported).
+-- This query is compatible with PostgreSQL 8.2+
+
+/*
+Оригинал скрипта
+https://github.com/NikolayS/postgres_dba/
+*/
+
+with step1 as (select i.nspname                                                                        as schema_name,
+                      i.tblname                                                                        as table_name,
+                      i.idxname                                                                        as index_name,
+                      i.reltuples,
+                      i.relpages,
+                      i.relam,
+                      a.attrelid                                                                       AS table_oid,
+                      current_setting('block_size')::numeric                                           AS bs,
+                      fillfactor,
+                      -- MAXALIGN: 4 on 32bits, 8 on 64bits (and mingw32 ?)
+                      case when version() ~ 'mingw32|64-bit|x86_64|ppc64|ia64|amd64' then 8 else 4 end as maxalign,
+                   /* per page header, fixed size: 20 for 7.X, 24 for others */
+                      24                                                                               AS pagehdr,
+                   /* per page btree opaque data */
+                      16                                                                               AS pageopqdata,
+                   /* per tuple header: add IndexAttributeBitMapData if some cols are null-able */
+                      case
+                          when max(coalesce(s.null_frac, 0)) = 0 then 2 -- IndexTupleData size
+                          else 2 + ((32 + 8 - 1) / 8) -- IndexTupleData size + IndexAttributeBitMapData size ( max num filed per index + 8 - 1 /8)
+                          end                                                                          as index_tuple_hdr_bm,
+                   /* data len: we remove null values save space using it fractionnal part from stats */
+                      sum((1 - coalesce(s.null_frac, 0)) * coalesce(s.avg_width, 1024))                as nulldatawidth,
+                      max(case when a.atttypid = 'pg_catalog.name'::regtype then 1 else 0 end) &gt; 0     as is_na
+               from pg_attribute as a
+                        join (select nspname,
+                                     tbl.relname                                              AS tblname,
+                                     idx.relname                                              AS idxname,
+                                     idx.reltuples,
+                                     idx.relpages,
+                                     idx.relam,
+                                     indrelid,
+                                     indexrelid,
+                                     indkey::smallint[]                                       AS attnum,
+                                     coalesce(substring(array_to_string(idx.reloptions, ' ') from
+                                                        'fillfactor=([0-9]+)')::smallint, 90) as fillfactor
+                              from pg_index
+                                       join pg_class idx on idx.oid = pg_index.indexrelid
+                                       join pg_class tbl on tbl.oid = pg_index.indrelid
+                                       join pg_namespace on pg_namespace.oid = idx.relnamespace
+                              where pg_index.indisvalid
+                                AND tbl.relkind = 'r'
+                                AND idx.relpages &gt; 0) as i on a.attrelid = i.indexrelid
+                        join pg_stats as s on
+                   s.schemaname = i.nspname
+                       and (
+                       (s.tablename = i.tblname and
+                        s.attname = pg_catalog.pg_get_indexdef(a.attrelid, a.attnum, true)) -- stats from tbl
+                           OR (s.tablename = i.idxname AND s.attname = a.attname) -- stats from functionnal cols
+                       )
+                        join pg_type as t on a.atttypid = t.oid
+               where a.attnum &gt; 0
+               group by 1, 2, 3, 4, 5, 6, 7, 8, 9),
+     step2 as (select *,
+                      (
+                          index_tuple_hdr_bm + maxalign
+                              -- Add padding to the index tuple header to align on MAXALIGN
+                              - case
+                                    when index_tuple_hdr_bm % maxalign = 0 THEN maxalign
+                                    else index_tuple_hdr_bm % maxalign end
+                              + nulldatawidth + maxalign
+                              -- Add padding to the data to align on MAXALIGN
+                              - case
+                                    when nulldatawidth = 0 then 0
+                                    when nulldatawidth::integer % maxalign = 0 then maxalign
+                                    else nulldatawidth::integer % maxalign
+                              end
+                          )::numeric as nulldatahdrwidth
+               -- , index_tuple_hdr_bm, nulldatawidth -- (DEBUG INFO)
+               from step1),
+     step3 as (select *,
+                      -- ItemIdData size + computed avg size of a tuple (nulldatahdrwidth)
+                      coalesce(
+                              1 + ceil(reltuples / floor((bs - pageopqdata - pagehdr) / (4 + nulldatahdrwidth)::float)),
+                              0)                                                                      as est_pages,
+                      coalesce(1 + ceil(reltuples / floor((bs - pageopqdata - pagehdr) * fillfactor /
+                                                          (100 * (4 + nulldatahdrwidth)::float))), 0) as est_pages_ff
+               -- , stattuple.pgstatindex(quote_ident(nspname)||'.'||quote_ident(idxname)) AS pst, index_tuple_hdr_bm, maxalign, pagehdr, nulldatawidth, nulldatahdrwidth, reltuples -- (DEBUG INFO)
+               from step2
+                        join pg_am am on step2.relam = am.oid
+               where am.amname = 'btree'),
+     step4 as (SELECT *,
+                      bs * (relpages)::bigint                           AS real_size,
+-------current_database(), nspname AS schemaname, tblname, idxname, bs*(relpages)::bigint AS real_size,
+                      bs * (relpages - est_pages)::bigint               AS extra_size,
+                      100 * (relpages - est_pages)::float / relpages    AS extra_ratio,
+                      bs * (relpages - est_pages_ff)                    AS bloat_size,
+                      100 * (relpages - est_pages_ff)::float / relpages AS bloat_ratio
+               -- , 100-(sub.pst).avg_leaf_density, est_pages, index_tuple_hdr_bm, maxalign, pagehdr, nulldatawidth, nulldatahdrwidth, sub.reltuples, sub.relpages -- (DEBUG INFO)
+               from step3
+         -- WHERE NOT is_na
+     )
+select case is_na when true then 'TRUE' else '' end as &quot;Is N/A&quot;,
+       format(
+               $out$%s
+  (%s)$out$,
+               left(index_name, 50) || case when length(index_name) &gt; 50 then '…' else '' end,
+               coalesce(nullif(schema_name, 'public') || '.', '') || table_name
+       )                                            as &quot;Index (Table)&quot;,
+       pg_size_pretty(real_size::numeric)           as &quot;Size&quot;,
+       case
+           when extra_size::numeric &gt;= 0
+               then '~' || pg_size_pretty(extra_size::numeric)::text || ' (' || round(extra_ratio::numeric, 2)::text ||
+                    '%)'
+           else null
+           end                                      as &quot;Extra&quot;,
+       case
+           when bloat_size::numeric &gt;= 0
+               then '~' || pg_size_pretty(bloat_size::numeric)::text || ' (' || round(bloat_ratio::numeric, 2)::text ||
+                    '%)'
+           else null
+           end                                      as &quot;Bloat&quot;,
+       case
+           when (real_size - bloat_size)::numeric &gt;= 0
+               then '~' || pg_size_pretty((real_size - bloat_size)::numeric)
+           else null
+           end                                      as &quot;Live&quot;,
+       fillfactor
+from step4
+order by real_size desc nulls last
+;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_47984" data-toc="i1ugyun_47984">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_47985"><thead><tr class="ijRowHead" id="i1ugyun_47986"><th id="i1ugyun_47987"><p>Is N/A</p></th><th id="i1ugyun_47988"><p>Index (Table)</p></th><th id="i1ugyun_47989"><p>Size</p></th><th id="i1ugyun_47990"><p>Extra</p></th><th id="i1ugyun_47991"><p>Bloat</p></th><th id="i1ugyun_47992"><p>Live</p></th><th id="i1ugyun_47993"><p>fillfactor</p></th></tr></thead><tbody><tr id="i1ugyun_47994"><td id="i1ugyun_47995"></td><td id="i1ugyun_47996"><p>teststat_pkey</p><br><p> (teststat)</p></td><td id="i1ugyun_47998"><p>249 MB</p></td><td id="i1ugyun_47999"><p>~26 MB (10.39%)</p></td><td id="i1ugyun_48000"><p>~904 kB (0.35%)</p></td><td id="i1ugyun_48001"><p>~248 MB</p></td><td id="i1ugyun_48002"><p>90</p></td></tr><tr id="i1ugyun_48003"><td id="i1ugyun_48004"></td><td id="i1ugyun_48005"><p>testidx_copy1_pkey</p><br><p> (testnoidx)</p></td><td id="i1ugyun_48007"><p>249 MB</p></td><td id="i1ugyun_48008"><p>~26 MB (10.29%)</p></td><td id="i1ugyun_48009"><p>~624 kB (0.24%)</p></td><td id="i1ugyun_48010"><p>~249 MB</p></td><td id="i1ugyun_48011"><p>90</p></td></tr><tr id="i1ugyun_48012"><td id="i1ugyun_48013"></td><td id="i1ugyun_48014"><p>testidx_pk</p><br><p> (testidx)</p></td><td id="i1ugyun_48016"><p>225 MB</p></td><td id="i1ugyun_48017"><p>~1328 kB (0.58%)</p></td><td id="i1ugyun_48018"><p>~1328 kB (0.58%)</p></td><td id="i1ugyun_48019"><p>~223 MB</p></td><td id="i1ugyun_48020"><p>100</p></td></tr><tr id="i1ugyun_48021"><td id="i1ugyun_48022"></td><td id="i1ugyun_48023"><p>testidx_created_at_index</p><br><p> (testidx)</p></td><td id="i1ugyun_48025"><p>165 MB</p></td><td id="i1ugyun_48026"><p>~15 MB (9.10%)</p></td><td id="i1ugyun_48027"><p>null</p></td><td id="i1ugyun_48028"><p>~167 MB</p></td><td id="i1ugyun_48029"><p>90</p></td></tr><tr id="i1ugyun_48030"><td id="i1ugyun_48031"></td><td id="i1ugyun_48032"><p>testidx_fk_id_index</p><br><p> (testidx)</p></td><td id="i1ugyun_48034"><p>114 MB</p></td><td id="i1ugyun_48035"><p>null</p></td><td id="i1ugyun_48036"><p>null</p></td><td id="i1ugyun_48037"><p>~247 MB</p></td><td id="i1ugyun_48038"><p>90</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="table-bloat" data-toc="table-bloat">Table bloat</h2><p id="i1ugyun_48039">Требуется модуль <a href="https://postgrespro.ru/docs/postgrespro/16/pgstattuple" id="i1ugyun_48040" data-external="true" rel="noopener noreferrer">pgstattuple</a></p><div class="code-block" data-lang="sql">
+create extension if not exists pgstattuple;
+</div><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Table bloat (requires pgstattuple; expensive)" data-disable-link-processing="true">--Table bloat (requires pgstattuple; expensive)
+
+--https://github.com/dataegret/pg-utils/tree/master/sql
+--pgstattuple extension required
+--WARNING: without table name/mask query will read all available tables which could cause I/O spikes
+
+/*
+Оригинал скрипта
+https://github.com/NikolayS/postgres_dba/
+*/
+
+select nspname,
+       relname,
+       pg_size_pretty(relation_size + toast_relation_size) as                                    total_size,
+       pg_size_pretty(toast_relation_size)                 as                                    toast_size,
+       round(((relation_size - (relation_size - free_space) * 100 / fillfactor) * 100 /
+              greatest(relation_size, 1))::numeric, 1)                                           table_waste_percent,
+       pg_size_pretty((relation_size - (relation_size - free_space) * 100 / fillfactor)::bigint) table_waste,
+       round(((toast_free_space + relation_size - (relation_size - free_space) * 100 / fillfactor) * 100 /
+              greatest(relation_size + toast_relation_size, 1))::numeric, 1)                     total_waste_percent,
+       pg_size_pretty((toast_free_space + relation_size -
+                       (relation_size - free_space) * 100 / fillfactor)::bigint)                 total_waste
+from (select nspname,
+             relname,
+             (select free_space from pgstattuple(c.oid))                                                         as free_space,
+             pg_relation_size(c.oid)                                                                             as relation_size,
+             (case
+                  when reltoastrelid = 0 then 0
+                  else (select free_space from pgstattuple(c.reltoastrelid)) end)                                as toast_free_space,
+             coalesce(pg_relation_size(c.reltoastrelid), 0)                                                      as toast_relation_size,
+             coalesce((SELECT (regexp_matches(reloptions::text, E'.*fillfactor=(\\d+).*'))[1]),
+                      '100')::real                                                                               AS fillfactor
+      from pg_class c
+               left join pg_namespace n on (n.oid = c.relnamespace)
+      where nspname not in ('pg_catalog', 'information_schema')
+        and nspname !~ '^pg_toast'
+        and relkind = 'r'
+        --put your table name/mask here
+        and relname ~ '') t
+order by (toast_free_space + relation_size - (relation_size - free_space) * 100 / fillfactor) desc
+limit 20;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48043" data-toc="i1ugyun_48043">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_48044"><thead><tr class="ijRowHead" id="i1ugyun_48045"><th id="i1ugyun_48046"><p>nspname</p></th><th id="i1ugyun_48047"><p>relname</p></th><th id="i1ugyun_48048"><p>total_size</p></th><th id="i1ugyun_48049"><p>toast_size</p></th><th id="i1ugyun_48050"><p>table_waste_percent</p></th><th id="i1ugyun_48051"><p>table_waste</p></th><th id="i1ugyun_48052"><p>total_waste_percent</p></th><th id="i1ugyun_48053"><p>total_waste</p></th></tr></thead><tbody><tr id="i1ugyun_48054"><td id="i1ugyun_48055"><p>public</p></td><td id="i1ugyun_48056"><p>teststat</p></td><td id="i1ugyun_48057"><p>1344 MB</p></td><td id="i1ugyun_48058"><p>314 MB</p></td><td id="i1ugyun_48059"><p>0.5</p></td><td id="i1ugyun_48060"><p>4829 kB</p></td><td id="i1ugyun_48061"><p>2.3</p></td><td id="i1ugyun_48062"><p>31 MB</p></td></tr><tr id="i1ugyun_48063"><td id="i1ugyun_48064"><p>public</p></td><td id="i1ugyun_48065"><p>testnoidx</p></td><td id="i1ugyun_48066"><p>1344 MB</p></td><td id="i1ugyun_48067"><p>314 MB</p></td><td id="i1ugyun_48068"><p>0.5</p></td><td id="i1ugyun_48069"><p>4829 kB</p></td><td id="i1ugyun_48070"><p>2.3</p></td><td id="i1ugyun_48071"><p>30 MB</p></td></tr><tr id="i1ugyun_48072"><td id="i1ugyun_48073"><p>public</p></td><td id="i1ugyun_48074"><p>testidx</p></td><td id="i1ugyun_48075"><p>1344 MB</p></td><td id="i1ugyun_48076"><p>314 MB</p></td><td id="i1ugyun_48077"><p>0.5</p></td><td id="i1ugyun_48078"><p>4829 kB</p></td><td id="i1ugyun_48079"><p>2.3</p></td><td id="i1ugyun_48080"><p>30 MB</p></td></tr><tr id="i1ugyun_48081"><td id="i1ugyun_48082"><p>public</p></td><td id="i1ugyun_48083"><p>testtbldata</p></td><td id="i1ugyun_48084"><p>383 MB</p></td><td id="i1ugyun_48085"><p>0 bytes</p></td><td id="i1ugyun_48086"><p>0.4</p></td><td id="i1ugyun_48087"><p>1746 kB</p></td><td id="i1ugyun_48088"><p>0.4</p></td><td id="i1ugyun_48089"><p>1746 kB</p></td></tr><tr id="i1ugyun_48090"><td id="i1ugyun_48091"><p>public</p></td><td id="i1ugyun_48092"><p>states</p></td><td id="i1ugyun_48093"><p>8192 bytes</p></td><td id="i1ugyun_48094"><p>0 bytes</p></td><td id="i1ugyun_48095"><p>97.7</p></td><td id="i1ugyun_48096"><p>8000 bytes</p></td><td id="i1ugyun_48097"><p>97.7</p></td><td id="i1ugyun_48098"><p>8000 bytes</p></td></tr><tr id="i1ugyun_48099"><td id="i1ugyun_48100"><p>public</p></td><td id="i1ugyun_48101"><p>t_agg</p></td><td id="i1ugyun_48102"><p>498 MB</p></td><td id="i1ugyun_48103"><p>0 bytes</p></td><td id="i1ugyun_48104"><p>0</p></td><td id="i1ugyun_48105"><p>5996 bytes</p></td><td id="i1ugyun_48106"><p>0</p></td><td id="i1ugyun_48107"><p>5996 bytes</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="b-tree-indexes-bloat" data-toc="b-tree-indexes-bloat">B-tree indexes bloat</h2><p id="i1ugyun_48108">Требуется модуль <a href="https://postgrespro.ru/docs/postgrespro/16/pgstattuple" id="i1ugyun_48109" data-external="true" rel="noopener noreferrer">pgstattuple</a></p><div class="code-block" data-lang="sql">
+create extension if not exists pgstattuple;
+</div><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--B-tree indexes bloat (requires pgstattuple; expensive)" data-disable-link-processing="true">--B-tree indexes bloat (requires pgstattuple; expensive)
+
+--https://github.com/dataegret/pg-utils/tree/master/sql
+--pgstattuple extension required
+--WARNING: without index name/mask query will read all available indexes which could cause I/O spikes
+
+/*
+Оригинал скрипта
+https://github.com/NikolayS/postgres_dba/
+*/
+
+with data as (
+    select
+        schemaname as schema_name,
+        p.relname as table_name,
+        (select spcname from pg_tablespace where oid = c_table.reltablespace) as table_tblspace,
+        (select spcname from pg_tablespace where oid = c.reltablespace) as index_tblspace,
+        indexrelname as index_name,
+        (
+            select (case when avg_leaf_density = 'NaN' then 0
+                         else greatest(ceil(index_size * (1 - avg_leaf_density / (coalesce((SELECT (regexp_matches(c.reloptions::text, E'.*fillfactor=(\\d+).*'))[1]),'90')::real)))::bigint, 0) end)
+            from pgstatindex(
+                    case when p.indexrelid::regclass::text ~ '\.' then p.indexrelid::regclass::text else schemaname || '.' || p.indexrelid::regclass::text end
+                 )
+        ) as free_space,
+        pg_relation_size(p.indexrelid) as index_size,
+        pg_relation_size(p.relid) as table_size,
+        idx_scan
+    from pg_stat_user_indexes p
+             join pg_class c on p.indexrelid = c.oid
+             join pg_class c_table on p.relid = c_table.oid
+    where
+        pg_get_indexdef(p.indexrelid) like '%USING btree%'
+      --put your index name/mask here
+      and indexrelname ~ ''
+)
+select
+    coalesce(nullif(schema_name, 'public') || '.', '') || table_name || coalesce(' [' || table_tblspace || ']', '') as &quot;Table&quot;,
+    coalesce(nullif(schema_name, 'public') || '.', '') || index_name || coalesce(' [' || index_tblspace || ']', '') as &quot;Index&quot;,
+    pg_size_pretty(table_size) as &quot;Table size&quot;,
+    pg_size_pretty(index_size) as &quot;Index size&quot;,
+    idx_scan as &quot;Index Scans&quot;,
+    round((free_space*100/index_size)::numeric, 1) as &quot;Wasted, %&quot;,
+    pg_size_pretty(free_space) as &quot;Wasted&quot;
+from data
+order by free_space desc;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48112" data-toc="i1ugyun_48112">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_48113"><thead><tr class="ijRowHead" id="i1ugyun_48114"><th id="i1ugyun_48115"><p>Table</p></th><th id="i1ugyun_48116"><p>Index</p></th><th id="i1ugyun_48117"><p>Table size</p></th><th id="i1ugyun_48118"><p>Index size</p></th><th id="i1ugyun_48119"><p>Index Scans</p></th><th id="i1ugyun_48120"><p>Wasted, %</p></th><th id="i1ugyun_48121"><p>Wasted</p></th></tr></thead><tbody><tr id="i1ugyun_48122"><td id="i1ugyun_48123"><p>testidx</p></td><td id="i1ugyun_48124"><p>testidx_pk</p></td><td id="i1ugyun_48125"><p>1030 MB</p></td><td id="i1ugyun_48126"><p>225 MB</p></td><td id="i1ugyun_48127"><p>17240064</p></td><td id="i1ugyun_48128"><p>0</p></td><td id="i1ugyun_48129"><p>230 kB</p></td></tr><tr id="i1ugyun_48130"><td id="i1ugyun_48131"><p>states</p></td><td id="i1ugyun_48132"><p>states_pkey</p></td><td id="i1ugyun_48133"><p>8192 bytes</p></td><td id="i1ugyun_48134"><p>16 kB</p></td><td id="i1ugyun_48135"><p>3</p></td><td id="i1ugyun_48136"><p>99</p></td><td id="i1ugyun_48137"><p>16 kB</p></td></tr><tr id="i1ugyun_48138"><td id="i1ugyun_48139"><p>testnoidx</p></td><td id="i1ugyun_48140"><p>testidx_copy1_pkey</p></td><td id="i1ugyun_48141"><p>1030 MB</p></td><td id="i1ugyun_48142"><p>249 MB</p></td><td id="i1ugyun_48143"><p>2</p></td><td id="i1ugyun_48144"><p>0</p></td><td id="i1ugyun_48145"><p>0 bytes</p></td></tr><tr id="i1ugyun_48146"><td id="i1ugyun_48147"><p>teststat</p></td><td id="i1ugyun_48148"><p>teststat_pkey</p></td><td id="i1ugyun_48149"><p>1030 MB</p></td><td id="i1ugyun_48150"><p>249 MB</p></td><td id="i1ugyun_48151"><p>8620000</p></td><td id="i1ugyun_48152"><p>0</p></td><td id="i1ugyun_48153"><p>0 bytes</p></td></tr><tr id="i1ugyun_48154"><td id="i1ugyun_48155"><p>testidx</p></td><td id="i1ugyun_48156"><p>testidx_fk_id_index</p></td><td id="i1ugyun_48157"><p>1030 MB</p></td><td id="i1ugyun_48158"><p>114 MB</p></td><td id="i1ugyun_48159"><p>549</p></td><td id="i1ugyun_48160"><p>0</p></td><td id="i1ugyun_48161"><p>0 bytes</p></td></tr><tr id="i1ugyun_48162"><td id="i1ugyun_48163"><p>testidx</p></td><td id="i1ugyun_48164"><p>testidx_created_at_index</p></td><td id="i1ugyun_48165"><p>1030 MB</p></td><td id="i1ugyun_48166"><p>165 MB</p></td><td id="i1ugyun_48167"><p>41</p></td><td id="i1ugyun_48168"><p>0</p></td><td id="i1ugyun_48169"><p>0 bytes</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="tables-and-columns-without-stats" data-toc="tables-and-columns-without-stats">Tables and columns without stats</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Tables and columns without stats" data-disable-link-processing="true">--Tables and columns without stats
+--Created by PostgreSQL Experts https://github.com/pgexperts/pgx_scripts/blob/master/bloat/no_stats_table_check.sql
+
+SELECT table_schema, table_name,
+       ( pg_class.relpages = 0 ) AS is_empty,
+       ( psut.relname IS NULL OR ( psut.last_analyze IS NULL and psut.last_autoanalyze IS NULL ) ) AS never_analyzed,
+       array_agg(column_name::TEXT) as no_stats_columns
+FROM information_schema.columns
+         JOIN pg_class ON columns.table_name = pg_class.relname
+    AND pg_class.relkind = 'r'
+         JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid
+    AND nspname = table_schema
+         LEFT OUTER JOIN pg_stats
+                         ON table_schema = pg_stats.schemaname
+                             AND table_name = pg_stats.tablename
+                             AND column_name = pg_stats.attname
+         LEFT OUTER JOIN pg_stat_user_tables AS psut
+                         ON table_schema = psut.schemaname
+                             AND table_name = psut.relname
+WHERE pg_stats.attname IS NULL
+  AND table_schema NOT IN ('pg_catalog', 'information_schema')
+GROUP BY table_schema, table_name, relpages, psut.relname, last_analyze, last_autoanalyze;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48171" data-toc="i1ugyun_48171">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_48172"><thead><tr class="ijRowHead" id="i1ugyun_48173"><th id="i1ugyun_48174"><p>table_schema</p></th><th id="i1ugyun_48175"><p>table_name</p></th><th id="i1ugyun_48176"><p>is_empty</p></th><th id="i1ugyun_48177"><p>never_analyzed</p></th><th id="i1ugyun_48178"><p>no_stats_columns</p></th></tr></thead><tbody><tr id="i1ugyun_48179"><td id="i1ugyun_48180"><p>public</p></td><td id="i1ugyun_48181"><p>category</p></td><td id="i1ugyun_48182"><p>false</p></td><td id="i1ugyun_48183"><p>true</p></td><td id="i1ugyun_48184"><p>{name,category_id,last_update}</p></td></tr><tr id="i1ugyun_48185"><td id="i1ugyun_48186"><p>public</p></td><td id="i1ugyun_48187"><p>language</p></td><td id="i1ugyun_48188"><p>false</p></td><td id="i1ugyun_48189"><p>true</p></td><td id="i1ugyun_48190"><p>{last_update,name,language_id}</p></td></tr><tr id="i1ugyun_48191"><td id="i1ugyun_48192"><p>public</p></td><td id="i1ugyun_48193"><p>staff</p></td><td id="i1ugyun_48194"><p>false</p></td><td id="i1ugyun_48195"><p>true</p></td><td id="i1ugyun_48196"><p>{password,username,staff_id,first_name,email,last_name,picture,last_update,active,store_id,address_id}</p></td></tr><tr id="i1ugyun_48197"><td id="i1ugyun_48198"><p>public</p></td><td id="i1ugyun_48199"><p>store</p></td><td id="i1ugyun_48200"><p>false</p></td><td id="i1ugyun_48201"><p>true</p></td><td id="i1ugyun_48202"><p>{last_update,manager_staff_id,address_id,store_id}</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i1ugyun_48203" data-toc="i1ugyun_48203">Неиспользуемые и редко используемые индексы</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Unused and rarely used indexes" data-disable-link-processing="true">--Unused and rarely used indexes
+
+--PostgreSQL Experts https://github.com/pgexperts/pgx_scripts/blob/master/indexes/unused_indexes.sql
+
+WITH table_scans as (
+    SELECT relid,
+           tables.idx_scan + tables.seq_scan as all_scans,
+           ( tables.n_tup_ins + tables.n_tup_upd + tables.n_tup_del ) as writes,
+           pg_relation_size(relid) as table_size
+    FROM pg_stat_user_tables as tables
+),
+     all_writes as (
+         SELECT sum(writes) as total_writes
+         FROM table_scans
+     ),
+     indexes as (
+         SELECT idx_stat.relid, idx_stat.indexrelid,
+                idx_stat.schemaname, idx_stat.relname as tablename,
+                idx_stat.indexrelname as indexname,
+                idx_stat.idx_scan,
+                pg_relation_size(idx_stat.indexrelid) as index_bytes,
+                indexdef ~* 'USING btree' AS idx_is_btree
+         FROM pg_stat_user_indexes as idx_stat
+                  JOIN pg_index
+                       USING (indexrelid)
+                  JOIN pg_indexes as indexes
+                       ON idx_stat.schemaname = indexes.schemaname
+                           AND idx_stat.relname = indexes.tablename
+                           AND idx_stat.indexrelname = indexes.indexname
+         WHERE pg_index.indisunique = FALSE
+     ),
+     index_ratios AS (
+         SELECT schemaname, tablename, indexname,
+                idx_scan, all_scans,
+                round(( CASE WHEN all_scans = 0 THEN 0.0::NUMERIC
+                             ELSE idx_scan::NUMERIC/all_scans * 100 END),2) as index_scan_pct,
+                writes,
+                round((CASE WHEN writes = 0 THEN idx_scan::NUMERIC ELSE idx_scan::NUMERIC/writes END),2)
+                                                                            as scans_per_write,
+                pg_size_pretty(index_bytes) as index_size,
+                pg_size_pretty(table_size) as table_size,
+                idx_is_btree, index_bytes
+         FROM indexes
+                  JOIN table_scans
+                       USING (relid)
+     ),
+     index_groups AS (
+         SELECT 'Never Used Indexes' as reason, *, 1 as grp
+         FROM index_ratios
+         WHERE
+             idx_scan = 0
+           and idx_is_btree
+         UNION ALL
+         SELECT 'Low Scans, High Writes' as reason, *, 2 as grp
+         FROM index_ratios
+         WHERE
+             scans_per_write &lt;= 1
+           and index_scan_pct &lt; 10
+           and idx_scan &gt; 0
+           and writes &gt; 100
+           and idx_is_btree
+         UNION ALL
+         SELECT 'Seldom Used Large Indexes' as reason, *, 3 as grp
+         FROM index_ratios
+         WHERE
+             index_scan_pct &lt; 5
+           and scans_per_write &gt; 1
+           and idx_scan &gt; 0
+           and idx_is_btree
+           and index_bytes &gt; 100000000
+         UNION ALL
+         SELECT 'High-Write Large Non-Btree' as reason, index_ratios.*, 4 as grp
+         FROM index_ratios, all_writes
+         WHERE
+             ( writes::NUMERIC / ( total_writes + 1 ) ) &gt; 0.02
+           AND NOT idx_is_btree
+           AND index_bytes &gt; 100000000
+         ORDER BY grp, index_bytes DESC )
+SELECT
+    reason,
+    schemaname as schema_name,
+    tablename as table_name,
+    indexname as index_name,
+    index_scan_pct,
+    scans_per_write,
+    index_size,
+    table_size,
+    idx_scan,
+    all_scans
+FROM index_groups;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48205" data-toc="i1ugyun_48205">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_48206"><thead><tr class="ijRowHead" id="i1ugyun_48207"><th id="i1ugyun_48208"><p>reason</p></th><th id="i1ugyun_48209"><p>schema_name</p></th><th id="i1ugyun_48210"><p>table_name</p></th><th id="i1ugyun_48211"><p>index_name</p></th><th id="i1ugyun_48212"><p>index_scan_pct</p></th><th id="i1ugyun_48213"><p>scans_per_write</p></th><th id="i1ugyun_48214"><p>index_size</p></th><th id="i1ugyun_48215"><p>table_size</p></th><th id="i1ugyun_48216"><p>idx_scan</p></th><th id="i1ugyun_48217"><p>all_scans</p></th></tr></thead><tbody><tr id="i1ugyun_48218"><td id="i1ugyun_48219"><p>Low Scans, High Writes</p></td><td id="i1ugyun_48220"><p>public</p></td><td id="i1ugyun_48221"><p>testidx</p></td><td id="i1ugyun_48222"><p>testidx_created_at_index</p></td><td id="i1ugyun_48223"><p>0</p></td><td id="i1ugyun_48224"><p>0</p></td><td id="i1ugyun_48225"><p>165 MB</p></td><td id="i1ugyun_48226"><p>1030 MB</p></td><td id="i1ugyun_48227"><p>41</p></td><td id="i1ugyun_48228"><p>17240843</p></td></tr><tr id="i1ugyun_48229"><td id="i1ugyun_48230"><p>Low Scans, High Writes</p></td><td id="i1ugyun_48231"><p>public</p></td><td id="i1ugyun_48232"><p>testidx</p></td><td id="i1ugyun_48233"><p>testidx_fk_id_index</p></td><td id="i1ugyun_48234"><p>0</p></td><td id="i1ugyun_48235"><p>0</p></td><td id="i1ugyun_48236"><p>114 MB</p></td><td id="i1ugyun_48237"><p>1030 MB</p></td><td id="i1ugyun_48238"><p>549</p></td><td id="i1ugyun_48239"><p>17240843</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i1ugyun_48240" data-toc="i1ugyun_48240">Избыточные индексы</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Redundant indexes" data-disable-link-processing="true">--Redundant indexes
+
+-- Use it to see redundant indexes list
+
+-- This query doesn't need any additional extensions to be installed
+-- (except plpgsql), and doesn't create anything (like views or smth)
+-- -- so feel free to use it in your clouds (Heroku, AWS RDS, etc)
+
+-- (Keep in mind, that on replicas, the whole picture of index usage
+-- is usually very different from master).
+
+with fk_indexes as (
+    select
+        n.nspname as schema_name,
+        ci.relname as index_name,
+        cr.relname as table_name,
+        (confrelid::regclass)::text as fk_table_ref,
+        array_to_string(indclass, ', ') as opclasses
+    from pg_index i
+             join pg_class ci on ci.oid = i.indexrelid and ci.relkind = 'i'
+             join pg_class cr on cr.oid = i.indrelid and cr.relkind = 'r'
+             join pg_namespace n on n.oid = ci.relnamespace
+             join pg_constraint cn on cn.conrelid = cr.oid
+             left join pg_stat_user_indexes si on si.indexrelid = i.indexrelid
+    where
+        contype = 'f'
+      and i.indisunique is false
+      and conkey is not null
+      and ci.relpages &gt; 0 -- raise for a DB with a lot of indexes
+      and si.idx_scan &lt; 10
+),
+-- Redundant indexes
+     index_data as (
+         select
+             *,
+             (select string_agg(lpad(i, 3, '0'), ' ') from unnest(string_to_array(indkey::text, ' ')) i) as columns,
+             array_to_string(indclass, ', ') as opclasses
+         from pg_index i
+                  join pg_class ci on ci.oid = i.indexrelid and ci.relkind = 'i'
+         where indisvalid = true and ci.relpages &gt; 0 -- raise for a DD with a lot of indexes
+     ), redundant_indexes as (
+    select
+        i2.indexrelid as index_id,
+        tnsp.nspname AS schema_name,
+        trel.relname AS table_name,
+        pg_relation_size(trel.oid) as table_size_bytes,
+        irel.relname AS index_name,
+        am1.amname as access_method,
+        (i1.indexrelid::regclass)::text as reason,
+        i1.indexrelid as reason_index_id,
+        pg_get_indexdef(i1.indexrelid) main_index_def,
+        pg_size_pretty(pg_relation_size(i1.indexrelid)) main_index_size,
+        pg_get_indexdef(i2.indexrelid) index_def,
+        pg_relation_size(i2.indexrelid) index_size_bytes,
+        s.idx_scan as index_usage,
+        quote_ident(tnsp.nspname) as formated_schema_name,
+        coalesce(nullif(quote_ident(tnsp.nspname), 'public') || '.', '') || quote_ident(irel.relname) as formated_index_name,
+        quote_ident(trel.relname) AS formated_table_name,
+        coalesce(nullif(quote_ident(tnsp.nspname), 'public') || '.', '') || quote_ident(trel.relname) as formated_relation_name,
+        i2.opclasses
+    from
+        index_data as i1
+            join index_data as i2 on (
+            i1.indrelid = i2.indrelid -- same table
+                and i1.indexrelid &lt;&gt; i2.indexrelid -- NOT same index
+            )
+            inner join pg_opclass op1 on i1.indclass[0] = op1.oid
+            inner join pg_opclass op2 on i2.indclass[0] = op2.oid
+            inner join pg_am am1 on op1.opcmethod = am1.oid
+            inner join pg_am am2 on op2.opcmethod = am2.oid
+            join pg_stat_user_indexes as s on s.indexrelid = i2.indexrelid
+            join pg_class as trel on trel.oid = i2.indrelid
+            join pg_namespace as tnsp on trel.relnamespace = tnsp.oid
+            join pg_class as irel on irel.oid = i2.indexrelid
+    where
+        not i2.indisprimary -- index 1 is not primary
+      and not ( -- skip if index1 is (primary or uniq) and is NOT (primary and uniq)
+        i2.indisunique and not i1.indisprimary
+        )
+      and am1.amname = am2.amname -- same access type
+      and i1.columns like (i2.columns || '%') -- index 2 includes all columns from index 1
+      and i1.opclasses like (i2.opclasses || '%')
+      -- index expressions is same
+      and pg_get_expr(i1.indexprs, i1.indrelid) is not distinct from pg_get_expr(i2.indexprs, i2.indrelid)
+      -- index predicates is same
+      and pg_get_expr(i1.indpred, i1.indrelid) is not distinct from pg_get_expr(i2.indpred, i2.indrelid)
+), redundant_indexes_fk as (
+    select
+        ri.*,
+        (
+            select count(1)
+            from fk_indexes fi
+            where
+                fi.fk_table_ref = ri.table_name
+              and fi.opclasses like (ri.opclasses || '%')
+        ) &gt; 0 as supports_fk
+    from redundant_indexes ri
+),
+-- Cut recursive links
+     redundant_indexes_tmp_num as (
+         select
+                     row_number() over () num,
+                     rig.*
+         from redundant_indexes_fk rig
+         order by index_id
+     ), redundant_indexes_tmp_cut as (
+    select
+        ri1.*,
+        ri2.num as r_num
+    from redundant_indexes_tmp_num ri1
+             left join redundant_indexes_tmp_num ri2 on ri2.reason_index_id = ri1.index_id and ri1.reason_index_id = ri2.index_id
+    where ri1.num &lt; ri2.num or ri2.num is null
+), redundant_indexes_cut_grouped as (
+    select
+        distinct(num),
+                *
+    from redundant_indexes_tmp_cut
+    order by index_size_bytes desc
+), redundant_indexes_grouped as (
+    select
+        distinct(num),
+                *
+    from redundant_indexes_tmp_cut
+    order by index_size_bytes desc
+)
+select
+    schema_name,
+    table_name,
+    table_size_bytes,
+    index_name,
+    access_method,
+    string_agg(distinct reason, ', ') as redundant_to,
+    string_agg(main_index_def, ', ') as main_index_def,
+    string_agg(main_index_size, ', ') as main_index_size,
+    index_def,
+    index_size_bytes,
+    index_usage,
+    supports_fk
+from redundant_indexes_cut_grouped
+group by
+    index_id,
+    schema_name,
+    table_name,
+    table_size_bytes,
+    index_name,
+    access_method,
+    index_def,
+    index_size_bytes,
+    index_usage,
+    supports_fk
+order by index_size_bytes desc;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48242" data-toc="i1ugyun_48242">Результат</h3></div><div class="collapse__content"><p id="i1ugyun_48243">TODO: добавить пример!</p></div></div></section></section><section class="chapter"><h2 id="fk" data-toc="fk">FK и отсутствующие индексы</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--FKs with Missing/Bad Indexes" data-disable-link-processing="true">--FKs with Missing/Bad Indexes
+
+--Created by PostgreSQL Experts https://github.com/pgexperts/pgx_scripts/blob/master/indexes/fk_no_index.sql
+
+-- check for FKs where there is no matching index
+-- on the referencing side
+-- or a bad index
+
+with fk_actions ( code, action ) as (
+    values ('a', 'error'),
+           ('r', 'restrict'),
+           ('c', 'cascade'),
+           ('n', 'set null'),
+           ('d', 'set default')
+), fk_list as (
+    select
+        pg_constraint.oid as fkoid, conrelid, confrelid as parentid,
+        conname,
+        relname,
+        nspname,
+        fk_actions_update.action as update_action,
+        fk_actions_delete.action as delete_action,
+        conkey as key_cols
+    from pg_constraint
+             join pg_class on conrelid = pg_class.oid
+             join pg_namespace on pg_class.relnamespace = pg_namespace.oid
+             join fk_actions as fk_actions_update on confupdtype = fk_actions_update.code
+             join fk_actions as fk_actions_delete on confdeltype = fk_actions_delete.code
+    where contype = 'f'
+), fk_attributes as (
+    select fkoid, conrelid, attname, attnum
+    from fk_list
+             join pg_attribute on conrelid = attrelid and attnum = any(key_cols)
+    order by fkoid, attnum
+), fk_cols_list as (
+    select fkoid, array_agg(attname) as cols_list
+    from fk_attributes
+    group by fkoid
+), index_list as (
+    select
+        indexrelid as indexid,
+        pg_class.relname as indexname,
+        indrelid,
+        indkey,
+        indpred is not null as has_predicate,
+        pg_get_indexdef(indexrelid) as indexdef
+    from pg_index
+             join pg_class on indexrelid = pg_class.oid
+    where indisvalid
+), fk_index_match as (
+    select
+        fk_list.*,
+        indexid,
+        indexname,
+        indkey::int[] as indexatts,
+        has_predicate,
+        indexdef,
+        array_length(key_cols, 1) as fk_colcount,
+        array_length(indkey,1) as index_colcount,
+        round(pg_relation_size(conrelid)/(1024^2)::numeric) as table_mb,
+        cols_list
+    from fk_list
+             join fk_cols_list using (fkoid)
+             left join index_list on
+        conrelid = indrelid
+            and (indkey::int2[])[0:(array_length(key_cols,1) -1)] operator(pg_catalog.@&gt;) key_cols
+
+), fk_perfect_match as (
+    select fkoid
+    from fk_index_match
+    where
+        (index_colcount - 1) &lt;= fk_colcount
+      and not has_predicate
+      and indexdef like '%USING btree%'
+), fk_index_check as (
+    select 'no index' as issue, *, 1 as issue_sort
+    from fk_index_match
+    where indexid is null
+    union all
+    select 'questionable index' as issue, *, 2
+    from fk_index_match
+    where
+        indexid is not null
+      and fkoid not in (select fkoid from fk_perfect_match)
+), parent_table_stats as (
+    select
+        fkoid,
+        tabstats.relname as parent_name,
+        (n_tup_ins + n_tup_upd + n_tup_del + n_tup_hot_upd) as parent_writes,
+        round(pg_relation_size(parentid)/(1024^2)::numeric) as parent_mb
+    from pg_stat_user_tables as tabstats
+             join fk_list on relid = parentid
+), fk_table_stats as (
+    select
+        fkoid,
+        (n_tup_ins + n_tup_upd + n_tup_del + n_tup_hot_upd) as writes,
+        seq_scan as table_scans
+    from pg_stat_user_tables as tabstats
+             join fk_list on relid = conrelid
+)
+select
+    nspname as schema_name,
+    relname as table_name,
+    conname as fk_name,
+    issue,
+    table_mb,
+    writes,
+    table_scans,
+    parent_name,
+    parent_mb,
+    parent_writes,
+    cols_list,
+    indexdef
+from fk_index_check
+         join parent_table_stats using (fkoid)
+         join fk_table_stats using (fkoid)
+where
+    table_mb &gt; 9
+  and (
+    writes &gt; 1000
+        or parent_writes &gt; 1000
+        or parent_mb &gt; 10
+    )
+order by issue_sort, table_mb desc, table_name, fk_name;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i1ugyun_48245" data-toc="i1ugyun_48245">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i1ugyun_48246"><thead><tr class="ijRowHead" id="i1ugyun_48247"><th id="i1ugyun_48248"><p>schema_name</p></th><th id="i1ugyun_48249"><p>table_name</p></th><th id="i1ugyun_48250"><p>fk_name</p></th><th id="i1ugyun_48251"><p>issue</p></th><th id="i1ugyun_48252"><p>table_mb</p></th><th id="i1ugyun_48253"><p>writes</p></th><th id="i1ugyun_48254"><p>table_scans</p></th><th id="i1ugyun_48255"><p>parent_name</p></th><th id="i1ugyun_48256"><p>parent_mb</p></th><th id="i1ugyun_48257"><p>parent_writes</p></th><th id="i1ugyun_48258"><p>cols_list</p></th><th id="i1ugyun_48259"><p>indexdef</p></th></tr></thead><tbody><tr id="i1ugyun_48260"><td id="i1ugyun_48261"><p>public</p></td><td id="i1ugyun_48262"><p>testnoidx</p></td><td id="i1ugyun_48263"><p>testidx_copy1_fk_id_fkey</p></td><td id="i1ugyun_48264"><p>no index</p></td><td id="i1ugyun_48265"><p>1030</p></td><td id="i1ugyun_48266"><p>11633001</p></td><td id="i1ugyun_48267"><p>920</p></td><td id="i1ugyun_48268"><p>testnoidx</p></td><td id="i1ugyun_48269"><p>1030</p></td><td id="i1ugyun_48270"><p>11633001</p></td><td id="i1ugyun_48271"><p>{fk_id}</p></td><td id="i1ugyun_48272"><p>null</p></td></tr><tr id="i1ugyun_48273"><td id="i1ugyun_48274"><p>public</p></td><td id="i1ugyun_48275"><p>teststat</p></td><td id="i1ugyun_48276"><p>teststat_fk_id_fkey</p></td><td id="i1ugyun_48277"><p>no index</p></td><td id="i1ugyun_48278"><p>1030</p></td><td id="i1ugyun_48279"><p>11633001</p></td><td id="i1ugyun_48280"><p>56</p></td><td id="i1ugyun_48281"><p>teststat</p></td><td id="i1ugyun_48282"><p>1030</p></td><td id="i1ugyun_48283"><p>11633001</p></td><td id="i1ugyun_48284"><p>{fk_id}</p></td><td id="i1ugyun_48285"><p>null</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i1ugyun_48286" data-toc="i1ugyun_48286">Поиск невалидных индексы</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Invalid indexes" data-disable-link-processing="true">--Invalid indexes
+
+-- Use it to see invalid indexes list
+
+-- This query doesn't need any additional extensions to be installed
+-- (except plpgsql), and doesn't create anything (like views or smth)
+-- -- so feel free to use it in your clouds (Heroku, AWS RDS, etc)
+
+-- (Keep in mind, that on replicas, the whole picture of index usage
+-- is usually very different from master).
+
+select
+    coalesce(nullif(pn.nspname, 'public') || '.', '') || pct.relname as &quot;relation_name&quot;,
+    pci.relname as index_name,
+    pn.nspname as schema_name,
+    pct.relname as table_name,
+    pg_size_pretty(pg_relation_size(pidx.indexrelid)) index_size,
+    format(
+            'DROP INDEX CONCURRENTLY %s; -- %s, table %s',
+            pidx.indexrelid::regclass::text,
+            'Invalid index',
+            pct.relname) as drop_code,
+    replace(
+            format('%s; -- table %s', pg_get_indexdef(pidx.indexrelid), pct.relname),
+            'CREATE INDEX',
+            'CREATE INDEX CONCURRENTLY'
+    ) as revert_code
+from pg_index pidx
+         join pg_class as pci on pci.oid = pidx.indexrelid
+         join pg_class as pct on pct.oid = pidx.indrelid
+         left join pg_namespace pn on pn.oid = pct.relnamespace
+where pidx.indisvalid = false;</div></section><section class="chapter"><h2 id="lock-trees-light" data-toc="lock-trees-light">Lock trees light версия</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Lock trees (leightweight)" data-disable-link-processing="true">--Lock trees (leightweight)
+
+-- Source: https://github.com/dataegret/pg-utils/blob/master/sql/locktree.sql
+-- The paths won't be precise but this query is very light and may be used quite frequently
+
+with recursive l as (
+    select pid, locktype, granted,
+           array_position(array['accessshare','rowshare','rowexclusive','shareupdateexclusive','share','sharerowexclusive','exclusive','accessexclusive'], left(mode,-4)) m,
+           row(locktype,database,relation,page,tuple,virtualxid,transactionid,classid,objid,objsubid) obj from pg_locks
+), pairs as (
+    select w.pid waiter, l.pid locker, l.obj, l.m
+    from l w join l on l.obj is not distinct from w.obj and l.locktype=w.locktype and not l.pid=w.pid and l.granted
+    where not w.granted
+      and not exists ( select from l i where i.pid=l.pid and i.locktype=l.locktype and i.obj is not distinct from l.obj and i.m &gt; l.m )
+), leads as (
+    select o.locker, 1::int lvl, count(*) q, array[locker] track, false as cycle from pairs o group by o.locker
+    union all
+    select i.locker, leads.lvl+1, (select count(*) from pairs q where q.locker=i.locker), leads.track||i.locker, i.locker=any(leads.track)
+    from pairs i, leads where i.waiter=leads.locker and not cycle
+), tree as (
+    select locker pid,locker dad,locker root,case when cycle then track end dl, null::record obj,0 lvl,locker::text path,array_agg(locker) over () all_pids from leads o
+    where (cycle and not exists (select from leads i where i.locker=any(o.track) and (i.lvl&gt;o.lvl or i.q&lt;o.q)))
+       or (not cycle and not exists (select from pairs where waiter=o.locker) and not exists (select from leads i where i.locker=o.locker and i.lvl&lt;o.lvl))
+    union all
+    select w.waiter pid,tree.pid,tree.root,case when w.waiter=any(tree.dl) then tree.dl end,w.obj,tree.lvl+1,tree.path||'.'||w.waiter,all_pids || array_agg(w.waiter) over ()
+    from tree join pairs w on tree.pid=w.locker and not w.waiter = any ( all_pids )
+)
+select (clock_timestamp() - a.xact_start)::interval(0) as ts_age,
+       (clock_timestamp() - a.state_change)::interval(0) as change_age,
+       a.datname,a.usename,a.client_addr,
+       --w.obj wait_on_object,
+       tree.pid,replace(a.state, 'idle in transaction', 'idletx') state,
+       lvl,(select count(*) from tree p where p.path ~ ('^'||tree.path) and not p.path=tree.path) blocked,
+       case when tree.pid=any(tree.dl) then '!&gt;' else repeat(' .', lvl) end||' '||trim(left(regexp_replace(a.query, e'\\s+', ' ', 'g'),100)) query
+from tree
+         left join pairs w on w.waiter=tree.pid and w.locker=tree.dad
+         join pg_stat_activity a using (pid)
+         join pg_stat_activity r on r.pid=tree.root
+order by (now() - r.xact_start), path;</div></section><section class="chapter"><h2 id="lock-trees" data-toc="lock-trees">Lock trees полная версия</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="--Lock trees, detailed (based on pg_blocking_pids())" data-disable-link-processing="true">--Lock trees, detailed (based on pg_blocking_pids())
+
+-- Based on: https://gitlab.com/-/snippets/1890428
+-- See also: https://postgres.ai/blog/20211018-postgresql-lock-trees
+
+begin;
+
+set local statement_timeout to '100ms';
+
+with recursive activity as (
+    select
+        pg_blocking_pids(pid) blocked_by,
+        *,
+        age(clock_timestamp(), xact_start)::interval(0) as tx_age,
+        age(clock_timestamp(), state_change)::interval(0) as state_age
+    from pg_stat_activity
+    where state is distinct from 'idle'
+), blockers as (
+    select
+        array_agg(distinct c order by c) as pids
+    from (
+             select unnest(blocked_by)
+             from activity
+         ) as dt(c)
+), tree as (
+    select
+        activity.*,
+        1 as level,
+        activity.pid as top_blocker_pid,
+        array[activity.pid] as path,
+        array[activity.pid]::int[] as all_blockers_above
+    from activity, blockers
+    where
+        array[pid] &lt;@ blockers.pids
+      and blocked_by = '{}'::int[]
+    union all
+    select
+        activity.*,
+        tree.level + 1 as level,
+        tree.top_blocker_pid,
+        path || array[activity.pid] as path,
+        tree.all_blockers_above || array_agg(activity.pid) over () as all_blockers_above
+    from activity, tree
+    where
+        not array[activity.pid] &lt;@ tree.all_blockers_above
+      and activity.blocked_by &lt;&gt; '{}'::int[]
+      and activity.blocked_by &lt;@ tree.all_blockers_above
+)
+select
+    pid,
+    blocked_by,
+    tx_age,
+    state_age,
+    backend_xid as xid,
+    backend_xmin as xmin,
+    replace(state, 'idle in transaction', 'idletx') as state,
+    datname,
+    usename,
+    wait_event_type || ':' || wait_event as wait,
+    (select count(distinct t1.pid) from tree t1 where array[tree.pid] &lt;@ t1.path and t1.pid &lt;&gt; tree.pid) as blkd,
+    format(
+            '%s %s%s',
+            lpad('[' || pid::text || ']', 7, ' '),
+            repeat('.', level - 1) || case when level &gt; 1 then ' ' end,
+            left(query, 1000)
+    ) as query
+from tree
+order by top_blocker_pid, level, pid;
+
+commit;</div></section><div class="last-modified">Last modified: 31 марта 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-pgservicewin.html" class="navigation-links__prev">Служба postgres на windows и перенос каталога данных</a><a href="postgres-dba-p2.html" class="navigation-links__next">Полезные скрипты Postgres-DBA часть 2</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-03-31T12:38:30.6361393"><title>Использование psql | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"windows","level":0,"title":"Что делать если некорректно отображаются русские буквы в Windows","anchor":"#windows"},{"id":"-q90a32_3224","level":0,"title":"У меня несколько серверов для работы","anchor":"#-q90a32_3224"},{"id":"psql","level":0,"title":"Небольшой справочник по коммандам psql","anchor":"#psql"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование psql | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-usepsqlcmd.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование psql | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-usepsqlcmd.html#webpage",
+    "url": "writerside-documentation/howto-usepsqlcmd.html",
+    "name": "Использование psql | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-usepsqlcmd" data-main-title="Использование psql" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="pjstgres-resourcesl.md|Ресурсы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-usepsqlcmd" id="howto-usepsqlcmd.md">Использование psql</h1><p id="-q90a32_3210">Сколько написано разных cheetsheet для psql, лучше обратится к официальной документации<br><a href="https://www.postgresql.org/docs/current/app-psql.html" id="-q90a32_3212" data-external="true" rel="noopener noreferrer">psql-en</a><br><a href="https://postgrespro.ru/docs/postgrespro/16/app-psql" id="-q90a32_3214" data-external="true" rel="noopener noreferrer">psql-ru</a></p><aside class="prompt" data-type="tip" data-title="" id="-q90a32_3215"><p id="-q90a32_3216">Очень полезно просто выучить почти все комманды для работы с psql! <br> Почему?</p><ul class="list _bullet" id="-q90a32_3218"><li class="list__item" id="-q90a32_3219"><p>на многих серверах просто не будет графической оболочки</p></li><li class="list__item" id="-q90a32_3220"><p>есть много комманд упрощающих вашу работу</p></li><li class="list__item" id="-q90a32_3221"><p>иногда возникают проблемы с различными IDE при выполнении запросов</p></li></ul></aside><section class="chapter"><h2 id="windows" data-toc="windows">Что делать если некорректно отображаются русские буквы в Windows</h2><p id="-q90a32_3222">Предварительно установите нужную кодировку в cmd</p><div class="code-block" data-lang="bash">
+chcp 1251
+</div></section><section class="chapter"><h2 id="-q90a32_3224" data-toc="-q90a32_3224">У меня несколько серверов для работы</h2><p id="-q90a32_3225">Используйте cmd файл нужного содержания, где укажите нужные вам параметры подключения к нужному серверу, например:</p><div class="code-block" data-lang="bash">
+@echo off
+chcp 1251
+PATH D:\Program Files\PostgreSQL\16\bin;%PATH%
+if not exist &quot;%APPDATA%\postgresql&quot; md &quot;%APPDATA%\postgresql&quot;
+psql.exe -h localhost -U &quot;postgres&quot; -d postgres -p 5433 
+pause
+</div></section><section class="chapter"><h2 id="psql" data-toc="psql">Небольшой справочник по коммандам psql</h2><section class="chapter"><h3 id="-q90a32_3227" data-toc="-q90a32_3227">Подключаемся к базе</h3><div class="code-block" data-lang="bash">
+psql -d devlearnpg -U postgres -W
+</div><div class="code-block" data-lang="bash">
+psql -h localhost -d devlearnpg -U postgres -W
+</div></section><section class="chapter"><h3 id="-q90a32_3230" data-toc="-q90a32_3230">Меняем базу после подключения</h3><div class="code-block" data-lang="bash">
+\c dbname 
+</div><div class="code-block" data-lang="bash">
+\c dbname username
+</div></section><section class="chapter"><h3 id="-q90a32_3233" data-toc="-q90a32_3233">Я где - информация о подключении</h3><div class="code-block" data-lang="bash">
+\conninfo
+</div><p id="-q90a32_3235">результат:</p><div class="code-block" data-lang="plaintext">
+postgres=# \conninfo
+Вы подключены к базе данных &quot;postgres&quot; как пользователь &quot;postgres&quot; (сервер &quot;localhost&quot;: адрес &quot;::1&quot;, порт &quot;5433&quot;).
+postgres=#
+</div></section><section class="chapter"><h3 id="-q90a32_3237" data-toc="-q90a32_3237">Смотрим текст запросов для специализированных комманд</h3><p id="-q90a32_3238">Когда выполняем дополнительные комманды в psql полезно иногда посмотреть сам sql выполняемый для той или иной комманды. <br> Используем параметр -E при подключении:</p><div class="code-block" data-lang="bash">
+psql -h localhost -d devtestindex -U postgres -W -E
+</div><p id="-q90a32_3241">и выполняем например \dt<br> результат:</p><div class="code-block" data-lang="plaintext">
+devtestindex=# \dt
+********* ЗАПРОС *********
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','')
+      AND n.nspname &lt;&gt; 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname &lt;&gt; 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+**************************
+
+             Список отношений
+ Схема  |     Имя     |   Тип   | Владелец
+--------+-------------+---------+----------
+ public | states      | таблица | postgres
+ public | t_agg       | таблица | postgres
+ public | testidx     | таблица | postgres
+ public | testnoidx   | таблица | postgres
+ public | teststat    | таблица | postgres
+ public | testtbldata | таблица | postgres
+(6 строк)
+</div><p id="-q90a32_3244">Далее смело используем запрос в любимой IDE!</p></section></section><div class="last-modified">Last modified: 31 марта 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-customgeneric.html" class="navigation-links__prev">Общее</a><a href="howto-likeoperator.html" class="navigation-links__next">Операция Like</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

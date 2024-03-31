@@ -1,0 +1,37 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-03-31T12:38:30.6741143"><title>Список схем | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-ec5l33_151","level":0,"title":"Как найти информацию о схемах","anchor":"#-ec5l33_151"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Список схем | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-findschema.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Список схем | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-findschema.html#webpage",
+    "url": "writerside-documentation/howto-findschema.html",
+    "name": "Список схем | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-findschema" data-main-title="Список схем" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="pjstgres-resourcesl.md|Ресурсы///How-to.md|Советы///howto-objectmanagement.md|Управление таблицами и объектами"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-findschema" id="howto-findschema.md">Список схем</h1><section class="chapter"><h2 id="-ec5l33_151" data-toc="-ec5l33_151">Как найти информацию о схемах</h2><div class="code-block" data-lang="sql">
+select schema_name, schema_owner
+from information_schema.schemata;
+</div><p id="-ec5l33_153">Результат:</p><div class="table-wrapper"><table class="wide" id="-ec5l33_154"><thead><tr class="ijRowHead" id="-ec5l33_155"><th id="-ec5l33_156"><p>schema_name</p></th><th id="-ec5l33_157"><p>schema_owner</p></th></tr></thead><tbody><tr id="-ec5l33_158"><td id="-ec5l33_159"><p>pg_toast</p></td><td id="-ec5l33_160"><p>postgres</p></td></tr><tr id="-ec5l33_161"><td id="-ec5l33_162"><p>pg_catalog</p></td><td id="-ec5l33_163"><p>postgres</p></td></tr><tr id="-ec5l33_164"><td id="-ec5l33_165"><p>public</p></td><td id="-ec5l33_166"><p>pg_database_owner</p></td></tr><tr id="-ec5l33_167"><td id="-ec5l33_168"><p>information_schema</p></td><td id="-ec5l33_169"><p>postgres</p></td></tr><tr id="-ec5l33_170"><td id="-ec5l33_171"><p>pg_temp_16</p></td><td id="-ec5l33_172"><p>postgres</p></td></tr><tr id="-ec5l33_173"><td id="-ec5l33_174"><p>pg_toast_temp_16</p></td><td id="-ec5l33_175"><p>postgres</p></td></tr><tr id="-ec5l33_176"><td id="-ec5l33_177"><p>pg_temp_3</p></td><td id="-ec5l33_178"><p>postgres</p></td></tr><tr id="-ec5l33_179"><td id="-ec5l33_180"><p>pg_toast_temp_3</p></td><td id="-ec5l33_181"><p>postgres</p></td></tr><tr id="-ec5l33_182"><td id="-ec5l33_183"><p>pg_temp_9</p></td><td id="-ec5l33_184"><p>postgres</p></td></tr><tr id="-ec5l33_185"><td id="-ec5l33_186"><p>pg_toast_temp_9</p></td><td id="-ec5l33_187"><p>postgres</p></td></tr></tbody></table></div><p id="-ec5l33_188">или</p><div class="code-block" data-lang="sql">
+select nspname as schema_name, pg_get_userbyid(nspowner) as schema_owner
+from pg_catalog.pg_namespace;
+</div><p id="-ec5l33_190">или</p><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="select schema_name, schema_owner, *">
+select schema_name, schema_owner, *
+from information_schema.schemata
+where schema_name not like 'pg_toast%'
+  and schema_name not like 'pg_temp%';
+</div><aside class="prompt" data-type="tip" data-title="Множественный оператор like?" id="-ec5l33_192"><p id="-ec5l33_193">Можно заменить на SIMILAR</p><div class="code-block" data-lang="sql">
+select schema_name, schema_owner
+from information_schema.schemata
+where schema_name not SIMILAR TO '(pg_toast|pg_temp)%';
+</div><p> или использовать массивы </p><div class="code-block" data-lang="sql">
+select schema_name, schema_owner
+from information_schema.schemata
+where schema_name not like all (array['pg_toast%', 'pg_temp%'] );
+</div><p> <a href="howto-likeoperator.html" id="-ec5l33_196" data-tooltip="Для поиска по Like Not Like есть варианты написания sql. Стандартный:">подробнее о Like...</a></p></aside><p id="-ec5l33_197">для psql используем</p><div class="code-block" data-lang="bash">
+\dn+
+</div></section><div class="last-modified">Last modified: 31 марта 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-indexcreatedrop.html" class="navigation-links__prev">Создание и удаление индексов</a><a href="howto-schemafindobject.html" class="navigation-links__next">Поиск объектов в схеме</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

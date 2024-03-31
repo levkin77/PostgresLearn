@@ -1,0 +1,354 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-03-31T12:38:30.750066"><title>Полезные скрипты Postgres-DBA часть 2 | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"query-stat-cpu-time","level":0,"title":"Query stat cpu time","anchor":"#query-stat-cpu-time"},{"id":"postgres","level":0,"title":"Определение версии Postgres","anchor":"#postgres"},{"id":"vacuum","level":0,"title":"Vacuum и текущий его прогресс","anchor":"#vacuum"},{"id":"top-20tablesize","level":0,"title":"Top 20 таблиц и индексов по размеру","anchor":"#top-20tablesize"},{"id":"top-20dbsize","level":0,"title":"Top 20 баз по размеру","anchor":"#top-20dbsize"},{"id":"i6v1tfq_16193","level":0,"title":"Активность записи в таблицы","anchor":"#i6v1tfq_16193"},{"id":"i6v1tfq_16353","level":0,"title":"Активность записи индексов таблиц","anchor":"#i6v1tfq_16353"},{"id":"i6v1tfq_16355","level":0,"title":"Поиск таблиц которые нужно переместить на более быструю дисковую систему","anchor":"#i6v1tfq_16355"},{"id":"i6v1tfq_16357","level":0,"title":"Поиск таблиц которые можно переместить на более низкую производительность дисковой системы","anchor":"#i6v1tfq_16357"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Полезные скрипты Postgres-DBA часть 2 | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-dba-p2.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Полезные скрипты Postgres-DBA часть 2 | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-dba-p2.html#webpage",
+    "url": "writerside-documentation/postgres-dba-p2.html",
+    "name": "Полезные скрипты Postgres-DBA часть 2 | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-dba-p2" data-main-title="Полезные скрипты Postgres-DBA часть 2" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="pjstgres-resourcesl.md|Ресурсы///postgres-dba.md|Полезные скрипты Postgres-DBA"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-dba-p2" id="postgres-dba-p2.md">Полезные скрипты Postgres-DBA часть 2</h1><p id="i6v1tfq_15955">Набор полезных скриптов для DBA. Многие из скриптов взяты с просторов интернета.</p><section class="chapter"><h2 id="query-stat-cpu-time" data-toc="query-stat-cpu-time">Query stat cpu time</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="with s as" data-disable-link-processing="true">with s as
+         (select sum(total_exec_time) as t,
+                 sum(blk_read_time + blk_write_time) as iot,
+                 sum(total_exec_time - blk_read_time - blk_write_time) as cput,
+                 sum(calls) as s,
+                 sum(rows) as r
+          from pg_stat_statements),
+    s1 as (select t,
+               case when iot=0 then -1 else iot end as iot,
+               case when cput=0 then -1 else cput end as cput,
+               case when s=0 then -1 else s end as s,
+               case when r=0 then -1 else r end as r  from s),
+     _pg_stat_statements as (select dbid,
+                                    regexp_replace(query, E'\\?(, ?\\?)+', '?') as query,
+                                    sum(total_exec_time)                        as total_time,
+                                    sum(blk_read_time)                          as blk_read_time,
+                                    sum(blk_write_time)                         as blk_write_time,
+                                    sum(calls)                                  as calls,
+                                    sum(rows)                                   as rows
+                             from pg_stat_statements
+                             group by dbid, query)
+
+select 100                               as time_percent,
+       100                               as iotime_percent,
+       100                               as cputime_percent,
+       (t / 1000) * '1 second'::interval as total_time,
+       (cput * 1000 / s1.s)::numeric(20, 2) as avg_cpu_time_microsecond,
+       (iot * 1000 / s1.s)::numeric(20, 2)  as avg_io_time_microsecond,
+       s                                 as calls,
+       100                               as calls_percent,
+       r                                 as rows,
+       100                               as row_percent,
+       'all'                             as database,
+       'total'                           as query
+from s1
+
+union all
+
+select (100 * total_time / (select t from s1))::numeric(20, 2) as time_percent,
+       (100 * (blk_read_time + blk_write_time) / (select iot from s1))::numeric(20, 2) as iotime_percent,
+       (100 * (total_time - blk_read_time - blk_write_time) / (select cput from s1))::numeric(20, 2) as cputime_percent,
+       (total_time / 1000) * '1 second'::interval as total_time,
+       ((total_time - blk_read_time - blk_write_time) * 1000 / calls)::numeric(20, 2) as avg_cpu_time_microsecond,
+       ((blk_read_time + blk_write_time) * 1000 / calls)::numeric(20, 2) as avg_io_time_microsecond,
+       calls,
+       (100 * calls / (select s from s1))::numeric(20, 2) as calls_percent,
+       rows,
+       (100 * rows / (select r from s1))::numeric(20, 2)                                             as row_percent,
+       (select datname from pg_database where oid = dbid)                                           as database,
+       query
+from _pg_stat_statements
+where (total_time - blk_read_time - blk_write_time) / (select cput from s1) &gt;= 0.005
+
+union all
+
+select (100 * sum(total_time) / (select t from s1))::numeric(20, 2)                            as time_percent,
+       (100 * sum(blk_read_time + blk_write_time) / (select iot from s1))::numeric(20, 2)      as iotime_percent,
+       (100 * sum(total_time - blk_read_time - blk_write_time) /
+        (select cput from s))::numeric(20, 2)                                                 as cputime_percent,
+       (sum(total_time) / 1000) * '1 second'::interval,
+       (sum(total_time - blk_read_time - blk_write_time) * 1000 / sum(calls))::numeric(10, 3) as avg_cpu_time_microsecond,
+       (sum(blk_read_time + blk_write_time) * 1000 / sum(calls))::numeric(10, 3)              as avg_io_time_microsecond,
+       sum(calls),
+       (100 * sum(calls) / (select s from s1))::numeric(20, 2)                                 as calls_percent,
+       sum(rows),
+       (100 * sum(rows) / (select r from s1))::numeric(20, 2)                                  as row_percent,
+       'all'                                                                                  as database,
+       'other'                                                                                as query
+from _pg_stat_statements
+where (total_time - blk_read_time - blk_write_time) / (select cput from s1) &lt; 0.005
+
+order by 3 desc;</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i6v1tfq_15957" data-toc="i6v1tfq_15957">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i6v1tfq_15958"><thead><tr class="ijRowHead" id="i6v1tfq_15959"><th id="i6v1tfq_15960"><p>time_percent</p></th><th id="i6v1tfq_15961"><p>iotime_percent</p></th><th id="i6v1tfq_15962"><p>cputime_percent</p></th><th id="i6v1tfq_15963"><p>total_time</p></th><th id="i6v1tfq_15964"><p>avg_cpu_time_microsecond</p></th><th id="i6v1tfq_15965"><p>avg_io_time_microsecond</p></th><th id="i6v1tfq_15966"><p>calls</p></th><th id="i6v1tfq_15967"><p>calls_percent</p></th><th id="i6v1tfq_15968"><p>rows</p></th><th id="i6v1tfq_15969"><p>row_percent</p></th><th id="i6v1tfq_15970"><p>database</p></th><th id="i6v1tfq_15971"><p>query</p></th></tr></thead><tbody><tr id="i6v1tfq_15972"><td id="i6v1tfq_15973"><p>100</p></td><td id="i6v1tfq_15974"><p>100</p></td><td id="i6v1tfq_15975"><p>100</p></td><td id="i6v1tfq_15976"><p>0 years 0 mons 0 days 0 hours 8 mins 21.230227 secs</p></td><td id="i6v1tfq_15977"><p>97269.6</p></td><td id="i6v1tfq_15978"><p>-0.19</p></td><td id="i6v1tfq_15979"><p>5153</p></td><td id="i6v1tfq_15980"><p>100</p></td><td id="i6v1tfq_15981"><p>30564723</p></td><td id="i6v1tfq_15982"><p>100</p></td><td id="i6v1tfq_15983"><p>all</p></td><td id="i6v1tfq_15984"><p>total</p></td></tr><tr id="i6v1tfq_15985"><td id="i6v1tfq_15986"><p>11.08</p></td><td id="i6v1tfq_15987"><p>0</p></td><td id="i6v1tfq_15988"><p>11.08</p></td><td id="i6v1tfq_15989"><p>0 years 0 mons 0 days 0 hours 0 mins 55.529481 secs</p></td><td id="i6v1tfq_15990"><p>27764740.25</p></td><td id="i6v1tfq_15991"><p>0</p></td><td id="i6v1tfq_15992"><p>2</p></td><td id="i6v1tfq_15993"><p>0.04</p></td><td id="i6v1tfq_15994"><p>23266002</p></td><td id="i6v1tfq_15995"><p>76.12</p></td><td id="i6v1tfq_15996"><p>devtestindex</p></td><td id="i6v1tfq_15997"><p>CREATE TABLE public.testtblData AS</p><br><p> TABLE public.testidx</p></td></tr><tr id="i6v1tfq_15999"><td id="i6v1tfq_16000"><p>8.27</p></td><td id="i6v1tfq_16001"><p>0</p></td><td id="i6v1tfq_16002"><p>8.27</p></td><td id="i6v1tfq_16003"><p>0 years 0 mons 0 days 0 hours 0 mins 41.429741 secs</p></td><td id="i6v1tfq_16004"><p>41429741.1</p></td><td id="i6v1tfq_16005"><p>0</p></td><td id="i6v1tfq_16006"><p>1</p></td><td id="i6v1tfq_16007"><p>0.02</p></td><td id="i6v1tfq_16008"><p>0</p></td><td id="i6v1tfq_16009"><p>0</p></td><td id="i6v1tfq_16010"><p>devtestindex</p></td><td id="i6v1tfq_16011"><p>reindex database devtestindex</p></td></tr><tr id="i6v1tfq_16012"><td id="i6v1tfq_16013"><p>8.12</p></td><td id="i6v1tfq_16014"><p>0</p></td><td id="i6v1tfq_16015"><p>8.12</p></td><td id="i6v1tfq_16016"><p>0 years 0 mons 0 days 0 hours 0 mins 40.692046 secs</p></td><td id="i6v1tfq_16017"><p>13564015.37</p></td><td id="i6v1tfq_16018"><p>0</p></td><td id="i6v1tfq_16019"><p>3</p></td><td id="i6v1tfq_16020"><p>0.06</p></td><td id="i6v1tfq_16021"><p>0</p></td><td id="i6v1tfq_16022"><p>0</p></td><td id="i6v1tfq_16023"><p>devtestindex</p></td><td id="i6v1tfq_16024"><p>vacuum full public.testtblData</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="postgres" data-toc="postgres">Определение версии Postgres</h2><p id="i6v1tfq_16025">Определить версию Postgres можно разными вариантами</p><div class="code-block" data-lang="sql">
+select version();
+</div><p id="i6v1tfq_16027">Результат: <br> PostgreSQL 16.2, compiled by Visual C++ build 1925, 64-bit</p><div class="code-block" data-lang="sql">
+show server_version;
+</div><p id="i6v1tfq_16030">Результат: <br> 16.2</p><div class="code-block" data-lang="sql">
+show server_version_num;
+</div><p id="i6v1tfq_16033">Результат: <br> 160002</p><div class="code-block" data-lang="sql">
+select setting from pg_settings 
+where name = 'server_version_num';
+</div><p id="i6v1tfq_16036">Результат: <br> 160002</p><div class="code-block" data-lang="sql">
+select current_setting('server_version_num');
+</div><p id="i6v1tfq_16039">Результат: <br> 160002</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="select case when setting::bigint &lt; 90400" data-disable-link-processing="true">select case when setting::bigint &lt; 90400
+                then 'Вы используете старую версию PostgreSQL, которая более не поддерживается сообществом.'||chr(10)||
+                     'Рекомендуем вам перейти на последнюю актуальную версию как можно скорее.'
+            when setting::bigint &lt; 120500
+                then 'Вы используете старую версию PostgreSQL, которая пока что поддерживается сообществом.'||chr(10)||
+                     'Рекомендуем вам перейти на последнюю актуальную версию.'
+            when setting::bigint &lt; 15600
+                then 'Вы используете достаточно современную версию PostgreSQL, которая активно поддерживается сообществом.'||chr(10)||
+                     'У вас все неплохо, но можно обновиться и на последнюю актуальную версию при возможности.'
+            when setting::bigint &lt; 170000
+                then 'Вы пользуетесь одной из самых последних версий PostgreSQL.'||chr(10)||
+                     'У вас все отлично.'
+            else 'Вы используете версию которая находится в разработке,'||chr(10)||
+                 'если это production, то рекомендуем вам перейти на стабильную версию PostgreSQL.'
+    end as &quot;Проверка мажорной версии PostgreSQL&quot;
+     , case when
+         setting::bigint between 160001 and 169999 or
+         setting::bigint between 150002 and 159999 or
+         setting::bigint between 140002 and 149999 or
+         setting::bigint between 130002 and 139999 or
+         setting::bigint between 120002 and 129999
+         then 'У вас стоит один из последних патчей PostgreSQL для вашей версии.'||chr(10)||
+                     'Похоже вы следите за обновлениями PostgreSQL. Это хороший факт.'
+            else 'Похоже вы не обновляли PostgreSQL, после установки/последнего мажорного обновления, совсем.'||chr (10)||
+                 'Это плохо, рекомендуем вам обновиться до последней актуальной версии PostgreSQL.'
+    end as &quot;Проверка минорной версии PostgreSQL&quot;
+     , 'Актуальные версии на данный момент следующие, в порядке убывания актуальности:'||chr (10)||
+    '16.2, 16.1, 16.0,15.6, 15.5, 15.4, 15.3, 15.2, 15.1, 15.0, ' ||
+    '14.11, 14.10, 14.9, 14.8, 14.7, 14.6, 14.5, 14.4, 14.3, 14.2, 14.1, 14.0, ' ||
+    '13.14, 13.13, 13.12, 13.11, 13.10, 13.9, 13.8, 13.7, 13.6, 13.5, 13.4, 13.3, 13.2, 13.1, 13.0, ' ||
+    '12.18, 12.17, 12.16, 12.15, 12.14, 12.13, 12.12, 12.11, 12.10, 12.9, 12.8, 12.7, 12.6, 12.5, 12.4, 12.3, 12.2, 12.1, 12.0' ||
+    '' as &quot;Список актуальных версий&quot;
+from pg_settings
+where name = 'server_version_num';
+
+
+
+</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i6v1tfq_16042" data-toc="i6v1tfq_16042">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i6v1tfq_16043"><thead><tr class="ijRowHead" id="i6v1tfq_16044"><th id="i6v1tfq_16045"><p>Проверка мажорной версии PostgreSQL</p></th><th id="i6v1tfq_16046"><p>Проверка минорной версии PostgreSQL</p></th><th id="i6v1tfq_16047"><p>Список актуальных версий</p></th></tr></thead><tbody><tr id="i6v1tfq_16048"><td id="i6v1tfq_16049"><p>Вы пользуетесь одной из самых последних версий PostgreSQL. </p><br><p> У вас все отлично.</p></td><td id="i6v1tfq_16051"><p>У вас стоит один из последних патчей PostgreSQL для вашей версии. </p><br><p> Похоже вы следите за обновлениями PostgreSQL. Это хороший факт.</p></td><td id="i6v1tfq_16053"><p>Актуальные версии на данный момент следующие, в порядке убывания актуальности: </p><br><p> 16.2, 16.1, 16.0,15.6, 15.5, 15.4, 15.3, 15.2, 15.1, 15.0, 14.11, 14.10, 14.9, 14.8, 14.7, 14.6, 14.5, 14.4, 14.3, 14.2, 14.1, 14.0, 13.14, 13.13, 13.12, 13.11, 13.10, 13.9, 13.8, 13.7, 13.6, 13.5, 13.4, 13.3, 13.2, 13.1, 13.0, 12.18, 12.17, 12.16, 12.15, 12.14, 12.13, 12.12, 12.11, 12.10, 12.9, 12.8, 12.7, 12.6, 12.5, 12.4, 12.3, 12.2, 12.1, 12.0</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="vacuum" data-toc="vacuum">Vacuum и текущий его прогресс</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- List active vacuums and their progress" data-disable-link-processing="true">-- List active vacuums and their progress
+select p.pid,
+       date_trunc('second', now() - a.xact_start)                                         as dur,
+       coalesce(wait_event_type || '.' || wait_event, 'f')                                as wait,
+       case when a.query ~ 'to prevent wraparound' then 'freeze' else 'regular' end       as mode,
+       (select datname from pg_database where oid = p.datid)                              as dat,
+       p.relid::regclass                                                                  as tab,
+       p.phase,
+       round((p.heap_blks_total * current_setting('block_size')::int) / 1024.0 / 1024)    as tab_mb,
+       round(pg_total_relation_size(relid) / 1024.0 / 1024)                               as ttl_mb,
+       round((p.heap_blks_scanned * current_setting('block_size')::int) / 1024.0 / 1024)  as scan_mb,
+       round((p.heap_blks_vacuumed * current_setting('block_size')::int) / 1024.0 / 1024) as vac_mb,
+       (100 * p.heap_blks_scanned / nullif(p.heap_blks_total, 0))                         as scan_pct,
+       (100 * p.heap_blks_vacuumed / nullif(p.heap_blks_total, 0))                        as vac_pct,
+       p.index_vacuum_count                                                               as ind_vac_cnt,
+       round(p.num_dead_tuples * 100.0 / nullif(p.max_dead_tuples, 0), 1)                 as dead_pct
+from pg_stat_progress_vacuum p
+         join pg_stat_activity a using (pid)
+order by dur desc;</div></section><section class="chapter"><h2 id="top-20tablesize" data-toc="top-20tablesize">Top 20 таблиц и индексов по размеру</h2><div class="code-block" data-lang="sql">
+select nspname,
+       relname,
+       relkind                                       as &quot;type&quot;,
+       pg_size_pretty(pg_table_size(C.oid))          as size,
+       pg_size_pretty(pg_indexes_size(C.oid))        as idxsize,
+       pg_size_pretty(pg_total_relation_size(C.oid)) as &quot;total&quot;
+from pg_class C
+         left join pg_namespace N on (N.oid = C.relnamespace)
+where nspname not in ('pg_catalog', 'information_schema')
+  and nspname !~ '^pg_toast'
+  and relkind in ('r', 'i', 'm')
+order by pg_total_relation_size(C.oid) desc
+limit 20;
+</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i6v1tfq_16057" data-toc="i6v1tfq_16057">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i6v1tfq_16058"><thead><tr class="ijRowHead" id="i6v1tfq_16059"><th id="i6v1tfq_16060"><p>nspname</p></th><th id="i6v1tfq_16061"><p>relname</p></th><th id="i6v1tfq_16062"><p>type</p></th><th id="i6v1tfq_16063"><p>size</p></th><th id="i6v1tfq_16064"><p>idxsize</p></th><th id="i6v1tfq_16065"><p>total</p></th></tr></thead><tbody><tr id="i6v1tfq_16066"><td id="i6v1tfq_16067"><p>public</p></td><td id="i6v1tfq_16068"><p>testidx</p></td><td id="i6v1tfq_16069"><p>r</p></td><td id="i6v1tfq_16070"><p>1349 MB</p></td><td id="i6v1tfq_16071"><p>504 MB</p></td><td id="i6v1tfq_16072"><p>1853 MB</p></td></tr><tr id="i6v1tfq_16073"><td id="i6v1tfq_16074"><p>public</p></td><td id="i6v1tfq_16075"><p>teststat</p></td><td id="i6v1tfq_16076"><p>r</p></td><td id="i6v1tfq_16077"><p>1349 MB</p></td><td id="i6v1tfq_16078"><p>249 MB</p></td><td id="i6v1tfq_16079"><p>1598 MB</p></td></tr><tr id="i6v1tfq_16080"><td id="i6v1tfq_16081"><p>public</p></td><td id="i6v1tfq_16082"><p>testnoidx</p></td><td id="i6v1tfq_16083"><p>r</p></td><td id="i6v1tfq_16084"><p>1349 MB</p></td><td id="i6v1tfq_16085"><p>249 MB</p></td><td id="i6v1tfq_16086"><p>1598 MB</p></td></tr><tr id="i6v1tfq_16087"><td id="i6v1tfq_16088"><p>public</p></td><td id="i6v1tfq_16089"><p>t_agg</p></td><td id="i6v1tfq_16090"><p>r</p></td><td id="i6v1tfq_16091"><p>498 MB</p></td><td id="i6v1tfq_16092"><p>0 bytes</p></td><td id="i6v1tfq_16093"><p>498 MB</p></td></tr><tr id="i6v1tfq_16094"><td id="i6v1tfq_16095"><p>public</p></td><td id="i6v1tfq_16096"><p>testtbldata</p></td><td id="i6v1tfq_16097"><p>r</p></td><td id="i6v1tfq_16098"><p>384 MB</p></td><td id="i6v1tfq_16099"><p>0 bytes</p></td><td id="i6v1tfq_16100"><p>384 MB</p></td></tr><tr id="i6v1tfq_16101"><td id="i6v1tfq_16102"><p>public</p></td><td id="i6v1tfq_16103"><p>testidx_copy1_pkey</p></td><td id="i6v1tfq_16104"><p>i</p></td><td id="i6v1tfq_16105"><p>249 MB</p></td><td id="i6v1tfq_16106"><p>0 bytes</p></td><td id="i6v1tfq_16107"><p>249 MB</p></td></tr><tr id="i6v1tfq_16108"><td id="i6v1tfq_16109"><p>public</p></td><td id="i6v1tfq_16110"><p>teststat_pkey</p></td><td id="i6v1tfq_16111"><p>i</p></td><td id="i6v1tfq_16112"><p>249 MB</p></td><td id="i6v1tfq_16113"><p>0 bytes</p></td><td id="i6v1tfq_16114"><p>249 MB</p></td></tr><tr id="i6v1tfq_16115"><td id="i6v1tfq_16116"><p>public</p></td><td id="i6v1tfq_16117"><p>testidx_pk</p></td><td id="i6v1tfq_16118"><p>i</p></td><td id="i6v1tfq_16119"><p>225 MB</p></td><td id="i6v1tfq_16120"><p>0 bytes</p></td><td id="i6v1tfq_16121"><p>225 MB</p></td></tr><tr id="i6v1tfq_16122"><td id="i6v1tfq_16123"><p>public</p></td><td id="i6v1tfq_16124"><p>testidx_created_at_index</p></td><td id="i6v1tfq_16125"><p>i</p></td><td id="i6v1tfq_16126"><p>165 MB</p></td><td id="i6v1tfq_16127"><p>0 bytes</p></td><td id="i6v1tfq_16128"><p>165 MB</p></td></tr><tr id="i6v1tfq_16129"><td id="i6v1tfq_16130"><p>public</p></td><td id="i6v1tfq_16131"><p>testidx_fk_id_index</p></td><td id="i6v1tfq_16132"><p>i</p></td><td id="i6v1tfq_16133"><p>114 MB</p></td><td id="i6v1tfq_16134"><p>0 bytes</p></td><td id="i6v1tfq_16135"><p>114 MB</p></td></tr><tr id="i6v1tfq_16136"><td id="i6v1tfq_16137"><p>public</p></td><td id="i6v1tfq_16138"><p>states</p></td><td id="i6v1tfq_16139"><p>r</p></td><td id="i6v1tfq_16140"><p>40 kB</p></td><td id="i6v1tfq_16141"><p>16 kB</p></td><td id="i6v1tfq_16142"><p>56 kB</p></td></tr><tr id="i6v1tfq_16143"><td id="i6v1tfq_16144"><p>public</p></td><td id="i6v1tfq_16145"><p>states_pkey</p></td><td id="i6v1tfq_16146"><p>i</p></td><td id="i6v1tfq_16147"><p>16 kB</p></td><td id="i6v1tfq_16148"><p>0 bytes</p></td><td id="i6v1tfq_16149"><p>16 kB</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="top-20dbsize" data-toc="top-20dbsize">Top 20 баз по размеру</h2><div class="code-block" data-lang="sql">
+select d.datname                            as Name,
+       pg_catalog.pg_get_userbyid(d.datdba) as Owner,
+       case
+           when pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+               then pg_catalog.pg_size_pretty(pg_catalog.pg_database_size(d.datname))
+           else 'No Access'
+           end                              as SIZE
+from pg_catalog.pg_database d
+order by case
+             when pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+                 then pg_catalog.pg_database_size(d.datname)
+             else null
+             end desc
+limit 20;
+</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i6v1tfq_16151" data-toc="i6v1tfq_16151">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i6v1tfq_16152"><thead><tr class="ijRowHead" id="i6v1tfq_16153"><th id="i6v1tfq_16154"><p>name</p></th><th id="i6v1tfq_16155"><p>owner</p></th><th id="i6v1tfq_16156"><p>size</p></th></tr></thead><tbody><tr id="i6v1tfq_16157"><td id="i6v1tfq_16158"><p>devtestindex</p></td><td id="i6v1tfq_16159"><p>postgres</p></td><td id="i6v1tfq_16160"><p>5939 MB</p></td></tr><tr id="i6v1tfq_16161"><td id="i6v1tfq_16162"><p>dvdrental</p></td><td id="i6v1tfq_16163"><p>postgres</p></td><td id="i6v1tfq_16164"><p>15 MB</p></td></tr><tr id="i6v1tfq_16165"><td id="i6v1tfq_16166"><p>testsasist</p></td><td id="i6v1tfq_16167"><p>postgres</p></td><td id="i6v1tfq_16168"><p>8668 kB</p></td></tr><tr id="i6v1tfq_16169"><td id="i6v1tfq_16170"><p>devtestdatatypes</p></td><td id="i6v1tfq_16171"><p>postgres</p></td><td id="i6v1tfq_16172"><p>7900 kB</p></td></tr><tr id="i6v1tfq_16173"><td id="i6v1tfq_16174"><p>devtesttablespace</p></td><td id="i6v1tfq_16175"><p>postgres</p></td><td id="i6v1tfq_16176"><p>7884 kB</p></td></tr><tr id="i6v1tfq_16177"><td id="i6v1tfq_16178"><p>devlearnpg</p></td><td id="i6v1tfq_16179"><p>postgres</p></td><td id="i6v1tfq_16180"><p>7868 kB</p></td></tr><tr id="i6v1tfq_16181"><td id="i6v1tfq_16182"><p>template1</p></td><td id="i6v1tfq_16183"><p>postgres</p></td><td id="i6v1tfq_16184"><p>7868 kB</p></td></tr><tr id="i6v1tfq_16185"><td id="i6v1tfq_16186"><p>postgres</p></td><td id="i6v1tfq_16187"><p>postgres</p></td><td id="i6v1tfq_16188"><p>7844 kB</p></td></tr><tr id="i6v1tfq_16189"><td id="i6v1tfq_16190"><p>template0</p></td><td id="i6v1tfq_16191"><p>postgres</p></td><td id="i6v1tfq_16192"><p>7673 kB</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i6v1tfq_16193" data-toc="i6v1tfq_16193">Активность записи в таблицы</h2><div class="code-block" data-lang="sql">
+select pg_stat_all_tables.schemaname || '.' || pg_stat_all_tables.relname as objname,
+       pg_size_pretty(pg_relation_size(relid)),
+       coalesce(t.spcname, (select spcname
+                            from pg_tablespace
+                            where oid =
+                                  (select dattablespace from pg_database where datname = current_database())))   as tblsp,
+       seq_scan,
+       idx_scan,
+       n_tup_ins,
+       n_tup_upd,
+       n_tup_del,
+       coalesce(n_tup_ins, 0) + 2 * coalesce(n_tup_upd, 0) - coalesce(n_tup_hot_upd, 0) +
+       coalesce(n_tup_del, 0)                                                                                    as total,
+       (coalesce(n_tup_hot_upd, 0)::float * 100 /
+        (case when n_tup_upd &gt; 0 then n_tup_upd else 1 end)::float)::numeric(10, 2)                              as hot_rate,
+       (select v[1]
+        from regexp_matches(reloptions::text, E'fillfactor=(\\d+)') as r(v)
+        limit 1)                                                                                                 as fillfactor
+from pg_stat_all_tables
+         join pg_class c on c.oid = relid
+         left join pg_tablespace t on t.oid = c.reltablespace
+where (coalesce(n_tup_ins, 0) + coalesce(n_tup_upd, 0) + coalesce(n_tup_del, 0)) &gt; 0
+  and pg_stat_all_tables.schemaname not in ('pg_catalog', 'pg_global')
+order by total desc
+limit 50;
+</div><section class="chapter"><div class="collapse"><div class="collapse__title"><h3 id="i6v1tfq_16195" data-toc="i6v1tfq_16195">Результат</h3></div><div class="collapse__content"><div class="table-wrapper"><table class="wide" id="i6v1tfq_16196"><thead><tr class="ijRowHead" id="i6v1tfq_16197"><th id="i6v1tfq_16198"><p>objname</p></th><th id="i6v1tfq_16199"><p>pg_size_pretty</p></th><th id="i6v1tfq_16200"><p>tblsp</p></th><th id="i6v1tfq_16201"><p>seq_scan</p></th><th id="i6v1tfq_16202"><p>idx_scan</p></th><th id="i6v1tfq_16203"><p>n_tup_ins</p></th><th id="i6v1tfq_16204"><p>n_tup_upd</p></th><th id="i6v1tfq_16205"><p>n_tup_del</p></th><th id="i6v1tfq_16206"><p>total</p></th><th id="i6v1tfq_16207"><p>hot_rate</p></th><th id="i6v1tfq_16208"><p>fillfactor</p></th></tr></thead><tbody><tr id="i6v1tfq_16209"><td id="i6v1tfq_16210"><p>public.testtbldata</p></td><td id="i6v1tfq_16211"><p>383 MB</p></td><td id="i6v1tfq_16212"><p>pg_default</p></td><td id="i6v1tfq_16213"><p>11</p></td><td id="i6v1tfq_16214"><p>null</p></td><td id="i6v1tfq_16215"><p>11633001</p></td><td id="i6v1tfq_16216"><p>0</p></td><td id="i6v1tfq_16217"><p>6999998</p></td><td id="i6v1tfq_16218"><p>18632999</p></td><td id="i6v1tfq_16219"><p>0.00</p></td><td id="i6v1tfq_16220"><p>null</p></td></tr><tr id="i6v1tfq_16221"><td id="i6v1tfq_16222"><p>public.testidx</p></td><td id="i6v1tfq_16223"><p>1030 MB</p></td><td id="i6v1tfq_16224"><p>pg_default</p></td><td id="i6v1tfq_16225"><p>189</p></td><td id="i6v1tfq_16226"><p>17240654</p></td><td id="i6v1tfq_16227"><p>11633004</p></td><td id="i6v1tfq_16228"><p>0</p></td><td id="i6v1tfq_16229"><p>0</p></td><td id="i6v1tfq_16230"><p>11633004</p></td><td id="i6v1tfq_16231"><p>0.00</p></td><td id="i6v1tfq_16232"><p>null</p></td></tr><tr id="i6v1tfq_16233"><td id="i6v1tfq_16234"><p>public.testnoidx</p></td><td id="i6v1tfq_16235"><p>1030 MB</p></td><td id="i6v1tfq_16236"><p>pg_default</p></td><td id="i6v1tfq_16237"><p>920</p></td><td id="i6v1tfq_16238"><p>2</p></td><td id="i6v1tfq_16239"><p>11633001</p></td><td id="i6v1tfq_16240"><p>0</p></td><td id="i6v1tfq_16241"><p>0</p></td><td id="i6v1tfq_16242"><p>11633001</p></td><td id="i6v1tfq_16243"><p>0.00</p></td><td id="i6v1tfq_16244"><p>null</p></td></tr><tr id="i6v1tfq_16245"><td id="i6v1tfq_16246"><p>public.teststat</p></td><td id="i6v1tfq_16247"><p>1030 MB</p></td><td id="i6v1tfq_16248"><p>pg_default</p></td><td id="i6v1tfq_16249"><p>56</p></td><td id="i6v1tfq_16250"><p>8620000</p></td><td id="i6v1tfq_16251"><p>11633001</p></td><td id="i6v1tfq_16252"><p>0</p></td><td id="i6v1tfq_16253"><p>0</p></td><td id="i6v1tfq_16254"><p>11633001</p></td><td id="i6v1tfq_16255"><p>0.00</p></td><td id="i6v1tfq_16256"><p>null</p></td></tr><tr id="i6v1tfq_16257"><td id="i6v1tfq_16258"><p>public.t_agg</p></td><td id="i6v1tfq_16259"><p>498 MB</p></td><td id="i6v1tfq_16260"><p>pg_default</p></td><td id="i6v1tfq_16261"><p>18</p></td><td id="i6v1tfq_16262"><p>null</p></td><td id="i6v1tfq_16263"><p>10000000</p></td><td id="i6v1tfq_16264"><p>0</p></td><td id="i6v1tfq_16265"><p>0</p></td><td id="i6v1tfq_16266"><p>10000000</p></td><td id="i6v1tfq_16267"><p>0.00</p></td><td id="i6v1tfq_16268"><p>null</p></td></tr><tr id="i6v1tfq_16269"><td id="i6v1tfq_16270"><p>pg_toast.pg_toast_382883</p></td><td id="i6v1tfq_16271"><p>0 bytes</p></td><td id="i6v1tfq_16272"><p>pg_default</p></td><td id="i6v1tfq_16273"><p>3</p></td><td id="i6v1tfq_16274"><p>273822</p></td><td id="i6v1tfq_16275"><p>197516</p></td><td id="i6v1tfq_16276"><p>0</p></td><td id="i6v1tfq_16277"><p>197516</p></td><td id="i6v1tfq_16278"><p>395032</p></td><td id="i6v1tfq_16279"><p>0.00</p></td><td id="i6v1tfq_16280"><p>null</p></td></tr><tr id="i6v1tfq_16281"><td id="i6v1tfq_16282"><p>pg_toast.pg_toast_17340</p></td><td id="i6v1tfq_16283"><p>314 MB</p></td><td id="i6v1tfq_16284"><p>pg_default</p></td><td id="i6v1tfq_16285"><p>26</p></td><td id="i6v1tfq_16286"><p>400873</p></td><td id="i6v1tfq_16287"><p>197516</p></td><td id="i6v1tfq_16288"><p>0</p></td><td id="i6v1tfq_16289"><p>0</p></td><td id="i6v1tfq_16290"><p>197516</p></td><td id="i6v1tfq_16291"><p>0.00</p></td><td id="i6v1tfq_16292"><p>null</p></td></tr><tr id="i6v1tfq_16293"><td id="i6v1tfq_16294"><p>pg_toast.pg_toast_108648</p></td><td id="i6v1tfq_16295"><p>314 MB</p></td><td id="i6v1tfq_16296"><p>pg_default</p></td><td id="i6v1tfq_16297"><p>12</p></td><td id="i6v1tfq_16298"><p>182895</p></td><td id="i6v1tfq_16299"><p>197516</p></td><td id="i6v1tfq_16300"><p>0</p></td><td id="i6v1tfq_16301"><p>0</p></td><td id="i6v1tfq_16302"><p>197516</p></td><td id="i6v1tfq_16303"><p>0.00</p></td><td id="i6v1tfq_16304"><p>null</p></td></tr><tr id="i6v1tfq_16305"><td id="i6v1tfq_16306"><p>pg_toast.pg_toast_199975</p></td><td id="i6v1tfq_16307"><p>314 MB</p></td><td id="i6v1tfq_16308"><p>pg_default</p></td><td id="i6v1tfq_16309"><p>12</p></td><td id="i6v1tfq_16310"><p>91970</p></td><td id="i6v1tfq_16311"><p>197516</p></td><td id="i6v1tfq_16312"><p>0</p></td><td id="i6v1tfq_16313"><p>0</p></td><td id="i6v1tfq_16314"><p>197516</p></td><td id="i6v1tfq_16315"><p>0.00</p></td><td id="i6v1tfq_16316"><p>null</p></td></tr><tr id="i6v1tfq_16317"><td id="i6v1tfq_16318"><p>pg_toast.pg_toast_2619</p></td><td id="i6v1tfq_16319"><p>104 kB</p></td><td id="i6v1tfq_16320"><p>pg_default</p></td><td id="i6v1tfq_16321"><p>0</p></td><td id="i6v1tfq_16322"><p>519</p></td><td id="i6v1tfq_16323"><p>173</p></td><td id="i6v1tfq_16324"><p>0</p></td><td id="i6v1tfq_16325"><p>162</p></td><td id="i6v1tfq_16326"><p>335</p></td><td id="i6v1tfq_16327"><p>0.00</p></td><td id="i6v1tfq_16328"><p>null</p></td></tr><tr id="i6v1tfq_16329"><td id="i6v1tfq_16330"><p>pg_toast.pg_toast_2618</p></td><td id="i6v1tfq_16331"><p>528 kB</p></td><td id="i6v1tfq_16332"><p>pg_default</p></td><td id="i6v1tfq_16333"><p>0</p></td><td id="i6v1tfq_16334"><p>616</p></td><td id="i6v1tfq_16335"><p>4</p></td><td id="i6v1tfq_16336"><p>0</p></td><td id="i6v1tfq_16337"><p>2</p></td><td id="i6v1tfq_16338"><p>6</p></td><td id="i6v1tfq_16339"><p>0.00</p></td><td id="i6v1tfq_16340"><p>null</p></td></tr><tr id="i6v1tfq_16341"><td id="i6v1tfq_16342"><p>public.states</p></td><td id="i6v1tfq_16343"><p>8192 bytes</p></td><td id="i6v1tfq_16344"><p>pg_default</p></td><td id="i6v1tfq_16345"><p>75</p></td><td id="i6v1tfq_16346"><p>3</p></td><td id="i6v1tfq_16347"><p>3</p></td><td id="i6v1tfq_16348"><p>0</p></td><td id="i6v1tfq_16349"><p>0</p></td><td id="i6v1tfq_16350"><p>3</p></td><td id="i6v1tfq_16351"><p>0.00</p></td><td id="i6v1tfq_16352"><p>null</p></td></tr></tbody></table></div></div></div></section></section><section class="chapter"><h2 id="i6v1tfq_16353" data-toc="i6v1tfq_16353">Активность записи индексов таблиц</h2><div class="code-block" data-lang="sql">
+select pg_stat_user_tables.schemaname || '.' || pg_stat_user_tables.relname as objname,
+       pg_size_pretty(pg_relation_size(relid)),
+       t.spcname                                                                                                     as tblsp,
+       coalesce(t.spcname, (select spcname
+                            from pg_tablespace
+                            where oid = (select dattablespace
+                                         from pg_database
+                                         where datname = current_database())))                                       as tblsp,
+       seq_scan,
+       idx_scan,
+       n_tup_ins,
+       n_tup_upd,
+       n_tup_del,
+       coalesce(n_tup_ins, 0) + coalesce(n_tup_upd, 0) - coalesce(n_tup_hot_upd, 0) +
+       coalesce(n_tup_del, 0)                                                                                        as total,
+       (coalesce(n_tup_hot_upd, 0)::float * 100 /
+        (case when n_tup_upd &gt; 0 then n_tup_upd else 1 end)::float)::numeric(10, 2)                                  as hot_rate,
+       (select v[1]
+        from regexp_matches(reloptions::text, E'fillfactor=(\\d+)') as r(v)
+        limit 1)                                                                                                     as fillfactor
+from pg_stat_user_tables
+         join pg_class c on c.oid = relid
+         left join pg_tablespace t on t.oid = c.reltablespace
+where coalesce(n_tup_ins, 0) + coalesce(n_tup_upd, 0) - coalesce(n_tup_hot_upd, 0) + coalesce(n_tup_del, 0) &gt; 100
+order by total desc
+limit 50;
+</div></section><section class="chapter"><h2 id="i6v1tfq_16355" data-toc="i6v1tfq_16355">Поиск таблиц которые нужно переместить на более быструю дисковую систему</h2><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="select *">
+select *
+from (with totals_counts as
+               (select sum(pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+                           pg_stat_get_blocks_fetched(c.reltoastrelid) -
+                           pg_stat_get_blocks_hit(c.reltoastrelid))                                         as disk,
+                       sum(pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                           2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                           pg_stat_get_tuples_deleted(c.oid) + pg_stat_get_tuples_deleted(c.reltoastrelid)) as write
+                from pg_class c
+                where c.relkind = 'r')
+      select (n.nspname || '.' || c.relname)::varchar(30),
+             t.spcname                                                                                                                                         as tblsp,
+             pg_size_pretty(pg_relation_size(c.oid) + (case
+                                                           when c.reltoastrelid = 0 then 0
+                                                           else pg_total_relation_size(c.reltoastrelid) end))                                                  as size,
+             (pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+              pg_stat_get_blocks_fetched(c.reltoastrelid) - pg_stat_get_blocks_hit(c.reltoastrelid)) / greatest(1,
+                                                                                                                (pg_stat_get_tuples_inserted(c.oid) +
+                                                                                                                 pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                                                                                                                 2 *
+                                                                                                                 (pg_stat_get_tuples_updated(c.oid) +
+                                                                                                                  pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                                                                                                                 pg_stat_get_tuples_deleted(c.oid) +
+                                                                                                                 pg_stat_get_tuples_deleted(c.reltoastrelid))) as ratio,
+             pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+             pg_stat_get_blocks_fetched(c.reltoastrelid) -
+             pg_stat_get_blocks_hit(c.reltoastrelid)                                                                                                           as disk,
+             ((100 * (pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+                      pg_stat_get_blocks_fetched(c.reltoastrelid) - pg_stat_get_blocks_hit(c.reltoastrelid))) /
+              (select disk from totals_counts))::numeric(5, 2)                                                                                                 as &quot;disk%&quot;,
+             ((select sum(pg_stat_get_tuples_fetched(i.indexrelid))::bigint from pg_index i where i.indrelid = c.oid) +
+              pg_stat_get_tuples_fetched(c.oid)) / greatest(1, (pg_stat_get_blocks_fetched(c.oid) -
+                                                                pg_stat_get_blocks_hit(c.oid) +
+                                                                pg_stat_get_blocks_fetched(c.reltoastrelid) -
+                                                                pg_stat_get_blocks_hit(c.reltoastrelid)))                                                      as rt_d_rat,
+             ((select sum(pg_stat_get_tuples_fetched(i.indexrelid))::bigint from pg_index i where i.indrelid = c.oid) +
+              pg_stat_get_tuples_fetched(c.oid))                                                                                                               as r_tuples,
+             pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+             2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+             pg_stat_get_tuples_deleted(c.oid) +
+             pg_stat_get_tuples_deleted(c.reltoastrelid)                                                                                                       as write,
+             ((100 * (pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                      2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                      pg_stat_get_tuples_deleted(c.oid) + pg_stat_get_tuples_deleted(c.reltoastrelid))) /
+              (select write from totals_counts))::numeric(5, 2)                                                                                                as &quot;write%&quot;,
+             pg_stat_get_tuples_inserted(c.oid) +
+             pg_stat_get_tuples_inserted(c.reltoastrelid)                                                                                                      as n_tup_ins,
+             pg_stat_get_tuples_updated(c.oid) +
+             pg_stat_get_tuples_updated(c.reltoastrelid)                                                                                                       as n_tup_upd,
+             pg_stat_get_tuples_deleted(c.oid) +
+             pg_stat_get_tuples_deleted(c.reltoastrelid)                                                                                                       as n_tup_del
+      from pg_class c
+               left join pg_namespace n on n.oid = c.relnamespace
+               left join pg_tablespace t on t.oid = c.reltablespace
+      where c.relkind = 'r'
+        and n.nspname is distinct from 'pg_catalog'
+        and t.spcname is distinct from 'ssd') as t1
+where ratio &gt; 10
+  and disk &gt; 1000
+order by disk desc nulls last
+limit 100;
+</div></section><section class="chapter"><h2 id="i6v1tfq_16357" data-toc="i6v1tfq_16357">Поиск таблиц которые можно переместить на более низкую производительность дисковой системы</h2><div class="code-block" data-lang="sql">
+select *
+from (with totals_counts as
+               (select sum(pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+                           pg_stat_get_blocks_fetched(c.reltoastrelid) -
+                           pg_stat_get_blocks_hit(c.reltoastrelid))                                         as disk,
+                       sum(pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                           2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                           pg_stat_get_tuples_deleted(c.oid) + pg_stat_get_tuples_deleted(c.reltoastrelid)) as write
+                from pg_class c
+                where c.relkind = 'r')
+      select (n.nspname || '.' || c.relname)::varchar(30),
+             t.spcname                                                                                               as tblsp,
+             pg_size_pretty(pg_relation_size(c.oid) + (case
+                                                           when c.reltoastrelid = 0 then 0
+                                                           else pg_total_relation_size(c.reltoastrelid) end))        as size,
+             ((pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+               pg_stat_get_blocks_fetched(c.reltoastrelid) - pg_stat_get_blocks_hit(c.reltoastrelid))::numeric(20, 2) /
+              greatest(1, (pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                           2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                           pg_stat_get_tuples_deleted(c.oid) +
+                           pg_stat_get_tuples_deleted(c.reltoastrelid)))::numeric(20, 2))::numeric(20, 2)            as ratio,
+             pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+             pg_stat_get_blocks_fetched(c.reltoastrelid) -
+             pg_stat_get_blocks_hit(c.reltoastrelid)                                                                 as disk,
+             ((100 * (pg_stat_get_blocks_fetched(c.oid) - pg_stat_get_blocks_hit(c.oid) +
+                      pg_stat_get_blocks_fetched(c.reltoastrelid) - pg_stat_get_blocks_hit(c.reltoastrelid))) /
+              (select disk from totals_counts))::numeric(5, 2)                                                       as &quot;disk%&quot;,
+             ((select sum(pg_stat_get_tuples_fetched(i.indexrelid))::bigint from pg_index i where i.indrelid = c.oid) +
+              pg_stat_get_tuples_fetched(c.oid)) / greatest(1, (pg_stat_get_blocks_fetched(c.oid) -
+                                                                pg_stat_get_blocks_hit(c.oid) +
+                                                                pg_stat_get_blocks_fetched(c.reltoastrelid) -
+                                                                pg_stat_get_blocks_hit(c.reltoastrelid)))            as rt_d_rat,
+             ((select sum(pg_stat_get_tuples_fetched(i.indexrelid))::bigint from pg_index i where i.indrelid = c.oid) +
+              pg_stat_get_tuples_fetched(c.oid))                                                                     as r_tuples,
+             pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+             2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+             pg_stat_get_tuples_deleted(c.oid) +
+             pg_stat_get_tuples_deleted(c.reltoastrelid)                                                             as write,
+             ((100 * (pg_stat_get_tuples_inserted(c.oid) + pg_stat_get_tuples_inserted(c.reltoastrelid) +
+                      2 * (pg_stat_get_tuples_updated(c.oid) + pg_stat_get_tuples_updated(c.reltoastrelid)) +
+                      pg_stat_get_tuples_deleted(c.oid) + pg_stat_get_tuples_deleted(c.reltoastrelid))) /
+              (select write from totals_counts))::numeric(5, 2)                                                      as &quot;write%&quot;,
+             pg_stat_get_tuples_inserted(c.oid) +
+             pg_stat_get_tuples_inserted(c.reltoastrelid)                                                            as n_tup_ins,
+             pg_stat_get_tuples_updated(c.oid) +
+             pg_stat_get_tuples_updated(c.reltoastrelid)                                                             as n_tup_upd,
+             pg_stat_get_tuples_deleted(c.oid) +
+             pg_stat_get_tuples_deleted(c.reltoastrelid)                                                             as n_tup_del
+      from pg_class c
+               left join pg_namespace n on n.oid = c.relnamespace
+               left join pg_tablespace t on t.oid = c.reltablespace
+      where c.relkind = 'r') as t1
+where tblsp = 'ssd'
+  and ratio &lt; 20
+order by disk desc nulls last
+limit 100;
+</div></section><div class="last-modified">Last modified: 31 марта 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-dba.html" class="navigation-links__prev">Полезные скрипты Postgres-DBA</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
