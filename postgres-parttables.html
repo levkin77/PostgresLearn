@@ -1,0 +1,66 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.7131353"><title>Секционирование таблиц по UUID | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"patrition-table-uuid","level":0,"title":"Как сделать patrition table по UUID","anchor":"#patrition-table-uuid"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Секционирование таблиц по UUID | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-parttables.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Секционирование таблиц по UUID | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-parttables.html#webpage",
+    "url": "writerside-documentation/postgres-parttables.html",
+    "name": "Секционирование таблиц по UUID | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-parttables" data-main-title="Секционирование таблиц по UUID" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-parttables" id="postgres-parttables.md">Секционирование таблиц по UUID</h1><section class="chapter"><h2 id="patrition-table-uuid" data-toc="patrition-table-uuid">Как сделать patrition table по UUID</h2><div class="code-block" data-lang="sql">
+CREATE TABLE t1 (hash uuid, data text) PARTITION BY range(hash);
+CREATE TABLE t1p0 PARTITION OF t1
+    FOR VALUES FROM ('00000000-0000-0000-0000-000000000000')
+        TO   ('10000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p1 PARTITION OF t1
+    FOR VALUES FROM ('10000000-0000-0000-0000-000000000000')
+        TO   ('20000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p2 PARTITION OF t1
+    FOR VALUES FROM ('20000000-0000-0000-0000-000000000000')
+        TO   ('30000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p3 PARTITION OF t1
+    FOR VALUES FROM ('30000000-0000-0000-0000-000000000000')
+        TO   ('40000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p4 PARTITION OF t1
+    FOR VALUES FROM ('40000000-0000-0000-0000-000000000000')
+        TO   ('50000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p5 PARTITION OF t1
+    FOR VALUES FROM ('50000000-0000-0000-0000-000000000000')
+        TO   ('60000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p6 PARTITION OF t1
+    FOR VALUES FROM ('60000000-0000-0000-0000-000000000000')
+        TO   ('70000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p7 PARTITION OF t1
+    FOR VALUES FROM ('70000000-0000-0000-0000-000000000000')
+        TO   ('80000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p8 PARTITION OF t1
+    FOR VALUES FROM ('80000000-0000-0000-0000-000000000000')
+        TO   ('90000000-0000-0000-0000-000000000000');
+CREATE TABLE t1p9 PARTITION OF t1
+    FOR VALUES FROM ('90000000-0000-0000-0000-000000000000')
+        TO   ('A0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pa PARTITION OF t1
+    FOR VALUES FROM ('A0000000-0000-0000-0000-000000000000')
+        TO   ('B0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pb PARTITION OF t1
+    FOR VALUES FROM ('B0000000-0000-0000-0000-000000000000')
+        TO   ('C0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pc PARTITION OF t1
+    FOR VALUES FROM ('C0000000-0000-0000-0000-000000000000')
+        TO   ('D0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pd PARTITION OF t1
+    FOR VALUES FROM ('D0000000-0000-0000-0000-000000000000')
+        TO   ('E0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pe PARTITION OF t1
+    FOR VALUES FROM ('E0000000-0000-0000-0000-000000000000')
+        TO   ('F0000000-0000-0000-0000-000000000000');
+CREATE TABLE t1pf PARTITION OF t1
+    FOR VALUES FROM ('F0000000-0000-0000-0000-000000000000')
+        TO   (MAXVALUE);
+</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-procsamples.html" class="navigation-links__prev">Примеры процедур</a><a href="postgres-customextention.html" class="navigation-links__next">Ресурсы и ссылки на дополнительные расширения</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5351371"><title>Хранение данных о типе и подтипе объекта | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-xuhm9d_509","level":0,"title":"Пример таблицы типов","anchor":"#-xuhm9d_509"},{"id":"-xuhm9d_578","level":0,"title":"Как это работает","anchor":"#-xuhm9d_578"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Хранение данных о типе и подтипе объекта | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/database-desing-typesubtype.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Хранение данных о типе и подтипе объекта | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/database-desing-typesubtype.html#webpage",
+    "url": "writerside-documentation/database-desing-typesubtype.html",
+    "name": "Хранение данных о типе и подтипе объекта | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="database-desing-typesubtype" data-main-title="Хранение данных о типе и подтипе объекта" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///database-desing.md|Проектирование баз данных"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="database-desing-typesubtype" id="database-desing-typesubtype.md">Хранение данных о типе и подтипе объекта</h1><p id="-xuhm9d_506">Достаточно часто встречается необходимость иметь тип и подтип данных для строки данных. Например, для таблицы определять тип товара - общее, стул, стол и т.д. В большинстве случаев это определяется наличием соответствующего столбца в таблице - условно <span class="control" id="-xuhm9d_507">EntityTypeValue int</span>, значения могут определятся набором констант или связями с соответствующей таблицей возможных типов.</p><p id="-xuhm9d_508">В случае необходимости наличия одноуровневых категорий можно воспользоваться простым способом &quot;хранения двух значений в одном&quot;.</p><section class="chapter"><h2 id="-xuhm9d_509" data-toc="-xuhm9d_509">Пример таблицы типов</h2><div class="code-block" data-lang="sql">
+create table EntityTypes
+(
+    pk      int,
+    typeval int,
+    subtypeval int,
+    name    text
+);
+insert into EntityTypes(pk, typeval, subtypeval, name)
+values (65537, 1, 1, N'Товар'),
+       (65538, 1, 2, N'Денежный'),
+       (65539, 1, 3, N'Услуги'),
+       (65540, 1, 4, N'Основные средства'),
+       (65541, 1, 5, N'Тара');
+
+insert into EntityTypes(pk, typeval, subtypeval, name)
+values
+( 196609, 3, 1, N'Предприятие' ),
+( 196610, 3, 2, N'Физ лицо' ),
+( 196611, 3, 3, N'Склад поставщика или клиента' ),
+( 196612, 3, 4, N'Мое предприятие' ),
+( 196613, 3, 5, N'Наш склад' ),
+( 196614, 3, 6, N'Банк' );
+</div><p id="-xuhm9d_511">Данные:</p><div class="table-wrapper"><table class="wide" id="-xuhm9d_512"><thead><tr class="ijRowHead" id="-xuhm9d_513"><th id="-xuhm9d_514"><p>pk</p></th><th id="-xuhm9d_515"><p>typeval</p></th><th id="-xuhm9d_516"><p>subtypeval</p></th><th id="-xuhm9d_517"><p>name</p></th></tr></thead><tbody><tr id="-xuhm9d_518"><td id="-xuhm9d_519"><p>65537</p></td><td id="-xuhm9d_520"><p>1</p></td><td id="-xuhm9d_521"><p>1</p></td><td id="-xuhm9d_522"><p>Товар</p></td></tr><tr id="-xuhm9d_523"><td id="-xuhm9d_524"><p>65538</p></td><td id="-xuhm9d_525"><p>1</p></td><td id="-xuhm9d_526"><p>2</p></td><td id="-xuhm9d_527"><p>Денежный</p></td></tr><tr id="-xuhm9d_528"><td id="-xuhm9d_529"><p>65539</p></td><td id="-xuhm9d_530"><p>1</p></td><td id="-xuhm9d_531"><p>3</p></td><td id="-xuhm9d_532"><p>Услуги</p></td></tr><tr id="-xuhm9d_533"><td id="-xuhm9d_534"><p>65540</p></td><td id="-xuhm9d_535"><p>1</p></td><td id="-xuhm9d_536"><p>4</p></td><td id="-xuhm9d_537"><p>Основные средства</p></td></tr><tr id="-xuhm9d_538"><td id="-xuhm9d_539"><p>65541</p></td><td id="-xuhm9d_540"><p>1</p></td><td id="-xuhm9d_541"><p>5</p></td><td id="-xuhm9d_542"><p>Тара</p></td></tr><tr id="-xuhm9d_543"><td id="-xuhm9d_544"><p>196609</p></td><td id="-xuhm9d_545"><p>3</p></td><td id="-xuhm9d_546"><p>1</p></td><td id="-xuhm9d_547"><p>Предприятие</p></td></tr><tr id="-xuhm9d_548"><td id="-xuhm9d_549"><p>196610</p></td><td id="-xuhm9d_550"><p>3</p></td><td id="-xuhm9d_551"><p>2</p></td><td id="-xuhm9d_552"><p>Физ лицо</p></td></tr><tr id="-xuhm9d_553"><td id="-xuhm9d_554"><p>196611</p></td><td id="-xuhm9d_555"><p>3</p></td><td id="-xuhm9d_556"><p>3</p></td><td id="-xuhm9d_557"><p>Склад поставщика или клиента</p></td></tr><tr id="-xuhm9d_558"><td id="-xuhm9d_559"><p>196612</p></td><td id="-xuhm9d_560"><p>3</p></td><td id="-xuhm9d_561"><p>4</p></td><td id="-xuhm9d_562"><p>Мое предприятие</p></td></tr><tr id="-xuhm9d_563"><td id="-xuhm9d_564"><p>196613</p></td><td id="-xuhm9d_565"><p>3</p></td><td id="-xuhm9d_566"><p>5</p></td><td id="-xuhm9d_567"><p>Наш склад</p></td></tr><tr id="-xuhm9d_568"><td id="-xuhm9d_569"><p>196614</p></td><td id="-xuhm9d_570"><p>3</p></td><td id="-xuhm9d_571"><p>6</p></td><td id="-xuhm9d_572"><p>Банк</p></td></tr></tbody></table></div><p id="-xuhm9d_573">Обращаем внимание на столбец <span class="control" id="-xuhm9d_574">pk</span> - он является <span class="emphasis" id="-xuhm9d_575">составным</span> значение столбцов <span class="control" id="-xuhm9d_576">typeval</span> и <span class="control" id="-xuhm9d_577">subtypeval</span>.</p></section><section class="chapter"><h2 id="-xuhm9d_578" data-toc="-xuhm9d_578">Как это работает</h2><p id="-xuhm9d_579">Для примера, выполним</p><div class="code-block" data-lang="sql">
+select pk, typeval, subtypeval, name,
+((pk &amp; 0x00FF0000)/power(2,16)) as ExtractedType,
+(pk &amp; 0x0000FFFF) as ExtractedKind
+from EntityTypes t;
+</div><div class="table-wrapper"><table class="wide" id="-xuhm9d_581"><thead><tr class="ijRowHead" id="-xuhm9d_582"><th id="-xuhm9d_583"><p>pk</p></th><th id="-xuhm9d_584"><p>typeval</p></th><th id="-xuhm9d_585"><p>subtypeval</p></th><th id="-xuhm9d_586"><p>name</p></th><th id="-xuhm9d_587"><p>extractedtype</p></th><th id="-xuhm9d_588"><p>extractedkind</p></th></tr></thead><tbody><tr id="-xuhm9d_589"><td id="-xuhm9d_590"><p>65537</p></td><td id="-xuhm9d_591"><p>1</p></td><td id="-xuhm9d_592"><p>1</p></td><td id="-xuhm9d_593"><p>Товар</p></td><td id="-xuhm9d_594"><p>1</p></td><td id="-xuhm9d_595"><p>1</p></td></tr><tr id="-xuhm9d_596"><td id="-xuhm9d_597"><p>65538</p></td><td id="-xuhm9d_598"><p>1</p></td><td id="-xuhm9d_599"><p>2</p></td><td id="-xuhm9d_600"><p>Денежный</p></td><td id="-xuhm9d_601"><p>1</p></td><td id="-xuhm9d_602"><p>2</p></td></tr><tr id="-xuhm9d_603"><td id="-xuhm9d_604"><p>65539</p></td><td id="-xuhm9d_605"><p>1</p></td><td id="-xuhm9d_606"><p>3</p></td><td id="-xuhm9d_607"><p>Услуги</p></td><td id="-xuhm9d_608"><p>1</p></td><td id="-xuhm9d_609"><p>3</p></td></tr><tr id="-xuhm9d_610"><td id="-xuhm9d_611"><p>65540</p></td><td id="-xuhm9d_612"><p>1</p></td><td id="-xuhm9d_613"><p>4</p></td><td id="-xuhm9d_614"><p>Основные средства</p></td><td id="-xuhm9d_615"><p>1</p></td><td id="-xuhm9d_616"><p>4</p></td></tr><tr id="-xuhm9d_617"><td id="-xuhm9d_618"><p>65541</p></td><td id="-xuhm9d_619"><p>1</p></td><td id="-xuhm9d_620"><p>5</p></td><td id="-xuhm9d_621"><p>Тара</p></td><td id="-xuhm9d_622"><p>1</p></td><td id="-xuhm9d_623"><p>5</p></td></tr><tr id="-xuhm9d_624"><td id="-xuhm9d_625"><p>196609</p></td><td id="-xuhm9d_626"><p>3</p></td><td id="-xuhm9d_627"><p>1</p></td><td id="-xuhm9d_628"><p>Предприятие</p></td><td id="-xuhm9d_629"><p>3</p></td><td id="-xuhm9d_630"><p>1</p></td></tr><tr id="-xuhm9d_631"><td id="-xuhm9d_632"><p>196610</p></td><td id="-xuhm9d_633"><p>3</p></td><td id="-xuhm9d_634"><p>2</p></td><td id="-xuhm9d_635"><p>Физ лицо</p></td><td id="-xuhm9d_636"><p>3</p></td><td id="-xuhm9d_637"><p>2</p></td></tr><tr id="-xuhm9d_638"><td id="-xuhm9d_639"><p>196611</p></td><td id="-xuhm9d_640"><p>3</p></td><td id="-xuhm9d_641"><p>3</p></td><td id="-xuhm9d_642"><p>Склад поставщика или клиента</p></td><td id="-xuhm9d_643"><p>3</p></td><td id="-xuhm9d_644"><p>3</p></td></tr><tr id="-xuhm9d_645"><td id="-xuhm9d_646"><p>196612</p></td><td id="-xuhm9d_647"><p>3</p></td><td id="-xuhm9d_648"><p>4</p></td><td id="-xuhm9d_649"><p>Мое предприятие</p></td><td id="-xuhm9d_650"><p>3</p></td><td id="-xuhm9d_651"><p>4</p></td></tr><tr id="-xuhm9d_652"><td id="-xuhm9d_653"><p>196613</p></td><td id="-xuhm9d_654"><p>3</p></td><td id="-xuhm9d_655"><p>5</p></td><td id="-xuhm9d_656"><p>Наш склад</p></td><td id="-xuhm9d_657"><p>3</p></td><td id="-xuhm9d_658"><p>5</p></td></tr><tr id="-xuhm9d_659"><td id="-xuhm9d_660"><p>196614</p></td><td id="-xuhm9d_661"><p>3</p></td><td id="-xuhm9d_662"><p>6</p></td><td id="-xuhm9d_663"><p>Банк</p></td><td id="-xuhm9d_664"><p>3</p></td><td id="-xuhm9d_665"><p>6</p></td></tr></tbody></table></div><p id="-xuhm9d_666">Разобраться в принципе формирования значений ключа pk поможет следующий код,</p><div class="code-block" data-lang="plaintext">
+(@type * power(2, 16) + @sybtype
+</div><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+        pw constant int=(power(2,16));
+        ex_subtype constant int = 0x0000FFFF;
+        ex_type constant int = 0x00FF0000;
+
+        testvalue int = 65538;
+        sourceTypeValue int=0;
+        sourceKindValue int=0;
+    begin
+        raise notice 'type extractor %',ex_type;
+        raise notice 'subtype extractor %',ex_subtype;
+
+        sourceTypeValue = (testvalue &amp; ex_type)/pw;
+        sourceKindValue = testvalue &amp; ex_subtype;
+        raise notice 'type value is: %; subtype is: %; of sourceValue %', sourceTypeValue, sourceKindValue, testvalue;
+    end;
+$$;
+</div><p id="-xuhm9d_669">и</p><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+pw constant int=(power(2,16));
+ex_subtype constant int = 0x0000FFFF;
+ex_type constant int = 0x00FF0000;
+
+sourceTypeValue int=1;
+sourceKindValue int=2;
+
+        retValue int=0;
+        begin
+retValue = sourceTypeValue * pw + sourceKindValue;
+raise notice 'Full TypeValue id %; TypeKind = %, SubKind=%', retValue, sourceTypeValue, sourceKindValue;
+    end;
+$$;
+</div><aside class="prompt" data-type="tip" data-title="" id="-xuhm9d_671"><p id="-xuhm9d_672">Недостатком данного подхода может оказать недостаточное количество &quot;типов&quot; и &quot;подтипов&quot;. Хотя в реальных задачах эти значения навряд ли превысят допустимые 32767</p></aside></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="database-desing-updateby-external.html" class="navigation-links__prev">Данные о действиях в отдельной таблице</a><a href="how-to.html" class="navigation-links__next">Советы</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5271336"><title>Генератор текстовых данных | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Генератор текстовых данных | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-fn-gentext.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Генератор текстовых данных | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-fn-gentext.html#webpage",
+    "url": "writerside-documentation/postgres-fn-gentext.html",
+    "name": "Генератор текстовых данных | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-fn-gentext" data-main-title="Генератор текстовых данных" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL///postgres-func-pgsql-md.md|Функции на языке PL/pgSQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-fn-gentext" id="postgres-fn-gentext.md">Генератор текстовых данных</h1><div class="code-block" data-lang="sql">
+create or replace function random_text(min_val int=0, max_val int=50)
+    returns text as
+$$
+declare
+    word_length numeric = floor(random() * (max_val - min_val) + min_val)::integer;
+    random_word text    = '';
+begin
+    -- only if the word length we get has a remainder after being divided by 5. This gives
+    -- some randomness to when words are produced or not. Adjust for your tastes.
+    if (word_length % 5) &gt; 1 then
+        select *
+        into random_word
+        from (with symbols(characters) as (values ('ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 '))
+              select string_agg(substr(characters, (random() * length(characters) + 1) :: integer, 1), ''), 'g1' as idx
+              from symbols
+                       join generate_series(1, word_length) as word(chr_idx) on 1 = 1 -- word length
+              group by idx) a;
+    end if;
+    return random_word;
+end
+$$ language 'plpgsql';
+</div><p id="-8x3qse_9">Пример:</p><div class="code-block" data-lang="sql">
+select time,
+       device_id,
+       random_text(2, 10) as note
+from generate_series(now() - interval '1 hour', now(), interval '1 minute') as time,
+     generate_series(1, 10, 1) as device_id
+order by 1, 2;
+</div><div class="code-block" data-lang="sql">
+select time,
+       device_id,
+       random_between(3, 100, 4) as cpu,
+       random_between(28, 83)    as temperature_c,
+       random_text(2, 10)        as note
+from generate_series(now() - interval '1 hour', now(), interval '1 minute') as time,
+     generate_series(1, 10, 1) as device_id
+order by 1, 2;
+</div><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-fn-gennum.html" class="navigation-links__prev">Генерация значения для чисел numeric со сзначениями от и до</a><a href="postgres-functions-table.html" class="navigation-links__next">Табличные функции</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

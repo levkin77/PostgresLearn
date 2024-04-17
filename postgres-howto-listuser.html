@@ -1,0 +1,97 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.6481382"><title>Просмотр групп и пользователей | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-2be98z_16","level":0,"title":"Просмотр всех групп","anchor":"#-2be98z_16"},{"id":"-2be98z_18","level":0,"title":"Список групп и пользователей","anchor":"#-2be98z_18"},{"id":"-2be98z_24","level":0,"title":"Разрешения для групп и пользователей","anchor":"#-2be98z_24"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Просмотр групп и пользователей | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-howto-listuser.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Просмотр групп и пользователей | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-howto-listuser.html#webpage",
+    "url": "writerside-documentation/postgres-howto-listuser.html",
+    "name": "Просмотр групп и пользователей | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-howto-listuser" data-main-title="Просмотр групп и пользователей" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-auditsec.md|Аудит и безопастность"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-howto-listuser" id="postgres-howto-listuser.md">Просмотр групп и пользователей</h1><section class="chapter"><h2 id="-2be98z_16" data-toc="-2be98z_16">Просмотр всех групп</h2><div class="code-block" data-lang="sql">
+select * from pg_roles;
+</div></section><section class="chapter"><h2 id="-2be98z_18" data-toc="-2be98z_18">Список групп и пользователей</h2><p id="-2be98z_19">Для psql</p><div class="code-block" data-lang="bash">
+psql \dp
+</div><p id="-2be98z_21">или</p><div class="code-block" data-lang="bash">
+psql \du
+</div><div class="code-block" data-lang="sql">
+select r.rolname,
+       r.rolsuper,
+       r.rolinherit,
+       r.rolcreaterole,
+       r.rolcreatedb,
+       r.rolcanlogin,
+       r.rolconnlimit,
+       r.rolvaliduntil,
+       r.rolreplication,
+       r.rolbypassrls
+from pg_catalog.pg_roles r
+where r.rolname !~ '^pg_'
+order by 1;
+</div></section><section class="chapter"><h2 id="-2be98z_24" data-toc="-2be98z_24">Разрешения для групп и пользователей</h2><p id="-2be98z_25">Для psql</p><div class="code-block" data-lang="bash">
+\dp
+</div><div class="code-block" data-lang="sql">
+select n.nspname                                   as &quot;Schema&quot;,
+       c.relname                                   as &quot;Name&quot;,
+       case c.relkind
+           when 'r' then 'table'
+           when 'v' then 'view'
+           when 'm' then 'materialized view'
+           when 'S' then 'sequence'
+           when 'f' then 'foreign table'
+           when 'p' then 'partitioned table' end   as &quot;Type&quot;,
+       pg_catalog.array_to_string(c.relacl, E'\n') as &quot;Access privileges&quot;,
+       pg_catalog.array_to_string(array(
+                                          select attname || E':\n  ' || pg_catalog.array_to_string(attacl, E'\n  ')
+                                          from pg_catalog.pg_attribute a
+                                          where attrelid = c.oid
+                                            and not attisdropped
+                                            and attacl is not null
+                                  ), E'\n')        as &quot;Column privileges&quot;,
+       pg_catalog.array_to_string(array(
+                                          select polname
+                                                     || case
+                                                            when not polpermissive then
+                                                                E' (RESTRICTIVE)'
+                                                            else '' end
+                                                     || case
+                                                            when polcmd != '*' then
+                                                                E' (' || polcmd::pg_catalog.text || E'):'
+                                                            else E':'
+                                                     end
+                                                     || case
+                                                            when polqual is not null then
+                                                                E'\n  (u): ' || pg_catalog.pg_get_expr(polqual, polrelid)
+                                                            else E''
+                                                     end
+                                                     || case
+                                                            when polwithcheck is not null then
+                                                                E'\n  (c): ' || pg_catalog.pg_get_expr(polwithcheck, polrelid)
+                                                            else E''
+                                                     end || case
+                                                                when polroles &lt;&gt; '{0}' then
+                                                                    E'\n  to: ' || pg_catalog.array_to_string(
+                                                                            array(
+                                                                                    select rolname
+                                                                                    from pg_catalog.pg_roles
+                                                                                    where oid = any (polroles)
+                                                                                    order by 1
+                                                                            ), E', ')
+                                                                else E''
+                                                     end
+                                          from pg_catalog.pg_policy pol
+                                          where polrelid = c.oid), E'\n')
+                                                   as &quot;Policies&quot;
+from pg_catalog.pg_class c
+         left join pg_catalog.pg_namespace n on n.oid = c.relnamespace
+where c.relkind in ('r', 'v', 'm', 'S', 'f', 'p')
+  and n.nspname &lt;&gt; 'pg_catalog'
+  and n.nspname &lt;&gt; 'information_schema'
+  and pg_catalog.pg_table_is_visible(c.oid)
+order by 1, 2;
+</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-howto-createrole.html" class="navigation-links__prev">Создание ролей</a><a href="postgres-howto-listgrant.html" class="navigation-links__next">Просмотр разрешений на таблицы</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

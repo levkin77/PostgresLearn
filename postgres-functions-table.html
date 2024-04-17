@@ -1,0 +1,568 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5421371"><title>Табличные функции | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"pg_tbl_func_init","level":0,"title":"Создание тестовых таблиц и данных","anchor":"#pg_tbl_func_init"},{"id":"pg_tbl_func_sql","level":0,"title":"Табличные функции на SQL","anchor":"#pg_tbl_func_sql"},{"id":"pg_tbl_func_plsql","level":0,"title":"Табличные функции на pgSQL","anchor":"#pg_tbl_func_plsql"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Табличные функции | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-functions-table.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Табличные функции | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-functions-table.html#webpage",
+    "url": "writerside-documentation/postgres-functions-table.html",
+    "name": "Табличные функции | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-functions_table" data-main-title="Табличные функции" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-sql&quot;,&quot;text&quot;:&quot;Функции на языке запросов (SQL)&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-overload&quot;,&quot;text&quot;:&quot;Перегрузка функций&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/plpgsql&quot;,&quot;text&quot;:&quot;PL/pgSQL — процедурный язык SQL&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-functions_table" id="postgres-functions_table.md">Табличные функции</h1><ul class="list _bullet" id="-l67ej4_110"><li class="list__item" id="-l67ej4_111"><p><a href="#pg_tbl_func_init" id="-l67ej4_112" data-tooltip="Предварительно удаляем все что мы могли создать ранее">Создание тестовых таблиц и данных</a></p></li><li class="list__item" id="-l67ej4_113"><p><a href="#pg_tbl_func_sql" id="-l67ej4_114" data-tooltip="Пример вызова">Табличные функции на SQL</a></p><ul class="list _bullet" id="-l67ej4_115"><li class="list__item" id="-l67ej4_116"><p><a href="#pg_tbl_func_sql_v1" id="-l67ej4_117" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры</a></p></li><li class="list__item" id="-l67ej4_118"><p><a href="#pg_tbl_func_sql_v2" id="-l67ej4_119" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры с RETURNS SETOF Record</a></p></li><li class="list__item" id="-l67ej4_120"><p><a href="#pg_tbl_func_sql_v3" id="-l67ej4_121" data-tooltip="В данном случае мы объявили всего один OUT параметр,указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.">Возвращение табличных данных через OUT параметры с RETURNS SETOF Type</a></p></li><li class="list__item" id="-l67ej4_122"><p><a href="#pg_tbl_func_sql_v4" id="-l67ej4_123" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURNS SETOF Table</a></p></li><li class="list__item" id="-l67ej4_124"><p><a href="#pg_tbl_func_sql_v5" id="-l67ej4_125" data-tooltip="Сначала создаем свой тип данных:">Возвращение табличных данных с помощью RETURNS SETOF Composite type</a></p></li></ul></li><li class="list__item" id="-l67ej4_126"><p><a href="#pg_tbl_func_plsql" id="-l67ej4_127" data-tooltip="С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два — это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.">Табличные функции на pgSQL</a></p><ul class="list _bullet" id="-l67ej4_128"><li class="list__item" id="-l67ej4_129"><p><a href="#pg_tbl_func_plsql_v1" id="-l67ej4_130" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_131"><p><a href="#pg_tbl_func_plsql_v2" id="-l67ej4_132" data-tooltip="Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_133"><p><a href="#pg_tbl_func_plsql_v3" id="-l67ej4_134" data-tooltip="Вариация использования инструкции RETURN NEXT">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</a></p></li><li class="list__item" id="-l67ej4_135"><p><a href="#pg_tbl_func_plsql_v4" id="-l67ej4_136" data-tooltip="Создание дополнительного типа">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</a></p></li></ul></li></ul><p id="-l67ej4_137">Табличные функции можно писать на</p><ul class="list _bullet" id="-l67ej4_138"><li class="list__item" id="-l67ej4_139"><p>sql</p></li><li class="list__item" id="-l67ej4_140"><p>plsql</p></li><li class="list__item" id="-l67ej4_141"><p>и других...</p></li></ul><p id="-l67ej4_142">Для работы создадим тестовую базу</p><div class="code-block" data-lang="sql">
+-- создаем новую базу для тестов
+--drop database if exists devdbtestfunc;
+create database devdbtestfunc;
+</div><p id="-l67ej4_144">Подключаемся к нашей новой тестовой базе и приступаем...</p><section class="chapter"><h2 id="pg_tbl_func_init" data-toc="pg_tbl_func_init">Создание тестовых таблиц и данных</h2><p id="-l67ej4_145">Предварительно удаляем все что мы могли создать ранее</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Удаление функций">
+-- Удаление функций
+drop function if exists public.buyer_orders_id,
+    public.buyer_orders_tbl_byerid,
+    public.products_getbyerid,
+    public.products_getbyerid_ver2,
+    public.products_ret_next,
+    public.products_ret_next_ver2,
+    public.products_ret_next_ver3,
+    public.products_ret_query,
+    public.products_type_byerid,
+    public.products_view_best;
+
+-- Удаление таблиц для пересоздания схемы данных
+drop table if exists orders_products, orders, products, buyers, product_types;
+
+-- Удаление типов
+drop type if exists public.t_products;
+drop type if exists public.t_products_next;
+</div><p id="-l67ej4_147">Создаем несколько простых таблиц и заполняем их данными.</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Создание таблиц">
+-- Создание таблиц
+create table buyers
+(
+    buyer_id   int          not null,
+    buyer_name varchar(100) not null,
+    birthday   date         not null
+);
+
+create table orders
+(
+    order_id     int            not null,
+    buyer_id     int            not null,
+    order_number int            not null,
+    order_date   date           not null,
+    order_summa  numeric(18, 2) not null
+);
+
+create table product_types
+(
+    type_id int          not null,
+    name    varchar(100) not null
+);
+
+create table products
+(
+    product_id   int            not null,
+    product_name varchar(100)   not null,
+    description  varchar(200)   null,
+    price        numeric(18, 2) null,
+    type_id      int            not null
+);
+
+create table orders_products
+(
+    order_id   int not null,
+    product_id int not null
+);
+</div><p id="-l67ej4_149">Заполнение данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Добавление записей в таблицы">
+-- Добавление записей в таблицы
+insert into buyers (buyer_id, buyer_name, birthday)
+values (753, 'Зайцев А.Е.', '1998.04.12'),
+       (832, 'Иванов И.И.', '1993.07.16'),
+       (991, 'Попова Е.В.', '2001.10.28'),
+       (1028, 'John Smith', '2000.05.03'),
+       (1109, 'Сергеев А.С.', '1986.10.12'),
+       (1177, 'Петров С.Л.', '2003.06.11'),
+       (1201, 'Андреев В.А.', '1980.09.27');
+
+insert into orders (order_id, buyer_id, order_number, order_date, order_summa)
+values (1459, 1201, 151, '2020.04.02', 12750),
+       (1567, 991, 259, '2020.04.17', 6700),
+       (1615, 832, 307, '2020.05.02', 21440),
+       (1646, 1109, 338, '2020.05.07', 15540),
+       (1660, 1201, 352, '2020.05.16', 2100),
+       (1708, 832, 400, '2020.05.21', 6700),
+       (1718, 1028, 410, '2020.05.21', 12300),
+       (1893, 832, 115, '2020.06.11', 4600),
+       (1923, 1109, 85, '2020.06.29', 23990),
+       (1959, 1201, 151, '2020.07.02', 1300),
+       (2052, 832, 244, '2020.07.30', 7900),
+       (2057, 991, 249, '2020.07.30', 16900),
+       (2106, 753, 298, '2020.08.08', 900),
+       (2146, 1201, 338, '2020.08.15', 2200),
+       (2181, 832, 373, '2020.08.23', 16740);
+
+insert into product_types (type_id, name)
+values (1, 'Физический'),
+       (2, 'Цифровой');
+
+insert into products (product_id, product_name, description, price, type_id)
+values (16, 'Процессор V5', '4-ядерный процессор, 3600 МГц', 12300, 1),
+       (29, 'Материнская плата R7Q', '2 слота DDR4, 1 слот PCI-E', 4600, 1),
+       (38, 'Клавиатура S939', 'Проводная, интерфейс USB', 1300, 1),
+       (47, 'Мышь N56', 'USB', 900, 1),
+       (60, 'Материнская плата ES20', '4 слота DDR4, 2 слота PCI-E', 6700, 1),
+       (71, 'Принтер 3075', 'Лазерный, 20 стр/мин (A4), USB', 3500, 1),
+       (83, 'Кулер для процессора D17', null, 450, 1),
+       (96, 'Процессор V7', '6-ядерный процессор, 3700 МГц', 15540, 1),
+       (108, 'Антивирусная программа', null, 1200, 2),
+       (125, 'Операционная система', null, 6700, 2);
+
+insert into orders_products (order_id, product_id)
+values (1459, 16),
+       (1459, 83),
+       (1567, 125),
+       (1615, 29),
+       (1615, 96),
+       (1615, 38),
+       (1646, 96),
+       (1660, 108),
+       (1660, 47),
+       (1708, 60),
+       (1718, 16),
+       (1893, 29),
+       (1923, 60),
+       (1923, 83),
+       (1923, 96),
+       (1923, 38),
+       (1959, 38),
+       (2052, 108),
+       (2052, 125),
+       (2057, 16),
+       (2057, 29),
+       (2106, 47),
+       (2146, 38),
+       (2146, 47),
+       (2181, 108),
+       (2181, 96);
+</div><p id="-l67ej4_151">Проверяем наличие данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Проверка данных">
+-- Проверка данных
+select * from public.buyers;
+select * from public.orders;
+select * from public.orders_products;
+select * from public.product_types;
+select * from public.products;
+</div></section><section class="chapter"><h2 id="pg_tbl_func_sql" data-toc="pg_tbl_func_sql">Табличные функции на SQL</h2><section class="chapter"><h3 id="pg_tbl_func_sql_v1" data-toc="pg_tbl_func_sql_v1">Возвращение табличных данных через OUT параметры</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_getbyerid(">
+-------------------------------------
+-- Возвращение табличных данных через OUT параметры
+drop function if exists public.products_getbyerid;
+-- Создание табличной функции
+create function public.products_getbyerid(
+    in _buyer_id int,
+    out order_id int,
+    out product_id int,
+    out order_number int,
+    out order_date date,
+    out product_name varchar(100),
+    out product_type varchar(100),
+    out price numeric(18, 2)
+)
+    language 'sql'
+as
+$$
+
+select o.order_id,
+       p.product_id,
+       o.order_number,
+       o.order_date,
+       p.product_name,
+       pt.name as product_type,
+       p.price
+from public.orders O
+         inner join public.orders_products op on op.order_id = O.order_id
+         inner join public.products p on p.product_id = op.product_id
+         inner join public.product_types pt on pt.type_id = p.type_id
+where o.buyer_id = _buyer_id;
+
+$$;
+</div><p id="-l67ej4_154">Пример вызова</p><div class="code-block" data-lang="sql">
+-- Пример вызова
+select * from public.products_getbyerid(1201);
+--!!! результат в конечном итоге неверный,
+-- для проверки выполним
+select count(*)
+from orders o
+         inner join orders_products op on o.order_id = op.order_id
+where o.buyer_id = 1201;
+</div><aside class="prompt" data-type="warning" data-title="" id="-l67ej4_156"><p id="-l67ej4_157">В таком виде табличные функции возвращают только первую строку!!!</p></aside><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_158"><p id="-l67ej4_159">Для интереса вызовем функцию с несуществующим ид _buyer_id в результате - тоже одна строка, но с null значениями.</p></aside><div class="code-block" data-lang="sql">
+select * from public.products_getbyerid(-1);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v2" data-toc="pg_tbl_func_sql_v2">Возвращение табличных данных через OUT параметры с RETURNS SETOF Record</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_getbyerid_ver2(">
+drop function if exists public.products_getbyerid_ver2;
+-- Создание табличной функции
+create function public.products_getbyerid_ver2(
+    in _buyer_id int,
+    out order_id int,
+    out product_id int,
+    out order_number int,
+    out order_date date,
+    out product_name varchar(100),
+    out product_type varchar(100),
+    out price numeric(18, 2)
+)
+    returns setof record
+    language 'sql'
+as
+$$
+
+select O.order_id,
+       P.product_id,
+       O.order_number,
+       O.order_date,
+       P.product_name,
+       PT.name as product_type,
+       P.price
+from public.orders O
+         inner join public.orders_products op on op.order_id = O.order_id
+         inner join public.products p on p.product_id = op.product_id
+         inner join public.product_types pt on pt.type_id = p.type_id
+where O.buyer_id = _buyer_id;
+
+$$;
+</div><p id="-l67ej4_162">Пример вызова</p><div class="code-block" data-lang="sql">
+-- Пример вызова
+select *
+from public.products_getbyerid_ver2(1201);
+-- Для интереса вызовем функцию с несуществующим ид _buyer_id
+select *
+from public.products_getbyerid_ver2(-1);
+-- ожидаемо, строк нет
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v3" data-toc="pg_tbl_func_sql_v3">Возвращение табличных данных через OUT параметры с RETURNS SETOF Type</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.buyer_orders_id(">
+-----------------------------------------------------------
+--Возвращение табличных данных через OUT параметры с RETURNS SETOF Type
+drop function if exists public.buyer_orders_id;
+-- Создание табличной функции
+create function public.buyer_orders_id(
+    _buyer_id int
+)
+    returns setof int
+    language 'sql'
+as
+$$
+
+select o.order_id
+from public.orders o
+where o.buyer_id = _buyer_id
+
+$$;
+</div><p id="-l67ej4_165">В данном случае мы объявили всего один OUT параметр, <br> указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.</p><p id="-l67ej4_167">Пример вызова</p><div class="code-block" data-lang="sql">
+select * from public.buyer_orders_id(1201);
+select * from public.buyer_orders_id(-1);
+</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_169"><p id="-l67ej4_170">Обращаем внимание, что столбец результатов - соответствует наименованию функции.</p></aside></section><section class="chapter"><h3 id="pg_tbl_func_sql_v4" data-toc="pg_tbl_func_sql_v4">Возвращение табличных данных с помощью RETURNS SETOF Table</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.buyer_orders_tbl_byerid(">
+drop function if exists public.buyer_orders_tbl_byerid;
+-- Создание табличной функции
+create function public.buyer_orders_tbl_byerid(
+    _buyer_id int
+)
+    -- возвращает все колонки и в той же последовательности
+    -- что и таблица public.orders
+    returns setof public.orders
+    language 'sql'
+as
+$$
+
+select o.order_id, o.buyer_id, o.order_number, o.order_date, o.order_summa
+from public.orders o
+where o.buyer_id = _buyer_id;
+
+$$;
+</div><p id="-l67ej4_172">Пример вызова</p><div class="code-block" data-lang="sql">
+select * 
+from public.buyer_orders_tbl_byerid(1201);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v5" data-toc="pg_tbl_func_sql_v5">Возвращение табличных данных с помощью RETURNS SETOF Composite type</h3><p id="-l67ej4_174">Сначала создаем свой тип данных:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products as">
+drop type if exists t_products;
+-- Создание составного типа данных
+create type t_products as
+(
+    order_id     int,
+    product_id   int,
+    order_number int,
+    order_date   date,
+    product_name varchar(100),
+    product_type varchar(100),
+    price        numeric(18, 2)
+);
+</div><p id="-l67ej4_176">функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_type_byerid(">
+drop function if exists public.products_type_byerid;
+-- Создание табличной функции
+create function public.products_type_byerid(
+    _buyer_id int
+)
+    returns setof t_products
+    language 'sql'
+as
+$$
+
+select o.order_id,
+       p.product_id,
+       o.order_number,
+       o.order_date,
+       p.product_name,
+       pt.name as product_type,
+       p.price
+from public.orders O
+         inner join public.orders_products op on op.order_id = o.order_id
+         inner join public.products P on p.product_id = op.product_id
+         inner join public.product_types pt on pt.type_id = p.type_id
+where O.buyer_id = _buyer_id;
+
+$$;
+</div><p id="-l67ej4_178">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_type_byerid(1201);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v6" data-toc="pg_tbl_func_sql_v6">Классический вариант возвращения табличных данных на SQL (RETURNS TABLE)</h3><aside class="prompt" data-type="note" data-title="" id="-l67ej4_180"><p id="-l67ej4_181">Наверное, самый правильный способ возвращения табличных данных.</p></aside><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_view_best(">
+drop function if exists public.products_view_best;
+-- Создание табличной функции
+create function public.products_view_best(
+    _buyer_id int
+)
+    returns table
+            (
+                order_id     int,
+                product_id   int,
+                order_date   date,
+                order_number int,
+                product_name varchar(100),
+                product_type varchar(100),
+                price        numeric(18, 2)
+            )
+    language 'sql'
+as
+$$
+
+select o.order_id,
+       p.product_id,
+       o.order_date,
+       o.order_number,
+       p.product_name,
+       pt.name as product_type,
+       p.price
+from public.orders o
+         inner join public.orders_products op on op.order_id = o.order_id
+         inner join public.products P on p.product_id = op.product_id
+         inner join public.product_types pt on pt.type_id = p.type_id
+where O.buyer_id = _buyer_id;
+
+$$;
+</div><p id="-l67ej4_183">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_view_best(1201);
+</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_185"><p id="-l67ej4_186">Удобнее чем вышеперечисленные варианты.</p><ul class="list _bullet" id="-l67ej4_187"><li class="list__item" id="-l67ej4_188"><p>нет необходимости создавать дополнительный тип</p></li><li class="list__item" id="-l67ej4_189"><p>нет необходимости зависеть от структуры таблицы</p></li><li class="list__item" id="-l67ej4_190"><p>контролируемое наименование колонок результата</p></li></ul><p id="-l67ej4_191">Как говорится - все в одном месте.</p></aside></section></section><section class="chapter"><h2 id="pg_tbl_func_plsql" data-toc="pg_tbl_func_plsql">Табличные функции на pgSQL</h2><p id="-l67ej4_192">С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два &mdash; это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.</p><section class="chapter"><h3 id="pg_tbl_func_plsql_v1" data-toc="pg_tbl_func_plsql_v1">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</h3><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_ret_query(">
+drop function if exists public.products_ret_query;
+-- Создание табличной функции
+create function public.products_ret_query(
+    _buyer_id int
+)
+    returns table
+            (
+                order_id     int,
+                product_id   int,
+                order_number int,
+                order_date   date,
+                product_name varchar(100),
+                product_type varchar(100),
+                price        numeric(18, 2)
+            )
+    language 'plpgsql'
+as
+$$
+
+declare
+    _price numeric(18, 2);
+
+begin
+
+    if _buyer_id &gt; 1000 then
+        _price := 500;
+    end if;
+
+    return query
+        select o.order_id,
+               p.product_id,
+               o.order_number,
+               o.order_date,
+               p.product_name,
+               pt.name as product_type,
+               p.price
+        from public.orders o
+                 inner join public.orders_products op on op.order_id = o.order_id
+                 inner join public.products p on p.product_id = op.product_id
+                 inner join public.product_types pt on pt.type_id = p.type_id
+        where o.buyer_id = _buyer_id
+          and (p.price &gt;= _price or _price is null);
+
+end
+$$;
+</div><p id="-l67ej4_194">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_ret_query(1201);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v2" data-toc="pg_tbl_func_plsql_v2">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</h3><p id="-l67ej4_196">Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.</p><p id="-l67ej4_197">Данный способ предпочтителен в тех случаях, когда каждая строка результирующего набора данных подвергается какой-то обработке. Например, все те случаи, когда данные мы накапливаем с помощью цикла, т.е. мы что-то перебираем и что-то куда-то складываем.</p><p id="-l67ej4_198">Если Вам не требуется перебирать данные и обрабатывать каждую строку в отдельности, т.е. можно обойтись без цикла, не нужно использовать RETURN NEXT и цикл для создания табличных функций, так как это будет значительно медленнее, чем если указать простой запрос SELECT в инструкции RETURN QUERY. Иными словами, если требуется вернуть простые табличные данные, используйте RETURN QUERY</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next(">
+drop function if exists &quot;public&quot;.products_ret_next;
+-- Создание табличной функции
+create function public.products_ret_next(
+    in _buyer_id int
+)
+    returns table
+            (
+                order_id     int,
+                product_id   int,
+                order_number int,
+                order_date   date,
+                product_name varchar(100),
+                product_type varchar(100),
+                price        numeric(18, 2)
+            )
+    language 'plpgsql'
+as
+$$
+begin
+
+    for order_id,
+        product_id,
+        order_number,
+        order_date,
+        product_name,
+        product_type,
+        price
+        in
+        (select o.order_id,
+                p.product_id,
+                o.order_number,
+                o.order_date,
+                p.product_name,
+                pt.name as product_type,
+                p.price
+         from public.orders o
+                  inner join public.orders_products op on op.order_id = o.order_id
+                  inner join public.products p on p.product_id = op.product_id
+                  inner join public.product_types pt on pt.type_id = p.type_id
+         where o.buyer_id = _buyer_id)
+        loop
+
+            return next;
+
+        end loop;
+
+    return;
+
+end
+$$;
+</div><p id="-l67ej4_200">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_ret_next(1201);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v3" data-toc="pg_tbl_func_plsql_v3">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</h3><p id="-l67ej4_202">Вариация использования инструкции RETURN NEXT</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver2(">
+drop function if exists public.products_ret_next_ver2;
+-- Создание табличной функции
+create function public.products_ret_next_ver2(
+    in _buyer_id int,
+    out order_id int,
+    out product_id int,
+    out order_number int,
+    out order_date date,
+    out product_name varchar(100),
+    out product_type varchar(100),
+    out price numeric(18, 2)
+)
+    returns setof record
+    language 'plpgsql'
+as
+$$
+declare
+    rec record;
+begin
+
+    for rec in
+        (select O.order_id,
+                P.product_id,
+                O.order_number,
+                O.order_date,
+                P.product_name,
+                PT.name as product_type,
+                P.price
+         from public.orders O
+                  inner join public.orders_products OP on OP.order_id = O.order_id
+                  inner join public.products P on P.product_id = OP.product_id
+                  inner join public.product_types PT on PT.type_id = P.type_id
+         where O.buyer_id = _buyer_id)
+        loop
+
+            order_id = rec.order_id;
+            product_id = rec.product_id;
+            order_number = rec.order_number;
+            order_date = rec.order_date;
+            product_name = rec.product_name;
+            product_type = rec.product_type;
+            price = rec.price;
+
+            return next;
+
+        end loop;
+
+    return;
+
+end
+$$;
+</div><p id="-l67ej4_204">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_ret_next_ver2(1201);
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v4" data-toc="pg_tbl_func_plsql_v4">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</h3><p id="-l67ej4_206">Создание дополнительного типа</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products_next as">
+drop type if exists t_products_next;
+  -- создание составного типа данных
+create type t_products_next as
+(
+    order_id     int,
+    product_id   int,
+    order_number int,
+    order_date   date,
+    product_name varchar(100),
+    product_type varchar(100),
+    price        numeric(18, 2)
+);
+</div><p id="-l67ej4_208">Функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver3(">
+drop function if exists public.products_ret_next_ver3;
+-- создание табличной функции
+create function public.products_ret_next_ver3(
+    in _buyer_id int
+)
+    returns setof t_products_next
+    language 'plpgsql'
+as
+$$
+declare
+    rec record;
+begin
+
+    for rec in
+        (select o.order_id,
+                p.product_id,
+                o.order_number,
+                o.order_date,
+                p.product_name,
+                pt.name as product_type,
+                p.price
+         from public.orders o
+                  inner join public.orders_products op on op.order_id = o.order_id
+                  inner join public.products p on p.product_id = op.product_id
+                  inner join public.product_types pt on pt.type_id = p.type_id
+         where o.buyer_id = _buyer_id)
+        loop
+            return next rec;
+        end loop;
+
+    return;
+
+end
+$$;
+</div><p id="-l67ej4_210">Пример вызова</p><div class="code-block" data-lang="sql">
+select *
+from public.products_ret_next_ver3(1201);
+</div></section></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-fn-gentext.html" class="navigation-links__prev">Генератор текстовых данных</a><a href="postgres-func-vs-proc.html" class="navigation-links__next">Function vs Procedure</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

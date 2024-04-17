@@ -1,0 +1,171 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5311347"><title>Использование generate_series | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"t19g1r_153","level":0,"title":"Простое использование","anchor":"#t19g1r_153"},{"id":"t19g1r_160","level":0,"title":"Генерация для разных типов данных","anchor":"#t19g1r_160"},{"id":"t19g1r_164","level":0,"title":"Генерация последовательности по датам","anchor":"#t19g1r_164"},{"id":"t19g1r_225","level":0,"title":"Последовательность по дням","anchor":"#t19g1r_225"},{"id":"t19g1r_241","level":0,"title":"Последовательность на первое число месяца","anchor":"#t19g1r_241"},{"id":"t19g1r_257","level":0,"title":"Последовательность по часам","anchor":"#t19g1r_257"},{"id":"t19g1r_277","level":0,"title":"Последовательность по часам и минутам","anchor":"#t19g1r_277"},{"id":"t19g1r_279","level":0,"title":"Последовательность и рандомные данные","anchor":"#t19g1r_279"},{"id":"t19g1r_287","level":0,"title":"Использование последовательности для определения значения на каждый день","anchor":"#t19g1r_287"},{"id":"t19g1r_289","level":0,"title":"Последний день месяца","anchor":"#t19g1r_289"},{"id":"t19g1r_291","level":0,"title":"Использование в циклах","anchor":"#t19g1r_291"},{"id":"t19g1r_293","level":0,"title":"Данные последовательности в таблицу","anchor":"#t19g1r_293"},{"id":"cross-join","level":0,"title":"Использование в CROSS JOIN","anchor":"#cross-join"},{"id":"t19g1r_298","level":0,"title":"Поиск пропущенных значений","anchor":"#t19g1r_298"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование generate_series | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-genser.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование generate_series | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-genser.html#webpage",
+    "url": "writerside-documentation/howto-genser.html",
+    "name": "Использование generate_series | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-genser" data-main-title="Использование generate_series" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-genser" id="howto-genser.md">Использование generate_series</h1><section class="chapter"><h2 id="t19g1r_153" data-toc="t19g1r_153">Простое использование</h2><p id="t19g1r_154">Генерация последовательности от 1 до 15</p><div class="code-block" data-lang="sql">
+select generate_series(1, 15);
+</div><p id="t19g1r_156">Генерация последовательности с указанным шагом</p><div class="code-block" data-lang="sql">
+select * from generate_series(2, 10, 2);
+</div><div class="code-block" data-lang="sql">
+select * from generate_series(1, 10, 2);
+</div><div class="code-block" data-lang="sql">
+select * from generate_series(-10, 10, 3);
+</div></section><section class="chapter"><h2 id="t19g1r_160" data-toc="t19g1r_160">Генерация для разных типов данных</h2><div class="code-block" data-lang="sql">
+select generate_series(1.1, 10.1, 3.0)::float;
+</div><div class="code-block" data-lang="sql">
+select generate_series(1.1, 10.1, 3.0)::money;
+</div><div class="code-block" data-lang="sql">
+select generate_series(1.1, 10.1, 3.0)::numeric(10,6);
+</div></section><section class="chapter"><h2 id="t19g1r_164" data-toc="t19g1r_164">Генерация последовательности по датам</h2><p id="t19g1r_165">По возрастанию</p><div class="code-block" data-lang="sql">
+select date '2024-01-01' + (interval '1' month * generate_series(0, 11)) as month;
+</div><p id="t19g1r_167">Результат:</p><div class="table-wrapper"><table class="" id="t19g1r_168"><thead><tr class="ijRowHead" id="t19g1r_169"><th id="t19g1r_170"><p>month</p></th></tr></thead><tbody><tr id="t19g1r_171"><td id="t19g1r_172"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="t19g1r_173"><td id="t19g1r_174"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="t19g1r_175"><td id="t19g1r_176"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="t19g1r_177"><td id="t19g1r_178"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="t19g1r_179"><td id="t19g1r_180"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="t19g1r_181"><td id="t19g1r_182"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="t19g1r_183"><td id="t19g1r_184"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="t19g1r_185"><td id="t19g1r_186"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="t19g1r_187"><td id="t19g1r_188"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="t19g1r_189"><td id="t19g1r_190"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="t19g1r_191"><td id="t19g1r_192"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="t19g1r_193"><td id="t19g1r_194"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div><p id="t19g1r_195">По убыванию</p><div class="code-block" data-lang="sql">
+select date '20241201' - (interval '1' month * generate_series(0, 11)) as month;
+</div><p id="t19g1r_197">Результат</p><div class="table-wrapper"><table class="" id="t19g1r_198"><thead><tr class="ijRowHead" id="t19g1r_199"><th id="t19g1r_200"><p>month</p></th></tr></thead><tbody><tr id="t19g1r_201"><td id="t19g1r_202"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="t19g1r_203"><td id="t19g1r_204"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="t19g1r_205"><td id="t19g1r_206"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="t19g1r_207"><td id="t19g1r_208"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="t19g1r_209"><td id="t19g1r_210"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="t19g1r_211"><td id="t19g1r_212"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="t19g1r_213"><td id="t19g1r_214"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="t19g1r_215"><td id="t19g1r_216"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="t19g1r_217"><td id="t19g1r_218"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="t19g1r_219"><td id="t19g1r_220"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="t19g1r_221"><td id="t19g1r_222"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="t19g1r_223"><td id="t19g1r_224"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="t19g1r_225" data-toc="t19g1r_225">Последовательность по дням</h2><div class="code-block" data-lang="sql">
+select generate_series(date '20240501', '20240801', '1 day')::date as day;
+</div><p id="t19g1r_227">Результат</p><div class="table-wrapper"><table class="" id="t19g1r_228"><thead><tr class="ijRowHead" id="t19g1r_229"><th id="t19g1r_230"><p>day</p></th></tr></thead><tbody><tr id="t19g1r_231"><td id="t19g1r_232"><p>2024-05-01</p></td></tr><tr id="t19g1r_233"><td id="t19g1r_234"><p>2024-05-02</p></td></tr><tr id="t19g1r_235"><td id="t19g1r_236"><p>2024-05-03</p></td></tr><tr id="t19g1r_237"><td id="t19g1r_238"><p>2024-05-04</p></td></tr><tr id="t19g1r_239"><td id="t19g1r_240"><p>2024-05-05</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="t19g1r_241" data-toc="t19g1r_241">Последовательность на первое число месяца</h2><div class="code-block" data-lang="sql">
+select generate_series(timestamp '20210101'
+         , timestamp '20210530'
+         , interval '1 month');
+</div><p id="t19g1r_243">Результат</p><div class="table-wrapper"><table class="" id="t19g1r_244"><thead><tr class="ijRowHead" id="t19g1r_245"><th id="t19g1r_246"><p>generate_series</p></th></tr></thead><tbody><tr id="t19g1r_247"><td id="t19g1r_248"><p>2021-01-01 00:00:00.000000</p></td></tr><tr id="t19g1r_249"><td id="t19g1r_250"><p>2021-02-01 00:00:00.000000</p></td></tr><tr id="t19g1r_251"><td id="t19g1r_252"><p>2021-03-01 00:00:00.000000</p></td></tr><tr id="t19g1r_253"><td id="t19g1r_254"><p>2021-04-01 00:00:00.000000</p></td></tr><tr id="t19g1r_255"><td id="t19g1r_256"><p>2021-05-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="t19g1r_257" data-toc="t19g1r_257">Последовательность по часам</h2><div class="code-block" data-lang="sql">
+select generate_series(
+               date_trunc('hour', now()) - '1 day'::interval,
+               date_trunc('hour', now()),
+               '1 hour'::interval
+       ) as hour;
+</div><p id="t19g1r_259">Результат:</p><div class="table-wrapper"><table class="" id="t19g1r_260"><thead><tr class="ijRowHead" id="t19g1r_261"><th id="t19g1r_262"><p>hour</p></th></tr></thead><tbody><tr id="t19g1r_263"><td id="t19g1r_264"><p>2024-04-05 15:00:00.000000 +03:00</p></td></tr><tr id="t19g1r_265"><td id="t19g1r_266"><p>2024-04-05 16:00:00.000000 +03:00</p></td></tr><tr id="t19g1r_267"><td id="t19g1r_268"><p>2024-04-05 17:00:00.000000 +03:00</p></td></tr><tr id="t19g1r_269"><td id="t19g1r_270"><p>2024-04-05 18:00:00.000000 +03:00</p></td></tr><tr id="t19g1r_271"><td id="t19g1r_272"><p>2024-04-05 19:00:00.000000 +03:00</p></td></tr><tr id="t19g1r_273"><td id="t19g1r_274"><p>2024-04-05 20:00:00.000000 +03:00</p></td></tr></tbody></table></div><p id="t19g1r_275">Варианты</p><div class="code-block" data-lang="sql">
+select *
+from generate_series(
+        '2021-01-01',
+        '2021-01-02', interval '1 hour'
+     );
+</div></section><section class="chapter"><h2 id="t19g1r_277" data-toc="t19g1r_277">Последовательность по часам и минутам</h2><div class="code-block" data-lang="sql">
+select *
+from generate_series(
+        '2021-01-01', '2021-01-02',
+        interval '1 hour 25 minutes'
+     );
+</div></section><section class="chapter"><h2 id="t19g1r_279" data-toc="t19g1r_279">Последовательность и рандомные данные</h2><p id="t19g1r_280">Можно использовать для всяких теств и заполнения данными</p><div class="code-block" data-lang="sql">
+select random() * 100 as CPU, *
+from generate_series(1, 5);
+</div><div class="code-block" data-lang="sql">
+select time, device_id, random() * 100 as cpu_usage
+from generate_series(
+             '2021-01-01 00:00:00',
+             '2021-01-01 11:00:00',
+             interval '1 hour'
+     ) as time,
+     generate_series(1, 4) device_id;
+</div><p id="t19g1r_283">Увеличение объемов данных за счет изменение диапазона дат</p><div class="code-block" data-lang="sql">
+select time, device_id, random() * 100 as cpu_usage
+from generate_series(
+             now() - interval '6 months',
+             now(),
+             interval '1 hour'
+     ) as time,
+     generate_series(1, 4) device_id;
+</div><p id="t19g1r_285">Использование дополнительных функций для реалистичности данных с использование round() и floor()</p><div class="code-block" data-lang="sql">
+select time,
+       device_id,
+       round((random() * (100 - 3) + 3)::numeric, 4) as cpu,
+       floor(random() * (83 - 28) + 28)::integer     as tempc
+from generate_series(now() - interval '1 hour', now(), interval '1 minute') as time,
+     generate_series(1, 10, 1) as device_id;
+</div></section><section class="chapter"><h2 id="t19g1r_287" data-toc="t19g1r_287">Использование последовательности для определения значения на каждый день</h2><div class="code-block" data-lang="sql">
+drop table if exists user_balance;
+create temporary table user_balance
+(
+    usr_id     int,
+    amount     int,
+    as_of_date date
+);
+
+truncate user_balance;
+insert into user_balance (usr_id, amount, as_of_date)
+values (1, 100, '20210103')
+     , (1, 50, '20210102')
+     , (1, 10, '20210101')
+     , (2, 200, '20210101')
+     , (2, 300, '20210101')
+     , (3, 30, '20210103')
+     , (3, 50, '20210102');
+
+select b.usr_id, max(b.amount) as amount, d.ondate
+from generate_series('20210101','20210103', '1 day'::interval) as d(ondate)
+    left join user_balance b on  b.as_of_date&lt;=d.ondate
+group by b.usr_id, d.ondate
+order by b.usr_id, d.ondate desc;
+</div></section><section class="chapter"><h2 id="t19g1r_289" data-toc="t19g1r_289">Последний день месяца</h2><div class="code-block" data-lang="sql">
+select last_day + interval '1 month - 1 day' as last_day_of_mon
+from generate_series(timestamp '20210101'
+         , timestamp '20210130'
+         , interval '1 month') last_day;
+</div></section><section class="chapter"><h2 id="t19g1r_291" data-toc="t19g1r_291">Использование в циклах</h2><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+        r record;
+    begin
+        for r in select * from generate_series(1, 5)
+            loop
+                raise notice '%', r;
+            end loop;
+    end;
+$$;
+</div></section><section class="chapter"><h2 id="t19g1r_293" data-toc="t19g1r_293">Данные последовательности в таблицу</h2><div class="code-block" data-lang="sql">
+drop table if exists seriestmp;
+create temporary table seriestmp
+(
+    series_id   int,
+    series_name text
+);
+insert into seriestmp
+select generate_series(1, 50), 'someseries';
+select * from seriestmp;
+</div><div class="code-block" data-lang="sql">
+drop table if exists seriestmp;
+create temporary table seriestmp as
+    select generate_series(1, 50), 'someseries';
+select * from seriestmp;
+</div></section><section class="chapter"><h2 id="cross-join" data-toc="cross-join">Использование в CROSS JOIN</h2><div class="code-block" data-lang="sql">
+select * from generate_series(5, 9);
+select *
+from generate_series(5, 9) -- пять записей
+         cross join generate_series(5, generate_series.generate_series) as g2;
+</div><div class="code-block" data-lang="sql">
+select *
+from generate_series(5, 9) as g1-- пять записей
+         cross join generate_series(5, g1) as g2;
+</div></section><section class="chapter"><h2 id="t19g1r_298" data-toc="t19g1r_298">Поиск пропущенных значений</h2><div class="code-block" data-lang="sql">
+drop table if exists seriestmp;
+create temporary table seriestmp
+(
+    series_id   int,
+    series_name text
+);
+insert into seriestmp
+select generate_series(1, 3), 'someseries'
+union all
+select generate_series(5, 7), 'someseries_kind';
+select * from seriestmp;
+
+with a as
+    (select generate_series(min(series_id), max(series_id)) as row_num from
+    seriestmp)
+select * from a left join seriestmp t on t.series_id= a.row_num where t.series_id is null;
+</div><p id="t19g1r_300">как вариант последний батч</p><div class="code-block" data-lang="sql">
+select * from
+(select generate_series(min(series_id), max(series_id)) as row_num from
+    seriestmp) as a
+    left join seriestmp t on t.series_id= a.row_num where t.series_id is null;
+</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-customgeneric.html" class="navigation-links__prev">Общее</a><a href="howto-windowsfn.html" class="navigation-links__next">Использование оконных функций</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

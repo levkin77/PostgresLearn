@@ -1,0 +1,99 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5811361"><title>Анонимные блоки кода | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-9qgqz7_21","level":0,"title":"Блок кода и переменные","anchor":"#-9qgqz7_21"},{"id":"exception","level":0,"title":"Блок кода и обработка exception","anchor":"#exception"},{"id":"-9qgqz7_24","level":0,"title":"Вызов функции в блоке кода","anchor":"#-9qgqz7_24"},{"id":"-9qgqz7_26","level":0,"title":"Вложенные блоки","anchor":"#-9qgqz7_26"},{"id":"-9qgqz7_31","level":0,"title":"Блок кода и возврат результата","anchor":"#-9qgqz7_31"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Анонимные блоки кода | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-codeblock.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Анонимные блоки кода | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-codeblock.html#webpage",
+    "url": "writerside-documentation/howto-codeblock.html",
+    "name": "Анонимные блоки кода | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-codeblock" data-main-title="Анонимные блоки кода" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-codeblock" id="howto-codeblock.md">Анонимные блоки кода</h1><p id="-9qgqz7_19">Общее представление блока</p><div class="code-block" data-lang="sql">
+do
+$$
+--main_block
+    begin
+        raise notice 'Hello World, I am an anonymous block';
+    end 
+--main_block;
+$$;
+</div><section class="chapter"><h2 id="-9qgqz7_21" data-toc="-9qgqz7_21">Блок кода и переменные</h2><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+        abc int;
+        xyz int;
+    begin
+        abc := 100;
+        xyz := abc / 50;
+        raise notice '%',xyz;
+    end;
+$$;
+</div></section><section class="chapter"><h2 id="exception" data-toc="exception">Блок кода и обработка exception</h2><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+        abc int;
+        xyz int;
+    begin
+        abc := 100;
+        xyz := abc / 0;
+    exception
+        when division_by_zero then
+            raise notice 'can not divide by zero';
+    end;
+$$;
+</div></section><section class="chapter"><h2 id="-9qgqz7_24" data-toc="-9qgqz7_24">Вызов функции в блоке кода</h2><div class="code-block" data-lang="sql">
+create or replace function f(n int)
+    returns int as
+$$
+begin
+    n := 5;
+    return n;
+end;
+$$ language 'plpgsql';
+
+do
+$$
+    declare
+        abc int;
+        xyz int;
+    begin
+        abc := f(5) * 10;
+        raise notice '%',abc;
+    end;
+$$;
+</div></section><section class="chapter"><h2 id="-9qgqz7_26" data-toc="-9qgqz7_26">Вложенные блоки</h2><div class="code-block" data-lang="sql">
+do
+$$
+    declare -- Outer Block--
+        a int;
+    begin
+        a := 1;
+        declare -- Inner Block--
+            b int;
+        begin
+            b := a; --Inner block can read the values from outer block--
+            raise notice '%',b;
+        end; -- inner_block;
+    end; --outer_block;
+$$;
+</div><aside class="prompt" data-type="note" data-title="" id="-9qgqz7_28"><p id="-9qgqz7_29">Блок верхнего уровня (Outer Block) не может видеть переменные вложенного блока (Inner Block)</p><p id="-9qgqz7_30">Блок нижнего уровня может видеть переменные верхнего уровня</p></aside></section><section class="chapter"><h2 id="-9qgqz7_31" data-toc="-9qgqz7_31">Блок кода и возврат результата</h2><p id="-9qgqz7_32">С использованием временных таблиц</p><div class="code-block" data-lang="sql">
+do
+$$
+begin
+ drop table if exists _x;
+ create temporary table _x
+ as
+ select * from pg_database;
+end;
+$$;
+-- the temporary table will continue to exist on individual Postgres session
+select * from _x; 
+
+</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-windowsfn.html" class="navigation-links__prev">Использование оконных функций</a><a href="howto-hierarchy.html" class="navigation-links__next">Иерархические запросы</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
