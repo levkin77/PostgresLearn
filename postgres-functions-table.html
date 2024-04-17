@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.5421371"><title>Табличные функции | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"pg_tbl_func_init","level":0,"title":"Создание тестовых таблиц и данных","anchor":"#pg_tbl_func_init"},{"id":"pg_tbl_func_sql","level":0,"title":"Табличные функции на SQL","anchor":"#pg_tbl_func_sql"},{"id":"pg_tbl_func_plsql","level":0,"title":"Табличные функции на pgSQL","anchor":"#pg_tbl_func_plsql"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Табличные функции | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-functions-table.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Табличные функции | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T07:03:18.3661919"><title>Табличные функции | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"pg_tbl_func_init","level":0,"title":"Создание тестовых таблиц и данных","anchor":"#pg_tbl_func_init"},{"id":"pg_tbl_func_sql","level":0,"title":"Табличные функции на SQL","anchor":"#pg_tbl_func_sql"},{"id":"pg_tbl_func_plsql","level":0,"title":"Табличные функции на pgSQL","anchor":"#pg_tbl_func_plsql"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="icon-192.png"><link rel="icon" type="image/png" sizes="16x16" href="icon-192.png"><meta name="msapplication-TileImage" content="mstile-144x144.png"><meta name="msapplication-square70x70logo" content="mstile-70x70.png"><meta name="msapplication-square150x150logo" content="mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="mstile-310x150.png"><meta name="msapplication-square310x310logo" content="mstile-310x150.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Табличные функции | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-functions-table.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Табличные функции | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/postgres-functions-table.html#webpage",
@@ -13,11 +13,11 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="postgres-functions_table" data-main-title="Табличные функции" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-sql&quot;,&quot;text&quot;:&quot;Функции на языке запросов (SQL)&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-overload&quot;,&quot;text&quot;:&quot;Перегрузка функций&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/plpgsql&quot;,&quot;text&quot;:&quot;PL/pgSQL — процедурный язык SQL&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-functions_table" id="postgres-functions_table.md">Табличные функции</h1><ul class="list _bullet" id="-l67ej4_110"><li class="list__item" id="-l67ej4_111"><p><a href="#pg_tbl_func_init" id="-l67ej4_112" data-tooltip="Предварительно удаляем все что мы могли создать ранее">Создание тестовых таблиц и данных</a></p></li><li class="list__item" id="-l67ej4_113"><p><a href="#pg_tbl_func_sql" id="-l67ej4_114" data-tooltip="Пример вызова">Табличные функции на SQL</a></p><ul class="list _bullet" id="-l67ej4_115"><li class="list__item" id="-l67ej4_116"><p><a href="#pg_tbl_func_sql_v1" id="-l67ej4_117" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры</a></p></li><li class="list__item" id="-l67ej4_118"><p><a href="#pg_tbl_func_sql_v2" id="-l67ej4_119" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры с RETURNS SETOF Record</a></p></li><li class="list__item" id="-l67ej4_120"><p><a href="#pg_tbl_func_sql_v3" id="-l67ej4_121" data-tooltip="В данном случае мы объявили всего один OUT параметр,указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.">Возвращение табличных данных через OUT параметры с RETURNS SETOF Type</a></p></li><li class="list__item" id="-l67ej4_122"><p><a href="#pg_tbl_func_sql_v4" id="-l67ej4_123" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURNS SETOF Table</a></p></li><li class="list__item" id="-l67ej4_124"><p><a href="#pg_tbl_func_sql_v5" id="-l67ej4_125" data-tooltip="Сначала создаем свой тип данных:">Возвращение табличных данных с помощью RETURNS SETOF Composite type</a></p></li></ul></li><li class="list__item" id="-l67ej4_126"><p><a href="#pg_tbl_func_plsql" id="-l67ej4_127" data-tooltip="С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два — это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.">Табличные функции на pgSQL</a></p><ul class="list _bullet" id="-l67ej4_128"><li class="list__item" id="-l67ej4_129"><p><a href="#pg_tbl_func_plsql_v1" id="-l67ej4_130" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_131"><p><a href="#pg_tbl_func_plsql_v2" id="-l67ej4_132" data-tooltip="Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_133"><p><a href="#pg_tbl_func_plsql_v3" id="-l67ej4_134" data-tooltip="Вариация использования инструкции RETURN NEXT">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</a></p></li><li class="list__item" id="-l67ej4_135"><p><a href="#pg_tbl_func_plsql_v4" id="-l67ej4_136" data-tooltip="Создание дополнительного типа">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</a></p></li></ul></li></ul><p id="-l67ej4_137">Табличные функции можно писать на</p><ul class="list _bullet" id="-l67ej4_138"><li class="list__item" id="-l67ej4_139"><p>sql</p></li><li class="list__item" id="-l67ej4_140"><p>plsql</p></li><li class="list__item" id="-l67ej4_141"><p>и других...</p></li></ul><p id="-l67ej4_142">Для работы создадим тестовую базу</p><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="postgres-functions_table" data-main-title="Табличные функции" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-sql&quot;,&quot;text&quot;:&quot;Функции на языке запросов (SQL)&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/xfunc-overload&quot;,&quot;text&quot;:&quot;Перегрузка функций&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/plpgsql&quot;,&quot;text&quot;:&quot;PL/pgSQL — процедурный язык SQL&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-functions_table" id="postgres-functions_table.md">Табличные функции</h1><ul class="list _bullet" id="-l67ej4_218"><li class="list__item" id="-l67ej4_219"><p><a href="#pg_tbl_func_init" id="-l67ej4_220" data-tooltip="Предварительно удаляем все что мы могли создать ранее">Создание тестовых таблиц и данных</a></p></li><li class="list__item" id="-l67ej4_221"><p><a href="#pg_tbl_func_sql" id="-l67ej4_222" data-tooltip="Пример вызова">Табличные функции на SQL</a></p><ul class="list _bullet" id="-l67ej4_223"><li class="list__item" id="-l67ej4_224"><p><a href="#pg_tbl_func_sql_v1" id="-l67ej4_225" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры</a></p></li><li class="list__item" id="-l67ej4_226"><p><a href="#pg_tbl_func_sql_v2" id="-l67ej4_227" data-tooltip="Пример вызова">Возвращение табличных данных через OUT параметры с RETURNS SETOF Record</a></p></li><li class="list__item" id="-l67ej4_228"><p><a href="#pg_tbl_func_sql_v3" id="-l67ej4_229" data-tooltip="В данном случае мы объявили всего один OUT параметр,указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.">Возвращение табличных данных через OUT параметры с RETURNS SETOF Type</a></p></li><li class="list__item" id="-l67ej4_230"><p><a href="#pg_tbl_func_sql_v4" id="-l67ej4_231" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURNS SETOF Table</a></p></li><li class="list__item" id="-l67ej4_232"><p><a href="#pg_tbl_func_sql_v5" id="-l67ej4_233" data-tooltip="Сначала создаем свой тип данных:">Возвращение табличных данных с помощью RETURNS SETOF Composite type</a></p></li></ul></li><li class="list__item" id="-l67ej4_234"><p><a href="#pg_tbl_func_plsql" id="-l67ej4_235" data-tooltip="С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два — это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.">Табличные функции на pgSQL</a></p><ul class="list _bullet" id="-l67ej4_236"><li class="list__item" id="-l67ej4_237"><p><a href="#pg_tbl_func_plsql_v1" id="-l67ej4_238" data-tooltip="Пример вызова">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_239"><p><a href="#pg_tbl_func_plsql_v2" id="-l67ej4_240" data-tooltip="Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</a></p></li><li class="list__item" id="-l67ej4_241"><p><a href="#pg_tbl_func_plsql_v3" id="-l67ej4_242" data-tooltip="Вариация использования инструкции RETURN NEXT">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</a></p></li><li class="list__item" id="-l67ej4_243"><p><a href="#pg_tbl_func_plsql_v4" id="-l67ej4_244" data-tooltip="Создание дополнительного типа">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</a></p></li></ul></li></ul><p id="-l67ej4_245">Табличные функции можно писать на</p><ul class="list _bullet" id="-l67ej4_246"><li class="list__item" id="-l67ej4_247"><p>sql</p></li><li class="list__item" id="-l67ej4_248"><p>plsql</p></li><li class="list__item" id="-l67ej4_249"><p>и других...</p></li></ul><p id="-l67ej4_250">Для работы создадим тестовую базу</p><div class="code-block" data-lang="sql">
 -- создаем новую базу для тестов
 --drop database if exists devdbtestfunc;
 create database devdbtestfunc;
-</div><p id="-l67ej4_144">Подключаемся к нашей новой тестовой базе и приступаем...</p><section class="chapter"><h2 id="pg_tbl_func_init" data-toc="pg_tbl_func_init">Создание тестовых таблиц и данных</h2><p id="-l67ej4_145">Предварительно удаляем все что мы могли создать ранее</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Удаление функций">
+</div><p id="-l67ej4_252">Подключаемся к нашей новой тестовой базе и приступаем...</p><section class="chapter"><h2 id="pg_tbl_func_init" data-toc="pg_tbl_func_init">Создание тестовых таблиц и данных</h2><p id="-l67ej4_253">Предварительно удаляем все что мы могли создать ранее</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Удаление функций">
 -- Удаление функций
 drop function if exists public.buyer_orders_id,
     public.buyer_orders_tbl_byerid,
@@ -36,7 +36,7 @@ drop table if exists orders_products, orders, products, buyers, product_types;
 -- Удаление типов
 drop type if exists public.t_products;
 drop type if exists public.t_products_next;
-</div><p id="-l67ej4_147">Создаем несколько простых таблиц и заполняем их данными.</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Создание таблиц">
+</div><p id="-l67ej4_255">Создаем несколько простых таблиц и заполняем их данными.</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Создание таблиц">
 -- Создание таблиц
 create table buyers
 (
@@ -74,7 +74,7 @@ create table orders_products
     order_id   int not null,
     product_id int not null
 );
-</div><p id="-l67ej4_149">Заполнение данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Добавление записей в таблицы">
+</div><p id="-l67ej4_257">Заполнение данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Добавление записей в таблицы">
 -- Добавление записей в таблицы
 insert into buyers (buyer_id, buyer_name, birthday)
 values (753, 'Зайцев А.Е.', '1998.04.12'),
@@ -145,7 +145,7 @@ values (1459, 16),
        (2146, 47),
        (2181, 108),
        (2181, 96);
-</div><p id="-l67ej4_151">Проверяем наличие данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Проверка данных">
+</div><p id="-l67ej4_259">Проверяем наличие данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Проверка данных">
 -- Проверка данных
 select * from public.buyers;
 select * from public.orders;
@@ -185,7 +185,7 @@ from public.orders O
 where o.buyer_id = _buyer_id;
 
 $$;
-</div><p id="-l67ej4_154">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_262">Пример вызова</p><div class="code-block" data-lang="sql">
 -- Пример вызова
 select * from public.products_getbyerid(1201);
 --!!! результат в конечном итоге неверный,
@@ -194,7 +194,7 @@ select count(*)
 from orders o
          inner join orders_products op on o.order_id = op.order_id
 where o.buyer_id = 1201;
-</div><aside class="prompt" data-type="warning" data-title="" id="-l67ej4_156"><p id="-l67ej4_157">В таком виде табличные функции возвращают только первую строку!!!</p></aside><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_158"><p id="-l67ej4_159">Для интереса вызовем функцию с несуществующим ид _buyer_id в результате - тоже одна строка, но с null значениями.</p></aside><div class="code-block" data-lang="sql">
+</div><aside class="prompt" data-type="warning" data-title="" id="-l67ej4_264"><p id="-l67ej4_265">В таком виде табличные функции возвращают только первую строку!!!</p></aside><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_266"><p id="-l67ej4_267">Для интереса вызовем функцию с несуществующим ид _buyer_id в результате - тоже одна строка, но с null значениями.</p></aside><div class="code-block" data-lang="sql">
 select * from public.products_getbyerid(-1);
 </div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v2" data-toc="pg_tbl_func_sql_v2">Возвращение табличных данных через OUT параметры с RETURNS SETOF Record</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_getbyerid_ver2(">
 drop function if exists public.products_getbyerid_ver2;
@@ -228,7 +228,7 @@ from public.orders O
 where O.buyer_id = _buyer_id;
 
 $$;
-</div><p id="-l67ej4_162">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_270">Пример вызова</p><div class="code-block" data-lang="sql">
 -- Пример вызова
 select *
 from public.products_getbyerid_ver2(1201);
@@ -254,10 +254,10 @@ from public.orders o
 where o.buyer_id = _buyer_id
 
 $$;
-</div><p id="-l67ej4_165">В данном случае мы объявили всего один OUT параметр, <br> указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.</p><p id="-l67ej4_167">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_273">В данном случае мы объявили всего один OUT параметр, <br> указали RETURNS SETOF Int и написали соответствующую инструкцию SELECT.</p><p id="-l67ej4_275">Пример вызова</p><div class="code-block" data-lang="sql">
 select * from public.buyer_orders_id(1201);
 select * from public.buyer_orders_id(-1);
-</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_169"><p id="-l67ej4_170">Обращаем внимание, что столбец результатов - соответствует наименованию функции.</p></aside></section><section class="chapter"><h3 id="pg_tbl_func_sql_v4" data-toc="pg_tbl_func_sql_v4">Возвращение табличных данных с помощью RETURNS SETOF Table</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.buyer_orders_tbl_byerid(">
+</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_277"><p id="-l67ej4_278">Обращаем внимание, что столбец результатов - соответствует наименованию функции.</p></aside></section><section class="chapter"><h3 id="pg_tbl_func_sql_v4" data-toc="pg_tbl_func_sql_v4">Возвращение табличных данных с помощью RETURNS SETOF Table</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.buyer_orders_tbl_byerid(">
 drop function if exists public.buyer_orders_tbl_byerid;
 -- Создание табличной функции
 create function public.buyer_orders_tbl_byerid(
@@ -275,10 +275,10 @@ from public.orders o
 where o.buyer_id = _buyer_id;
 
 $$;
-</div><p id="-l67ej4_172">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_280">Пример вызова</p><div class="code-block" data-lang="sql">
 select * 
 from public.buyer_orders_tbl_byerid(1201);
-</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v5" data-toc="pg_tbl_func_sql_v5">Возвращение табличных данных с помощью RETURNS SETOF Composite type</h3><p id="-l67ej4_174">Сначала создаем свой тип данных:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products as">
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v5" data-toc="pg_tbl_func_sql_v5">Возвращение табличных данных с помощью RETURNS SETOF Composite type</h3><p id="-l67ej4_282">Сначала создаем свой тип данных:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products as">
 drop type if exists t_products;
 -- Создание составного типа данных
 create type t_products as
@@ -291,7 +291,7 @@ create type t_products as
     product_type varchar(100),
     price        numeric(18, 2)
 );
-</div><p id="-l67ej4_176">функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_type_byerid(">
+</div><p id="-l67ej4_284">функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_type_byerid(">
 drop function if exists public.products_type_byerid;
 -- Создание табличной функции
 create function public.products_type_byerid(
@@ -316,10 +316,10 @@ from public.orders O
 where O.buyer_id = _buyer_id;
 
 $$;
-</div><p id="-l67ej4_178">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_286">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_type_byerid(1201);
-</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v6" data-toc="pg_tbl_func_sql_v6">Классический вариант возвращения табличных данных на SQL (RETURNS TABLE)</h3><aside class="prompt" data-type="note" data-title="" id="-l67ej4_180"><p id="-l67ej4_181">Наверное, самый правильный способ возвращения табличных данных.</p></aside><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_view_best(">
+</div></section><section class="chapter"><h3 id="pg_tbl_func_sql_v6" data-toc="pg_tbl_func_sql_v6">Классический вариант возвращения табличных данных на SQL (RETURNS TABLE)</h3><aside class="prompt" data-type="note" data-title="" id="-l67ej4_288"><p id="-l67ej4_289">Наверное, самый правильный способ возвращения табличных данных.</p></aside><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_view_best(">
 drop function if exists public.products_view_best;
 -- Создание табличной функции
 create function public.products_view_best(
@@ -353,10 +353,10 @@ from public.orders o
 where O.buyer_id = _buyer_id;
 
 $$;
-</div><p id="-l67ej4_183">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_291">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_view_best(1201);
-</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_185"><p id="-l67ej4_186">Удобнее чем вышеперечисленные варианты.</p><ul class="list _bullet" id="-l67ej4_187"><li class="list__item" id="-l67ej4_188"><p>нет необходимости создавать дополнительный тип</p></li><li class="list__item" id="-l67ej4_189"><p>нет необходимости зависеть от структуры таблицы</p></li><li class="list__item" id="-l67ej4_190"><p>контролируемое наименование колонок результата</p></li></ul><p id="-l67ej4_191">Как говорится - все в одном месте.</p></aside></section></section><section class="chapter"><h2 id="pg_tbl_func_plsql" data-toc="pg_tbl_func_plsql">Табличные функции на pgSQL</h2><p id="-l67ej4_192">С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два &mdash; это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.</p><section class="chapter"><h3 id="pg_tbl_func_plsql_v1" data-toc="pg_tbl_func_plsql_v1">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</h3><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_ret_query(">
+</div><aside class="prompt" data-type="tip" data-title="" id="-l67ej4_293"><p id="-l67ej4_294">Удобнее чем вышеперечисленные варианты.</p><ul class="list _bullet" id="-l67ej4_295"><li class="list__item" id="-l67ej4_296"><p>нет необходимости создавать дополнительный тип</p></li><li class="list__item" id="-l67ej4_297"><p>нет необходимости зависеть от структуры таблицы</p></li><li class="list__item" id="-l67ej4_298"><p>контролируемое наименование колонок результата</p></li></ul><p id="-l67ej4_299">Как говорится - все в одном месте.</p></aside></section></section><section class="chapter"><h2 id="pg_tbl_func_plsql" data-toc="pg_tbl_func_plsql">Табличные функции на pgSQL</h2><p id="-l67ej4_300">С глобальной точки зрения способов возврата табличных данных на PL/pgSQL всего два &mdash; это RETURN QUERY и RETURN NEXT. И именно RETURN QUERY является наиболее популярным и предпочтительным вариантом возвращения табличных данных.</p><section class="chapter"><h3 id="pg_tbl_func_plsql_v1" data-toc="pg_tbl_func_plsql_v1">Возвращение табличных данных с помощью RETURN QUERY (RETURNS TABLE)</h3><div class="code-collapse" data-lang="sql" data-is-expanded="true" data-synopsis="create function public.products_ret_query(">
 drop function if exists public.products_ret_query;
 -- Создание табличной функции
 create function public.products_ret_query(
@@ -402,10 +402,10 @@ begin
 
 end
 $$;
-</div><p id="-l67ej4_194">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_302">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_ret_query(1201);
-</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v2" data-toc="pg_tbl_func_plsql_v2">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</h3><p id="-l67ej4_196">Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.</p><p id="-l67ej4_197">Данный способ предпочтителен в тех случаях, когда каждая строка результирующего набора данных подвергается какой-то обработке. Например, все те случаи, когда данные мы накапливаем с помощью цикла, т.е. мы что-то перебираем и что-то куда-то складываем.</p><p id="-l67ej4_198">Если Вам не требуется перебирать данные и обрабатывать каждую строку в отдельности, т.е. можно обойтись без цикла, не нужно использовать RETURN NEXT и цикл для создания табличных функций, так как это будет значительно медленнее, чем если указать простой запрос SELECT в инструкции RETURN QUERY. Иными словами, если требуется вернуть простые табличные данные, используйте RETURN QUERY</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next(">
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v2" data-toc="pg_tbl_func_plsql_v2">Возвращение табличных данных с помощью RETURN NEXT (RETURNS TABLE)</h3><p id="-l67ej4_304">Суть данного способа в том, что данные в результирующую таблицу мы добавляем построчно с помощью инструкции RETURN NEXT.</p><p id="-l67ej4_305">Данный способ предпочтителен в тех случаях, когда каждая строка результирующего набора данных подвергается какой-то обработке. Например, все те случаи, когда данные мы накапливаем с помощью цикла, т.е. мы что-то перебираем и что-то куда-то складываем.</p><p id="-l67ej4_306">Если Вам не требуется перебирать данные и обрабатывать каждую строку в отдельности, т.е. можно обойтись без цикла, не нужно использовать RETURN NEXT и цикл для создания табличных функций, так как это будет значительно медленнее, чем если указать простой запрос SELECT в инструкции RETURN QUERY. Иными словами, если требуется вернуть простые табличные данные, используйте RETURN QUERY</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next(">
 drop function if exists &quot;public&quot;.products_ret_next;
 -- Создание табличной функции
 create function public.products_ret_next(
@@ -456,10 +456,10 @@ begin
 
 end
 $$;
-</div><p id="-l67ej4_200">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_308">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_ret_next(1201);
-</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v3" data-toc="pg_tbl_func_plsql_v3">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</h3><p id="-l67ej4_202">Вариация использования инструкции RETURN NEXT</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver2(">
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v3" data-toc="pg_tbl_func_plsql_v3">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Record)</h3><p id="-l67ej4_310">Вариация использования инструкции RETURN NEXT</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver2(">
 drop function if exists public.products_ret_next_ver2;
 -- Создание табличной функции
 create function public.products_ret_next_ver2(
@@ -511,10 +511,10 @@ begin
 
 end
 $$;
-</div><p id="-l67ej4_204">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_312">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_ret_next_ver2(1201);
-</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v4" data-toc="pg_tbl_func_plsql_v4">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</h3><p id="-l67ej4_206">Создание дополнительного типа</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products_next as">
+</div></section><section class="chapter"><h3 id="pg_tbl_func_plsql_v4" data-toc="pg_tbl_func_plsql_v4">Возвращение табличных данных с помощью RETURN NEXT (RETURNS SETOF Composite type)</h3><p id="-l67ej4_314">Создание дополнительного типа</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create type t_products_next as">
 drop type if exists t_products_next;
   -- создание составного типа данных
 create type t_products_next as
@@ -527,7 +527,7 @@ create type t_products_next as
     product_type varchar(100),
     price        numeric(18, 2)
 );
-</div><p id="-l67ej4_208">Функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver3(">
+</div><p id="-l67ej4_316">Функция</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create function public.products_ret_next_ver3(">
 drop function if exists public.products_ret_next_ver3;
 -- создание табличной функции
 create function public.products_ret_next_ver3(
@@ -562,7 +562,7 @@ begin
 
 end
 $$;
-</div><p id="-l67ej4_210">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="-l67ej4_318">Пример вызова</p><div class="code-block" data-lang="sql">
 select *
 from public.products_ret_next_ver3(1201);
-</div></section></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-fn-gentext.html" class="navigation-links__prev">Генератор текстовых данных</a><a href="postgres-func-vs-proc.html" class="navigation-links__next">Function vs Procedure</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
+</div></section></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-fn-gentext.html" class="navigation-links__prev">Генератор текстовых данных</a><a href="postgres-func-vs-proc.html" class="navigation-links__next">Function vs Procedure</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

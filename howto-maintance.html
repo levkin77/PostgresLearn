@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T06:07:31.6461389"><title>Обслуживание (MAINTENANCE) | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-gz1bjk_89","level":0,"title":"Обновление статистики для таблицы","anchor":"#-gz1bjk_89"},{"id":"-gz1bjk_126","level":0,"title":"Размер таблицы","anchor":"#-gz1bjk_126"},{"id":"vacuumtable","level":0,"title":"Реорганизация таблицы с Vacuum","anchor":"#vacuumtable"},{"id":"vacuum_full","level":0,"title":"Реорганизация таблицы с Vacuum Full","anchor":"#vacuum_full"},{"id":"vacuum","level":0,"title":"Когда был Vacuum для таблицы","anchor":"#vacuum"},{"id":"auto-vacuum","level":0,"title":"Включение отключение AUTO Vacuum для таблицы","anchor":"#auto-vacuum"},{"id":"auto-vacuum_1","level":0,"title":"Опции AUTO Vacuum для таблиц","anchor":"#auto-vacuum_1"},{"id":"vacuum_1","level":0,"title":"Мониторинг vacuum операций","anchor":"#vacuum_1"},{"id":"autovacuum","level":0,"title":"Управление autovacuum","anchor":"#autovacuum"},{"id":"rebuild-index","level":0,"title":"Rebuild index","anchor":"#rebuild-index"},{"id":"index-create-rebuild","level":0,"title":"Мониторинг создания индексов (index create, rebuild)","anchor":"#index-create-rebuild"},{"id":"-gz1bjk_168","level":0,"title":"Статистика для колонки таблицы","anchor":"#-gz1bjk_168"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Обслуживание (MAINTENANCE) | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-maintance.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Обслуживание (MAINTENANCE) | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T07:03:18.3731918"><title>Обслуживание (MAINTENANCE) | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-gz1bjk_176","level":0,"title":"Обновление статистики для таблицы","anchor":"#-gz1bjk_176"},{"id":"-gz1bjk_213","level":0,"title":"Размер таблицы","anchor":"#-gz1bjk_213"},{"id":"vacuumtable","level":0,"title":"Реорганизация таблицы с Vacuum","anchor":"#vacuumtable"},{"id":"vacuum_full","level":0,"title":"Реорганизация таблицы с Vacuum Full","anchor":"#vacuum_full"},{"id":"vacuum","level":0,"title":"Когда был Vacuum для таблицы","anchor":"#vacuum"},{"id":"auto-vacuum","level":0,"title":"Включение отключение AUTO Vacuum для таблицы","anchor":"#auto-vacuum"},{"id":"auto-vacuum_1","level":0,"title":"Опции AUTO Vacuum для таблиц","anchor":"#auto-vacuum_1"},{"id":"vacuum_1","level":0,"title":"Мониторинг vacuum операций","anchor":"#vacuum_1"},{"id":"autovacuum","level":0,"title":"Управление autovacuum","anchor":"#autovacuum"},{"id":"rebuild-index","level":0,"title":"Rebuild index","anchor":"#rebuild-index"},{"id":"index-create-rebuild","level":0,"title":"Мониторинг создания индексов (index create, rebuild)","anchor":"#index-create-rebuild"},{"id":"-gz1bjk_255","level":0,"title":"Статистика для колонки таблицы","anchor":"#-gz1bjk_255"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="icon-192.png"><link rel="icon" type="image/png" sizes="16x16" href="icon-192.png"><meta name="msapplication-TileImage" content="mstile-144x144.png"><meta name="msapplication-square70x70logo" content="mstile-70x70.png"><meta name="msapplication-square150x150logo" content="mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="mstile-310x150.png"><meta name="msapplication-square310x310logo" content="mstile-310x150.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Обслуживание (MAINTENANCE) | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-maintance.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Обслуживание (MAINTENANCE) | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-maintance.html#webpage",
@@ -13,34 +13,34 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-maintance" data-main-title="Обслуживание (MAINTENANCE)" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-maintance" id="howto-maintance.md">Обслуживание (MAINTENANCE)</h1><section class="chapter"><h2 id="-gz1bjk_89" data-toc="-gz1bjk_89">Обновление статистики для таблицы</h2><p id="-gz1bjk_90">Анализ таблицы</p><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="howto-maintance" data-main-title="Обслуживание (MAINTENANCE)" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-maintance" id="howto-maintance.md">Обслуживание (MAINTENANCE)</h1><section class="chapter"><h2 id="-gz1bjk_176" data-toc="-gz1bjk_176">Обновление статистики для таблицы</h2><p id="-gz1bjk_177">Анализ таблицы</p><div class="code-block" data-lang="sql">
 analyze public.testidx;
-</div><p id="-gz1bjk_92">Анализ указанных колонок</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_179">Анализ указанных колонок</p><div class="code-block" data-lang="sql">
 analyze public.testidx (state,created_at);
-</div><p id="-gz1bjk_94">Когда был проведен анализ</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_181">Когда был проведен анализ</p><div class="code-block" data-lang="sql">
 select schemaname, relname, analyze_count, last_analyze, last_autoanalyze
 from pg_stat_user_tables
 where relname in ('testidx', 'testnoidx');
-</div><p id="-gz1bjk_96">Пример результата:</p><div class="table-wrapper"><table class="wide" id="-gz1bjk_97"><thead><tr class="ijRowHead" id="-gz1bjk_98"><th id="-gz1bjk_99"><p>schemaname</p></th><th id="-gz1bjk_100"><p>relname</p></th><th id="-gz1bjk_101"><p>analyze_count</p></th><th id="-gz1bjk_102"><p>last_analyze</p></th><th id="-gz1bjk_103"><p>last_autoanalyze</p></th></tr></thead><tbody><tr id="-gz1bjk_104"><td id="-gz1bjk_105"><p>public</p></td><td id="-gz1bjk_106"><p>testidx</p></td><td id="-gz1bjk_107"><p>5</p></td><td id="-gz1bjk_108"><p>2024-03-25 07:02:09.149396 +03:00</p></td><td id="-gz1bjk_109"><p>2024-03-19 22:47:29.390729 +03:00</p></td></tr><tr id="-gz1bjk_110"><td id="-gz1bjk_111"><p>public</p></td><td id="-gz1bjk_112"><p>testnoidx</p></td><td id="-gz1bjk_113"><p>3</p></td><td id="-gz1bjk_114"><p>2024-03-23 05:59:07.183202 +03:00</p></td><td id="-gz1bjk_115"><p>2024-03-19 22:53:58.156683 +03:00</p></td></tr></tbody></table></div><p id="-gz1bjk_116">Анализ с verbose</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_183">Пример результата:</p><div class="table-wrapper"><table class="wide" id="-gz1bjk_184"><thead><tr class="ijRowHead" id="-gz1bjk_185"><th id="-gz1bjk_186"><p>schemaname</p></th><th id="-gz1bjk_187"><p>relname</p></th><th id="-gz1bjk_188"><p>analyze_count</p></th><th id="-gz1bjk_189"><p>last_analyze</p></th><th id="-gz1bjk_190"><p>last_autoanalyze</p></th></tr></thead><tbody><tr id="-gz1bjk_191"><td id="-gz1bjk_192"><p>public</p></td><td id="-gz1bjk_193"><p>testidx</p></td><td id="-gz1bjk_194"><p>5</p></td><td id="-gz1bjk_195"><p>2024-03-25 07:02:09.149396 +03:00</p></td><td id="-gz1bjk_196"><p>2024-03-19 22:47:29.390729 +03:00</p></td></tr><tr id="-gz1bjk_197"><td id="-gz1bjk_198"><p>public</p></td><td id="-gz1bjk_199"><p>testnoidx</p></td><td id="-gz1bjk_200"><p>3</p></td><td id="-gz1bjk_201"><p>2024-03-23 05:59:07.183202 +03:00</p></td><td id="-gz1bjk_202"><p>2024-03-19 22:53:58.156683 +03:00</p></td></tr></tbody></table></div><p id="-gz1bjk_203">Анализ с verbose</p><div class="code-block" data-lang="sql">
 analyze verbose public.testidx (state,created_at);
-</div><p id="-gz1bjk_118">Анализ по всей базе</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_205">Анализ по всей базе</p><div class="code-block" data-lang="sql">
 analyze;
-</div><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_120"><p id="-gz1bjk_121">Для analyze требуется блокировка только на чтение</p></aside><p id="-gz1bjk_122"><a href="https://postgrespro.ru/docs/postgrespro/16/progress-reporting#ANALYZE-PROGRESS-REPORTING" id="-gz1bjk_123" data-external="true" rel="noopener noreferrer">Анализ выполнения операции analyze...</a></p><p id="-gz1bjk_124"><a href="https://postgrespro.ru/search/?q=set+statistics&amp;area=version&amp;product=postgrespro&amp;version=16" id="-gz1bjk_125" data-external="true" rel="noopener noreferrer">еще про статистику...</a></p></section><section class="chapter"><h2 id="-gz1bjk_126" data-toc="-gz1bjk_126">Размер таблицы</h2><div class="code-block" data-lang="sql">
+</div><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_207"><p id="-gz1bjk_208">Для analyze требуется блокировка только на чтение</p></aside><p id="-gz1bjk_209"><a href="https://postgrespro.ru/docs/postgrespro/16/progress-reporting#ANALYZE-PROGRESS-REPORTING" id="-gz1bjk_210" data-external="true" rel="noopener noreferrer">Анализ выполнения операции analyze...</a></p><p id="-gz1bjk_211"><a href="https://postgrespro.ru/search/?q=set+statistics&amp;area=version&amp;product=postgrespro&amp;version=16" id="-gz1bjk_212" data-external="true" rel="noopener noreferrer">еще про статистику...</a></p></section><section class="chapter"><h2 id="-gz1bjk_213" data-toc="-gz1bjk_213">Размер таблицы</h2><div class="code-block" data-lang="sql">
 select pg_size_pretty(pg_relation_size('public.testidx'));
-</div></section><section class="chapter"><h2 id="vacuumtable" data-toc="vacuumtable">Реорганизация таблицы с Vacuum</h2><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_128"><p id="-gz1bjk_129">Операция не возвращает место на диске!</p></aside><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="vacuumtable" data-toc="vacuumtable">Реорганизация таблицы с Vacuum</h2><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_215"><p id="-gz1bjk_216">Операция не возвращает место на диске!</p></aside><div class="code-block" data-lang="sql">
 vacuum public.testtblData;
 </div><div class="code-block" data-lang="sql">
 vacuum analyze public.testtblData;
 </div><div class="code-block" data-lang="sql">
 vacuum verbose analyze public.testtblData;
-</div><p id="-gz1bjk_133">Мониторинг vacuum</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_220">Мониторинг vacuum</p><div class="code-block" data-lang="sql">
 select * from pg_stat_progress_vacuum
-</div><p id="-gz1bjk_135">Данные для таблицы</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_222">Данные для таблицы</p><div class="code-block" data-lang="sql">
 select schemaname,relname,last_vacuum,vacuum_count 
 from pg_stat_user_tables where relname='emptab';
-</div></section><section class="chapter"><h2 id="vacuum_full" data-toc="vacuum_full">Реорганизация таблицы с Vacuum Full</h2><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_137"><p id="-gz1bjk_138">Операция возвращает место на диске!</p></aside><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="vacuum_full" data-toc="vacuum_full">Реорганизация таблицы с Vacuum Full</h2><aside class="prompt" data-type="note" data-title="" id="-gz1bjk_224"><p id="-gz1bjk_225">Операция возвращает место на диске!</p></aside><div class="code-block" data-lang="sql">
 vacuum full public.testtblData;
-</div><p id="-gz1bjk_140">vacuum full - операция для сжатия данных. Для проверки:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_227">vacuum full - операция для сжатия данных. Для проверки:</p><div class="code-block" data-lang="sql">
 drop table if exists public.testtblData;
 -- public.testidx - достаточно большая таблица
 create table public.testtblData as table public.testidx;
@@ -75,11 +75,11 @@ where c.relkind = 'r'
   and nspname not in ('pg_catalog', 'information_schema');
 </div></section><section class="chapter"><h2 id="vacuum_1" data-toc="vacuum_1">Мониторинг vacuum операций</h2><div class="code-block" data-lang="sql">
 select * from pg_stat_progress_vacuum;
-</div></section><section class="chapter"><h2 id="autovacuum" data-toc="autovacuum">Управление autovacuum</h2><p id="-gz1bjk_147">Включен или выключен automacuum:</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="autovacuum" data-toc="autovacuum">Управление autovacuum</h2><p id="-gz1bjk_234">Включен или выключен automacuum:</p><div class="code-block" data-lang="sql">
 select name, setting, short_desc, boot_val, pending_restart
 from pg_settings
 where name in ('autovacuum', 'track_counts');
-</div><p id="-gz1bjk_149">Дополнительные опции autovacuum:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_236">Дополнительные опции autovacuum:</p><div class="code-block" data-lang="sql">
 select name,
        setting,
        short_desc,
@@ -90,22 +90,22 @@ select name,
        pending_restart
 from pg_settings
 where category like 'Autovacuum';
-</div><p id="-gz1bjk_151">Изменение опций autovacuum:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_238">Изменение опций autovacuum:</p><div class="code-block" data-lang="sql">
 alter system set autovacuum_max_workers=10 ;
-</div><aside class="prompt" data-type="warning" data-title="" id="-gz1bjk_153"><p id="-gz1bjk_154">Требуется рестарт!</p></aside></section><section class="chapter"><h2 id="rebuild-index" data-toc="rebuild-index">Rebuild index</h2><p id="-gz1bjk_155">Перестроение одного индекса:</p><div class="code-block" data-lang="sql">
+</div><aside class="prompt" data-type="warning" data-title="" id="-gz1bjk_240"><p id="-gz1bjk_241">Требуется рестарт!</p></aside></section><section class="chapter"><h2 id="rebuild-index" data-toc="rebuild-index">Rebuild index</h2><p id="-gz1bjk_242">Перестроение одного индекса:</p><div class="code-block" data-lang="sql">
 reindex index testidx_pk;
 -- или с указанием схемы
 reindex index public.testidx_pk;
-</div><p id="-gz1bjk_157">Перестроение всех индексов таблицы:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_244">Перестроение всех индексов таблицы:</p><div class="code-block" data-lang="sql">
 -- 
 reindex table public.testidx;
-</div><p id="-gz1bjk_159">Перестроение свех индексов в схеме</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_246">Перестроение свех индексов в схеме</p><div class="code-block" data-lang="sql">
 reindex schema public;
-</div><p id="-gz1bjk_161">Перестроение всех индексов в базе:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_248">Перестроение всех индексов в базе:</p><div class="code-block" data-lang="sql">
 reindex database devtestindex
-</div><p id="-gz1bjk_163">Перестроение с опцией verbose. Вывод дополнительных сообщений</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_250">Перестроение с опцией verbose. Вывод дополнительных сообщений</p><div class="code-block" data-lang="sql">
 reindex (verbose) table public.testidx;
-</div><p id="-gz1bjk_165">Перестроение без блокировки:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_252">Перестроение без блокировки:</p><div class="code-block" data-lang="sql">
 reindex (verbose) table concurrently public.testidx;
 </div></section><section class="chapter"><h2 id="index-create-rebuild" data-toc="index-create-rebuild">Мониторинг создания индексов (index create, rebuild)</h2><div class="code-block" data-lang="sql">
 select a.query, p.phase, p.blocks_total, p.blocks_done, p.tuples_total, p.tuples_done
@@ -121,7 +121,7 @@ select pid,
        partitions_total,
        partitions_done
 from pg_stat_progress_create_index;
-</div></section><section class="chapter"><h2 id="-gz1bjk_168" data-toc="-gz1bjk_168">Статистика для колонки таблицы</h2><p id="-gz1bjk_169">Структура таблицы:</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-gz1bjk_255" data-toc="-gz1bjk_255">Статистика для колонки таблицы</h2><p id="-gz1bjk_256">Структура таблицы:</p><div class="code-block" data-lang="sql">
 create table public.teststat
 (
     id         bigint generated by default as identity
@@ -133,11 +133,11 @@ create table public.teststat
     item       text,
     created_at timestamp(6) with time zone
 );
-</div><p id="-gz1bjk_171">данные о статистике:</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_258">данные о статистике:</p><div class="code-block" data-lang="sql">
 select attname as column_name, attstattarget as stats_level
 from pg_attribute
 where attrelid = (select oid from pg_class where relname = 'teststat')
   and attname = 'item';
-</div><p id="-gz1bjk_173">изменение статистики: где 100 означает 1 процент,10000 означает 100 процентов, -1 = по умолчанию</p><div class="code-block" data-lang="sql">
+</div><p id="-gz1bjk_260">изменение статистики: где 100 означает 1 процент,10000 означает 100 процентов, -1 = по умолчанию</p><div class="code-block" data-lang="sql">
 alter table teststat alter column item set statistics 1000;
-</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-index-uniqnull.html" class="navigation-links__prev">Индексы и уникальность на NULL</a><a href="howto-monitor.html" class="navigation-links__next">Мониторинг запросов</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
+</div></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-index-uniqnull.html" class="navigation-links__prev">Индексы и уникальность на NULL</a><a href="howto-monitor.html" class="navigation-links__next">Мониторинг запросов</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
