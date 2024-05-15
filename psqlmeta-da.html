@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0879185"><title>Мета dA | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"meta_dA","level":0,"title":"Мета \\dA","anchor":"#meta_dA"},{"id":"meta_dA_plus","level":0,"title":"Мета \\dA+","anchor":"#meta_dA_plus"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Мета dA | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/psqlmeta-da.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Мета dA | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.1561085"><title>Мета dA | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"meta_dA","level":0,"title":"Мета \\dA","anchor":"#meta_dA"},{"id":"meta_dA_plus","level":0,"title":"Мета \\dA+","anchor":"#meta_dA_plus"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Мета dA | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/psqlmeta-da.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Мета dA | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/psqlmeta-da.html#webpage",
@@ -18,7 +18,7 @@ SELECT amname AS &quot;Name&quot;,
   CASE amtype WHEN 'i' THEN 'Index' WHEN 't' THEN 'Table' END AS &quot;Type&quot;
 FROM pg_catalog.pg_am
 ORDER BY 1;
-</div><p id="-sick1b_17">результат:</p><div class="code-block" data-lang="plaintext">
+</div><p id="-sick1b_24">результат:</p><div class="code-block" data-lang="plaintext">
 List of access methods
   Name  | Type
 --------+-------
@@ -36,7 +36,7 @@ SELECT amname AS &quot;Name&quot;,
        pg_catalog.obj_description(oid, 'pg_am') AS &quot;Description&quot;
 FROM pg_catalog.pg_am
 ORDER BY 1;
-</div><p id="-sick1b_20">результат:</p><div class="code-block" data-lang="plaintext">
+</div><p id="-sick1b_27">результат:</p><div class="code-block" data-lang="plaintext">
                              List of access methods
   Name  | Type  |       Handler        |              Description
 --------+-------+----------------------+----------------------------------------

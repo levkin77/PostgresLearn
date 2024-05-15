@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.1699169"><title>Поиск индексов и не только | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-b5ywab_2","level":0,"title":"Найти индексы для таблицы","anchor":"#-b5ywab_2"},{"id":"-b5ywab_4","level":0,"title":"Все индексы в базе данных","anchor":"#-b5ywab_4"},{"id":"-b5ywab_6","level":0,"title":"Индексы и очень детальная информация","anchor":"#-b5ywab_6"},{"id":"-b5ywab_11","level":0,"title":"Индексы и очень детальная информация","anchor":"#-b5ywab_11"},{"id":"-b5ywab_16","level":0,"title":"Индексы для таблицы и колонки","anchor":"#-b5ywab_16"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Поиск индексов и не только | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-indexdetail.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Поиск индексов и не только | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.2611041"><title>Поиск индексов и не только | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-b5ywab_19","level":0,"title":"Найти индексы для таблицы","anchor":"#-b5ywab_19"},{"id":"-b5ywab_21","level":0,"title":"Все индексы в базе данных","anchor":"#-b5ywab_21"},{"id":"-b5ywab_23","level":0,"title":"Индексы и очень детальная информация","anchor":"#-b5ywab_23"},{"id":"-b5ywab_28","level":0,"title":"Индексы и очень детальная информация","anchor":"#-b5ywab_28"},{"id":"-b5ywab_33","level":0,"title":"Индексы для таблицы и колонки","anchor":"#-b5ywab_33"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Поиск индексов и не только | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-indexdetail.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Поиск индексов и не только | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-indexdetail.html#webpage",
@@ -13,13 +13,13 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-indexdetail" data-main-title="Поиск индексов и не только" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-objectmanagement.md|Управление таблицами и объектами"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-indexdetail" id="howto-indexdetail.md">Поиск индексов и не только</h1><section class="chapter"><h2 id="-b5ywab_2" data-toc="-b5ywab_2">Найти индексы для таблицы</h2><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="howto-indexdetail" data-main-title="Поиск индексов и не только" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-objectmanagement.md|Управление таблицами и объектами"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-indexdetail" id="howto-indexdetail.md">Поиск индексов и не только</h1><section class="chapter"><h2 id="-b5ywab_19" data-toc="-b5ywab_19">Найти индексы для таблицы</h2><div class="code-block" data-lang="sql">
 select * from pg_indexes where tablename='testidx';
-</div></section><section class="chapter"><h2 id="-b5ywab_4" data-toc="-b5ywab_4">Все индексы в базе данных</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-b5ywab_21" data-toc="-b5ywab_21">Все индексы в базе данных</h2><div class="code-block" data-lang="sql">
 select * from pg_indexes
-</div></section><section class="chapter"><h2 id="-b5ywab_6" data-toc="-b5ywab_6">Индексы и очень детальная информация</h2><p id="-b5ywab_7">Для psql</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h2 id="-b5ywab_23" data-toc="-b5ywab_23">Индексы и очень детальная информация</h2><p id="-b5ywab_24">Для psql</p><div class="code-block" data-lang="bash">
 \di
-</div><p id="-b5ywab_9">или</p><div class="code-block" data-lang="sql">
+</div><p id="-b5ywab_26">или</p><div class="code-block" data-lang="sql">
 select n.nspname                                 as &quot;Schema&quot;,
        c.relname                                 as &quot;Name&quot;,
        case c.relkind
@@ -45,9 +45,9 @@ where c.relkind in ('i', 'I', '')
   and n.nspname &lt;&gt; 'information_schema'
   and pg_catalog.pg_table_is_visible(c.oid)
 order by 1, 2;
-</div></section><section class="chapter"><h2 id="-b5ywab_11" data-toc="-b5ywab_11">Индексы и очень детальная информация</h2><p id="-b5ywab_12">Для psql</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h2 id="-b5ywab_28" data-toc="-b5ywab_28">Индексы и очень детальная информация</h2><p id="-b5ywab_29">Для psql</p><div class="code-block" data-lang="bash">
 \di+
-</div><p id="-b5ywab_14">или</p><div class="code-block" data-lang="sql">
+</div><p id="-b5ywab_31">или</p><div class="code-block" data-lang="sql">
 select n.nspname                                                  as &quot;Schema&quot;,
        c.relname                                                  as &quot;Name&quot;,
        case c.relkind
@@ -81,7 +81,7 @@ where c.relkind in ('i', 'I', '')
   and n.nspname &lt;&gt; 'information_schema'
   and pg_catalog.pg_table_is_visible(c.oid)
 order by 1, 2;
-</div></section><section class="chapter"><h2 id="-b5ywab_16" data-toc="-b5ywab_16">Индексы для таблицы и колонки</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-b5ywab_33" data-toc="-b5ywab_33">Индексы для таблицы и колонки</h2><div class="code-block" data-lang="sql">
 select t.relname                                   as table_name,
        i.relname                                   as index_name,
        array_to_string(array_agg(a.attname), ', ') as column_names

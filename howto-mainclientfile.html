@@ -1,1 +1,157 @@
-<error>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.2001083"><title>Важные файлы которые нужно настроить для клиентских утилит | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"pgpass","level":0,"title":"Файл .pgpass","anchor":"#pgpass"},{"id":"psqlrc-conf","level":0,"title":"Файл psqlrc.conf","anchor":"#psqlrc-conf"},{"id":"byfosm_602","level":0,"title":"Переменные окружения","anchor":"#byfosm_602"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Важные файлы которые нужно настроить для клиентских утилит | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-mainclientfile.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Важные файлы которые нужно настроить для клиентских утилит | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-mainclientfile.html#webpage",
+    "url": "writerside-documentation/howto-mainclientfile.html",
+    "name": "Важные файлы которые нужно настроить для клиентских утилит | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-mainclientfile" data-main-title="Важные файлы которые нужно настроить для клиентских утилит" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/libpq-pgpass&quot;,&quot;text&quot;:&quot;pgpass&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/libpq-connect#LIBPQ-CONNECT-PASSFILE&quot;,&quot;text&quot;:&quot;passfile&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-mainclientfile" id="howto-mainclientfile.md">Важные файлы которые нужно настроить для клиентских утилит</h1><section class="chapter"><h2 id="pgpass" data-toc="pgpass">Файл .pgpass</h2><p id="byfosm_494">В Windows, файл pgpass.conf расположен <code class="code" id="byfosm_495">%APPDATA%\postgresql\</code> что обычно соответсвует <code class="code" id="byfosm_496">C:\Users\&lt;YourUsername&gt;\AppData\Roaming\postgresql</code></p><p id="byfosm_497">Формат записи</p><div class="code-block" data-lang="plaintext">
+hostname:port:database:username:password
+</div><ul class="list _bullet" id="byfosm_499"><li class="list__item" id="byfosm_500"><p><span class="control" id="byfosm_501">hostname</span>: это имя хоста сервера, на котором работает сервер PostgreSQL.</p></li><li class="list__item" id="byfosm_502"><p><span class="control" id="byfosm_503">port</span>: это порт, на котором прослушивается сервер PostgreSQL.</p></li><li class="list__item" id="byfosm_504"><p><span class="control" id="byfosm_505">database</span>: это база данных, к которой вы хотите подключиться.</p></li><li class="list__item" id="byfosm_506"><p><span class="control" id="byfosm_507">username</span>: это имя пользователя, которое вы хотите использовать для подключения к базе данных.</p></li><li class="list__item" id="byfosm_508"><p><span class="control" id="byfosm_509">password</span>: это пароль имени пользователя.</p></li></ul><p id="byfosm_510">Если запись должна содержать символ <code class="code" id="byfosm_511">:</code> или <code class="code" id="byfosm_512">\</code>, добавьте перед ним <code class="code" id="byfosm_513">\</code></p><p id="byfosm_514">Поле <span class="control" id="byfosm_515">database</span> имеет ограниченную ценность, так как пользователи используют один пароль для всех баз данных в кластере.</p><p id="byfosm_516">Пример:</p><div class="code-block" data-lang="plaintext">
+localhost:5432:*:postgres:moreSecure
+192.168.0.133:5433:*:postgres:moreSecure
+</div><p id="byfosm_518">для редактирования файла в nix</p><div class="code-block" data-lang="bash">
+nano ~/.pgpass
+</div><p id="byfosm_520">в nix должны быть права 0600. Если разрешения будут менее строгими, этот файл будет игнорироваться</p><div class="code-block" data-lang="bash">
+chmod 600 ~/.pgpass
+</div><p id="byfosm_522">для редактирования файла в windows (powershell)</p><div class="code-block" data-lang="bash">
+notepad.exe &quot;$env:APPDATA\postgresql\pgpass.conf&quot;
+</div><p id="byfosm_524">или</p><div class="code-block" data-lang="bash">
+Start notepad++ &quot;$env:APPDATA\postgresql\pgpass.conf&quot;
+</div></section><section class="chapter"><h2 id="psqlrc-conf" data-toc="psqlrc-conf">Файл psqlrc.conf</h2><p id="byfosm_526">Для утилиты <a href="https://postgrespro.ru/docs/postgresql/16/app-psql" id="byfosm_527" data-external="true" rel="noopener noreferrer">psql</a> до тех пор, пока не указана опция <span class="control" id="byfosm_528">-X</span> будет использоваться данный файл с настройками!</p><aside class="prompt" data-type="warning" data-title="" id="byfosm_529"><p id="byfosm_530">Не читать стартовые файлы (ни общесистемный файл <span class="control" id="byfosm_531">psqlrc</span>, ни пользовательский файл ~/.psqlrc)</p><p id="byfosm_532"><span class="control" id="byfosm_533">-X</span><br><span class="control" id="byfosm_535">--no-psqlrc</span></p><p id="byfosm_536"><span class="control" id="byfosm_537">PSQLRC</span> - переменная среды, определяющая расположение файла <span class="control" id="byfosm_538">psqlrc</span></p></aside><aside class="prompt" data-type="warning" data-title="" id="byfosm_539"><p id="byfosm_540"><span class="control" id="byfosm_541">-c command</span><br><span class="control" id="byfosm_543">--command command</span><br> НЕ отключают выполнение стартового файла, это может зависеть от дистрибутива!</p></aside><p id="byfosm_545">Данный файл может быть <span class="control" id="byfosm_546">пользовательским</span> или <span class="control" id="byfosm_547">общесистемным</span> и расположен в каталоге основной установки Postgres, которую можно проверить:</p><div class="code-block" data-lang="bash">
+pg_config --sysconfdir
+</div><p id="byfosm_549">результат: <span class="control" id="byfosm_550">D:/Program Files/PostgreSQL/16/etc</span></p><p id="byfosm_551"><span class="control" id="byfosm_552">Пользовательский</span> файл находится в каталоге пользователя для windows</p><div class="code-block" data-lang="plaintext">
+%APPDATA%\postgresql\psqlrc.conf
+</div><p id="byfosm_554">для nix</p><div class="code-block" data-lang="plaintext">
+~/.psqlrc
+или
+/usr/local/pgsql/etc
+или
+/usr/local/etc
+</div><p id="byfosm_556">Также файл может быть для указанной версии, например:</p><div class="code-block" data-lang="plaintext">
+ ~/.psqlrc-16.2
+~/.psqlrc-16
+~/.psqlrc-15.0
+</div><aside class="prompt" data-type="warning" data-title="" id="byfosm_558"><p id="byfosm_559">По умолчанию пользовательских файлов может не быть!</p></aside><p id="byfosm_560">Для windows системы может отсутствовать необходимая переменная окружения! Проверьте ее наличие с помощью PowerShell:</p><div class="code-block" data-lang="bash">
+Get-Item -Path Env:PSQLRC
+</div><p id="byfosm_562">В случае отсутствия (PowerShell)</p><div class="code-block" data-lang="bash">
+$Env:PSQLRC = %APPDATA%\postgresql\psqlrc.conf
+</div><div class="code-block" data-lang="bash">
+$Env:PSQLRC = &quot;C:\Users\&lt;your-username&gt;\AppData\Roaming\postgresql\psqlrc.conf&quot;
+</div><p id="byfosm_565">по умолчанию данный файл отсутствует или имеет пустое содержимое:</p><div class="code-block" data-lang="plaintext">
+--
+--	system-wide psql configuration file
+--
+--  This file is read before the .psqlrc file in the user's home directory.
+--
+--  Copy this to your installation's sysconf directory and rename it psqlrc.
+--  The sysconf directory can be identified via &quot;pg_config --sysconfdir&quot;.
+--
+
+</div><p id="byfosm_567">Что можно указать в данном файле:</p><div class="code-block" data-lang="plaintext">
+\set version 'SELECT version();'
+\set extensions 'select * from pg_available_extensions;'
+
+\echo 'Welcome to PostgreSQL! \n'
+\echo 'Type :version to see the PostgreSQL version. \n' 
+\echo 'Type :extensions to see the available extensions. \n'
+\echo 'Type \\q to exit. \n'
+\set version 'SELECT version();'
+\set extensions 'select * from pg_available_extensions;'
+</div><p id="byfosm_569">еще пример:</p><div class="code-collapse" data-lang="plaintext" data-is-expanded="false" data-synopsis="\set PROMPT1 '%~%#%x '">
+\set PROMPT1 '%~%#%x '
+\x auto
+\set ON_ERROR_STOP on
+\set ON_ERROR_ROLLBACK interactive
+\set HISTFILE ~/.psql_history-:DBNAME
+
+\set VERBOSITY verbose
+
+-- \pset null '⦱'
+\pset null '¤'
+\pset linestyle 'unicode'
+
+\pset unicode_border_linestyle single
+\pset unicode_column_linestyle single
+\pset unicode_header_linestyle double
+
+set intervalstyle to 'postgres_verbose';
+
+\setenv LESS '-iMFXSx4R'
+\setenv EDITOR '/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -nw'
+</div><p id="byfosm_571">еще пример</p><div class="code-collapse" data-lang="plaintext" data-is-expanded="false" data-synopsis="-- Don't display the &quot;helpful&quot; message on startup.">
+-- Don't display the &quot;helpful&quot; message on startup.
+\set QUIET 1
+\pset null '[NULL]'
+
+\set PROMPT1 '%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
+-- PROMPT2 is printed when the prompt expects more input, like when you type
+-- SELECT * FROM&lt;enter&gt;. %R shows what type of input it expects.
+\set PROMPT2 '[more] %R &gt; '
+
+-- Show how long each query takes to execute
+\timing
+
+-- Use best available output format
+\x auto
+\set VERBOSITY verbose
+\set HISTFILE ~/.psql_history- :DBNAME
+\set HISTCONTROL ignoredups
+\set COMP_KEYWORD_CASE upper
+\unset QUIET
+
+-- psql can't check for a file's existence, so we'll provide an empty local
+-- file that users can override with their custom dotfiles. To set your own
+-- personal settings, place your own file in ~/.psqlrc.local
+\i ~/.psqlrc.local
+</div><p id="byfosm_573">Обратите внимание на <span class="control" id="byfosm_574">\i ~/.psqlrc.local</span> - также будет прочитан указанный файл.</p><p id="byfosm_575">Переключение языка на английский, что бывает полезно при работе с локализованными сообщениями</p><div class="code-block" data-lang="plaintext">
+\setenv LC_MESSAGES 'English'
+</div><p id="byfosm_577">Переключение языка на русский, для windows версии</p><div class="code-block" data-lang="plaintext">
+\setenv LC_MESSAGES 'Russian_Russia.1251'
+</div><p id="byfosm_579"><span class="control" id="byfosm_580">\set [ name [ value [ ... ] ] ]</span> - это устанавливает значение имени переменной psql или, если дано более одного значения, для объединения всех из них. Если приведен только один аргумент, переменная устанавливается с пустым значением. Чтобы снять переменную, используйте команду \unset.</p><div class="code-block" data-lang="plaintext">
+\set waits 'SELECT pg_stat_activity.procpid, pg_stat_activity.current_query, pg_stat_activity.waiting, now() - pg_stat_activity.query_start  as &quot;totaltime&quot;, pg_stat_activity.backend_start FROM pg_stat_activity WHERE pg_stat_activity.current_query !~ \'%IDLE%\'::text AND pg_stat_activity.waiting = true;;'
+</div><div class="code-block" data-lang="plaintext">
+\set locks 'select pid,mode,current_query from pg_locks,pg_stat_activity where granted=false and locktype=\'transactionid\' and pid=procpid order by pid,granted;;'
+</div><p id="byfosm_583"><span class="control" id="byfosm_584">\setenv name [ value ]</span> - Это устанавливает значение имени переменной среды или, если значение не предоставлено, отменяет настройку переменной среды. Здесь мы используем эту возможность для настройки конкретных переменных среды, которые нам нужны изнутри psql, таких как настройка LESS. Это позволяет вызывать пейджер для каждого набора результатов, но при необходимости брать на себя управление экраном.</p><p id="byfosm_585"><span class="control" id="byfosm_586">\set ON_ERROR_STOP on</span> - название довольно хорошо описывает опцию. Это позволяет psql знать, что это не стоит продолжать попытки выполнить все ваши команды, когда предыдущая выдает ошибку. Он в первую очередь практичен для скриптов и может быть установлен также с помощью командной строки. Как вы возможно уже знаете, мы легко можем вызывать сценарии в интерактивном режиме в рамках нашего сеанса с помощью команд \i и \ir, поэтому опция нам полезна и сейчас.</p><p id="byfosm_587"><span class="control" id="byfosm_588">\set ON_ERROR_ROLLBACK interactive</span> - Этот параметр изменяет поведение psql в отношении транзакций. Это очень хорошая интерактивная настройка, но ее следует <span class="control" id="byfosm_589">избегать</span> в пакетных сценариях.</p><p id="byfosm_590"><span class="control" id="byfosm_591">\pset pager OFF</span> - отключить пейджер</p><p id="byfosm_592"><span class="control" id="byfosm_593">\set PROMPT1 '%~%#%x '</span> - строка приглашения будет выглядеть так, т.е. будет скрыто все:</p><div class="code-block" data-lang="plaintext">
+psql (16.2)
+Type &quot;help&quot; for help.
+
+~#
+</div><p id="byfosm_595"><span class="control" id="byfosm_596">\set PROMPT1 '%[%033[1;32;40m%]%m port=%&gt; %n@%/%[%033[0m%] %# '</span></p><div class="code-block" data-lang="plaintext">
+psql (16.2)
+Type &quot;help&quot; for help.
+
+192 port=5433 postgres@postgres #
+</div><p id="byfosm_598">Установить кодировку для клиентской среды, полезно при запуске из терминала powershell или при кодировке терминала отличной от UTF8</p><div class="code-block" data-lang="sql">
+SET client_encoding = 'UTF8';
+</div><p id="byfosm_600"><a href="https://postgrespro.ru/docs/postgresql/16/multibyte" id="byfosm_601" data-external="true" rel="noopener noreferrer">кодировки</a></p></section><section class="chapter"><h2 id="byfosm_602" data-toc="byfosm_602">Переменные окружения</h2><section class="chapter"><h3 id="envnix" data-toc="envnix">Переменные окружения в nix</h3><p id="byfosm_603">Для просмотра текущих переменных окружения в nix</p><div class="code-block" data-lang="bash">
+printenv
+</div><p id="byfosm_605">Для просмотра в less (для выхода нажимаем <kbd class="keystroke" id="byfosm_606" data-bypass="true"><span class="keystroke__value">Q</span></kbd>)</p><div class="code-block" data-lang="bash">
+printenv | less
+</div><p id="byfosm_608">Для поиска</p><div class="code-block" data-lang="bash">
+printenv | grep DISPLAY
+</div><p id="byfosm_610">Для просмотра значения</p><div class="code-block" data-lang="bash">
+echo $HOME
+</div><div class="code-block" data-lang="bash">
+printenv SHELL
+</div><div class="code-block" data-lang="bash">
+printenv HOME SHELL
+</div><p id="byfosm_614">Для создания переменной в текущей сессии</p><div class="code-block" data-lang="bash">
+MY_SITE='linuxconfig.org'
+</div><div class="code-block" data-lang="bash">
+export MY_SITE=&quot;linuxconfig.org&quot;
+</div><p id="byfosm_617">Для того, чтобы настроить новую переменную среды на постоянную, нам потребуется отредактировать файлы конфигурации Bash. Это можно сделать с помощью трех разных файлов, в зависимости от того, как именно вы планируете получить доступ к переменной среды.</p><ul class="list _bullet" id="byfosm_618"><li class="list__item" id="byfosm_619"><p>~/.bashrc &ndash; Переменные, хранящиеся здесь, будут находиться в домашнем каталоге пользователя и доступны только этому пользователю. Переменные загружаются каждый раз, когда открывается новая оболочка.</p></li><li class="list__item" id="byfosm_620"><p>/etc/profile &ndash; Переменные, хранящиеся здесь, будут доступны всем пользователям и загружаются при каждом открытии новой оболочки.</p></li><li class="list__item" id="byfosm_621"><p>/etc/environment &ndash; Переменные, хранящиеся здесь, доступны для всей системы.</p></li></ul><p id="byfosm_622">Добавьте новую переменную в файлы конфигурации ~/.bashrc или /etc/profile, добавив строку в ее конец с помощью этого синтаксиса. Обратите внимание, что мы предшествуем каждой новой переменной с <code class="code" id="byfosm_623">export</code></p><div class="code-block" data-lang="bash">
+export MY_SITE='linuxconfig.org'
+</div><p id="byfosm_625">После этого вы можете загрузить новые переменные среды в текущий сеанс с помощью следующей команды</p><div class="code-block" data-lang="bash">
+source ~/.bashrc
+</div><p id="byfosm_627">или</p><div class="code-block" data-lang="bash">
+source /etc/profile
+</div></section><section class="chapter"><h3 id="nix" data-toc="nix">Некоторые переменные nix</h3><ul class="list _bullet" id="byfosm_629"><li class="list__item" id="byfosm_630"><p>BASHOPTS: Список параметров командной строки, которые использовались при запуске bash.</p></li><li class="list__item" id="byfosm_631"><p>BASH_VERSION: Версия bash.</p></li><li class="list__item" id="byfosm_632"><p>COLUMNS: Ширина клеммы в столбцах.</p></li><li class="list__item" id="byfosm_633"><p>DIRSTACK: стек каталогов для использования с командами pushd и popd.</p></li><li class="list__item" id="byfosm_634"><p>HISTFILESIZE: максимальное количество строк истории команд, которые можно записать в файл истории.</p></li><li class="list__item" id="byfosm_635"><p>HISTSIZE: Максимальное количество строк командной истории, разрешенное для хранения в памяти. Если пройти мимо этого числа, в памяти перезаписываются ранее запомненные команды. При закрытии окна терминала история команд записывается в файл истории.</p></li><li class="list__item" id="byfosm_636"><p>HOME: Домашний каталог текущего пользователя.</p></li><li class="list__item" id="byfosm_637"><p>HOSTNAME: Имя компьютера.</p></li><li class="list__item" id="byfosm_638"><p>IFS: внутренний разделитель полей, который используется для анализа пользовательского ввода. Значение по умолчанию - пробел.</p></li><li class="list__item" id="byfosm_639"><p>LANG: Текущий язык и настройки локализации, включая кодировку символов.</p></li><li class="list__item" id="byfosm_640"><p>LS_COLORS: Это определяет коды, которые используются для добавления цвета к выходным данным ls.</p></li><li class="list__item" id="byfosm_641"><p>MAIL: Путь к почтовому ящику текущего пользователя Linux.</p></li><li class="list__item" id="byfosm_642"><p>OLDPWD: Предыдущий рабочий каталог.</p></li><li class="list__item" id="byfosm_643"><p>PS1: Определение основной командной строки. Это определяет, как выглядит подсказка в окне терминала.</p></li><li class="list__item" id="byfosm_644"><p>PATH: Разделенный двоеточием список каталогов, в которых выполняется поиск соответствующей команды или приложения при вводе команды в оболочку.</p></li><li class="list__item" id="byfosm_645"><p>PWD: Текущий рабочий каталог.</p></li><li class="list__item" id="byfosm_646"><p>SHELL: имя вашей оболочки по умолчанию.</p></li><li class="list__item" id="byfosm_647"><p>TERM: Тип терминала, который эмулируется при запуске оболочки.</p></li><li class="list__item" id="byfosm_648"><p>UID: идентификатор пользователя текущего пользователя.</p></li><li class="list__item" id="byfosm_649"><p>USER: Текущий пользователь</p></li></ul></section></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="psqlmeta-du.html" class="navigation-links__prev">Мета du</a><a href="howto-srvqury.html" class="navigation-links__next">Полезные запросы на уровне сервера</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0329182"><title>Создание копии таблицы и полной копии | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-w3s4wu_4","level":0,"title":"Создание копии таблицы","anchor":"#-w3s4wu_4"},{"id":"-w3s4wu_7","level":0,"title":"Создания полной копии","anchor":"#-w3s4wu_7"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Создание копии таблицы и полной копии | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-tables-copy.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Создание копии таблицы и полной копии | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.2811026"><title>Создание копии таблицы и полной копии | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-w3s4wu_14","level":0,"title":"Создание копии таблицы","anchor":"#-w3s4wu_14"},{"id":"-w3s4wu_17","level":0,"title":"Создания полной копии","anchor":"#-w3s4wu_17"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Создание копии таблицы и полной копии | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-tables-copy.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Создание копии таблицы и полной копии | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-tables-copy.html#webpage",
@@ -13,7 +13,7 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-tables-copy" data-main-title="Создание копии таблицы и полной копии" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-objectmanagement.md|Управление таблицами и объектами"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-tables-copy" id="howto-tables-copy.md">Создание копии таблицы и полной копии</h1><p id="-w3s4wu_2">Для примера создадим таблицу</p><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="howto-tables-copy" data-main-title="Создание копии таблицы и полной копии" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-objectmanagement.md|Управление таблицами и объектами"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-tables-copy" id="howto-tables-copy.md">Создание копии таблицы и полной копии</h1><p id="-w3s4wu_12">Для примера создадим таблицу</p><div class="code-block" data-lang="sql">
 create table tbl_A
 (
     ID      int,
@@ -23,17 +23,17 @@ create table tbl_A
     constraint pk_tbl_A_ID primary key (ID)
 );
 create index idx_tbl_A_Subject on tbl_A using BTREE (Subject);
-</div><section class="chapter"><h2 id="-w3s4wu_4" data-toc="-w3s4wu_4">Создание копии таблицы</h2><div class="code-block" data-lang="sql">
+</div><section class="chapter"><h2 id="-w3s4wu_14" data-toc="-w3s4wu_14">Создание копии таблицы</h2><div class="code-block" data-lang="sql">
 drop table if exists tbl_B;
 create table tbl_B as
 select *
 from tbl_A;
-</div><p id="-w3s4wu_6">В данном случае создается только основная структура таблицы, без индексов, ограничений</p></section><section class="chapter"><h2 id="-w3s4wu_7" data-toc="-w3s4wu_7">Создания полной копии</h2><div class="code-block" data-lang="sql">
+</div><p id="-w3s4wu_16">В данном случае создается только основная структура таблицы, без индексов, ограничений</p></section><section class="chapter"><h2 id="-w3s4wu_17" data-toc="-w3s4wu_17">Создания полной копии</h2><div class="code-block" data-lang="sql">
 create table tbl_C
 (
     like tbl_A including all
 );
-</div><p id="-w3s4wu_9">Проверяем DDL скрипт таблицы tbl_C</p><div class="code-block" data-lang="sql">
+</div><p id="-w3s4wu_19">Проверяем DDL скрипт таблицы tbl_C</p><div class="code-block" data-lang="sql">
 create table if not exists public.tbl_c
 (
     id      integer not null
