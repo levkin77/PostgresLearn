@@ -1,0 +1,124 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.1529211"><title>Регулярное легкое обслуживание | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Регулярное легкое обслуживание | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-maintance-dbmaintancelite.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Регулярное легкое обслуживание | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-maintance-dbmaintancelite.html#webpage",
+    "url": "writerside-documentation/howto-maintance-dbmaintancelite.html",
+    "name": "Регулярное легкое обслуживание | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-maintance-dbmaintancelite" data-main-title="Регулярное легкое обслуживание" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/sql-vacuum&quot;,&quot;text&quot;:&quot;Vacuum&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/libpq-envars&quot;,&quot;text&quot;:&quot;Переменные окружения&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-maintance.md|Обслуживание (MAINTENANCE)"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-maintance-dbmaintancelite" id="howto-maintance-dbmaintancelite.md">Регулярное легкое обслуживание</h1><p id="-4ugcw0_2">Bash скрипт</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="export PGHOST=localhost">
+export PGHOST=localhost
+export PGPORT=5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+# Получаем список баз данных
+dblist=`psql -d postgres -c &quot;copy (select datname from pg_stat_database) to stdout&quot;`
+for db in $dblist ; do
+
+    # Игнорируем служебные базы данных
+    if [[ $db == template0 ]] ||  [[ $db == template1 ]] || [[ $db == postgres ]] ; then
+        continue
+    fi
+
+    # Проводим сборку мусора и анализ базы данных
+    # Подробнее: https://postgrespro.ru/docs/postgresql/16/sql-vacuum
+    psql -d $db -e -a -c &quot;VACUUM;&quot;
+
+done
+</div><p id="-4ugcw0_4">Powershell</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="&lt;#">
+&lt;#
+Обслуживание PostgreSQL из PowerShell 
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию 
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252
+$env:PGCLIENTENCODING = 'WIN1251' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# Базы данных, которые мы исключаем из обслуживания
+$databaseNameExcludeList = @('postgres', 'devtestindex', 'devtestclusteridx'); 
+
+
+# Информация о версии
+$serviceDbActionResult = $(.\psql -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d &quot;postgres&quot; -c &quot;\conninfo&quot;);
+Write-Host $serviceDbActionResult
+Write-Host $(&quot;-&quot; * 50)
+
+
+# Игнорируем служебные базы данных
+$sqlQuery = &quot;select v.datname 
+from pg_catalog.pg_stat_database as v 
+where v.datid&gt;0 and v.datname not in('postgres', 'template1', 'template0');&quot;;
+
+$dblist = $(.\psql -d &quot;postgres&quot; -c $sqlQuery --csv | ConvertFrom-Csv)
+foreach($dbListRow in $dblist)
+{
+    $currentDB = $dbListRow.datname;
+    # Пропускаем базы, которые не относятся к указанному имени в параметре databaseName
+    if($databaseNameExcludeList.Contains($currentDB))
+    {
+        continue;
+    }  
+    Write-Host $(&quot;Current database: $currentDB&quot;);
+    #psql -d $db -e -a -c &quot;VACUUM;&quot;
+    # -a Отправляет в стандартный вывод все непустые входные строки по мере их чтения
+    # -e Посылает все команды SQL, отправленные на сервер, ещё и на стандартный вывод
+    # -c Передаёт psql команду для выполнения
+    # Варианты VACUUM, VACUUM FULL, VACUUM (VERBOSE, ANALYZE)
+    $serviceDbActionResult = $(.\psql -d $currentDB -e -a -c &quot;VACUUM;&quot;);
+    #Write-Host $serviceDbActionResult
+    
+}
+Write-Host $(&quot;-&quot; * 50)
+</div><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-maintance-dbrebuildindex.html" class="navigation-links__prev">Перестроение индексов</a><a href="howto-maintance-dbmaintancehard.html" class="navigation-links__next">Регулярное тяжелое обслуживание</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.025916"><title>Мета l | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"l","level":0,"title":"Мета \\l","anchor":"#l"},{"id":"l_db","level":0,"title":"Мета \\l [имябазы]","anchor":"#l_db"},{"id":"l_plus","level":0,"title":"Мета \\l+","anchor":"#l_plus"},{"id":"l_plus_db","level":0,"title":"Мета \\l+ [имябазы]","anchor":"#l_plus_db"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Мета l | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/psqlmeta-l.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Мета l | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/psqlmeta-l.html#webpage",
+    "url": "writerside-documentation/psqlmeta-l.html",
+    "name": "Мета l | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="psqlmeta-l" data-main-title="Мета l" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-usepsqlcmd.md|Использование psql"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="psqlmeta-l" id="psqlmeta-l.md">Мета l</h1><p id="zbwkok_26">Информация о базе данных</p><section class="chapter"><h2 id="l" data-toc="l">Мета \l</h2><div class="code-block" data-lang="sql">
+SELECT
+  d.datname as &quot;Name&quot;,
+  pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;,
+  pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;,
+  CASE d.datlocprovider WHEN 'c' THEN 'libc' WHEN 'i' THEN 'icu' END AS &quot;Locale Provider&quot;,
+  d.datcollate as &quot;Collate&quot;,
+  d.datctype as &quot;Ctype&quot;,
+  d.daticulocale as &quot;ICU Locale&quot;,
+  d.daticurules as &quot;ICU Rules&quot;,
+  pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot;
+FROM pg_catalog.pg_database d
+ORDER BY 1;
+</div><p id="zbwkok_28">результат:</p><div class="code-block" data-lang="plaintext">
+         Name          |  Owner   | Encoding | Locale Provider |       Collate       |        Ctype        | ICU Locale | ICU Rules |   Access privileges
+-----------------------+----------+----------+-----------------+---------------------+---------------------+------------+-----------+-----------------------
+ demo                  | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |
+ dvdrental             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |
+ postgremaintenance    | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |
+ postgres              | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |
+ template0             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           | =c/postgres          +
+                       |          |          |                 |                     |                     |            |           | postgres=CTc/postgres
+ template1             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           | =c/postgres          +
+                       |          |          |                 |                     |                     |            |           | postgres=CTc/postgres
+</div></section><section class="chapter"><h2 id="l_db" data-toc="l_db">Мета \l [имябазы]</h2><div class="code-block" data-lang="sql">
+SELECT
+d.datname as &quot;Name&quot;,
+pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;,
+pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;,
+CASE d.datlocprovider WHEN 'c' THEN 'libc' WHEN 'i' THEN 'icu' END AS &quot;Locale Provider&quot;,
+d.datcollate as &quot;Collate&quot;,
+d.datctype as &quot;Ctype&quot;,
+d.daticulocale as &quot;ICU Locale&quot;,
+d.daticurules as &quot;ICU Rules&quot;,
+pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot;
+FROM pg_catalog.pg_database d
+WHERE d.datname OPERATOR(pg_catalog.~) '^(dvdrental)$' COLLATE pg_catalog.default
+ORDER BY 1;
+</div></section><section class="chapter"><h2 id="l_plus" data-toc="l_plus">Мета \l+</h2><div class="code-block" data-lang="sql">
+SELECT
+  d.datname as &quot;Name&quot;,
+  pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;,
+  pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;,
+  CASE d.datlocprovider WHEN 'c' THEN 'libc' WHEN 'i' THEN 'icu' END AS &quot;Locale Provider&quot;,
+  d.datcollate as &quot;Collate&quot;,
+  d.datctype as &quot;Ctype&quot;,
+  d.daticulocale as &quot;ICU Locale&quot;,
+  d.daticurules as &quot;ICU Rules&quot;,
+  pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot;,
+  CASE WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+       THEN pg_catalog.pg_size_pretty(pg_catalog.pg_database_size(d.datname))
+       ELSE 'No Access'
+  END as &quot;Size&quot;,
+  t.spcname as &quot;Tablespace&quot;,
+  pg_catalog.shobj_description(d.oid, 'pg_database') as &quot;Description&quot;
+FROM pg_catalog.pg_database d
+  JOIN pg_catalog.pg_tablespace t on d.dattablespace = t.oid
+ORDER BY 1;
+</div><p id="zbwkok_33">результат:</p><div class="code-block" data-lang="plaintext">
+         Name          |  Owner   | Encoding | Locale Provider |       Collate       |        Ctype        | ICU Locale | ICU Rules |   Access privileges   |  Size   | Tablespace |                Description
+
+-----------------------+----------+----------+-----------------+---------------------+---------------------+------------+-----------+-----------------------+---------+------------+--------------------------------------------
+ demo                  | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |                       | 281 MB  | pg_default |
+ dvdrental             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |                       | 15 MB   | pg_default |
+ postgremaintenance    | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |                       | 6809 kB | pg_default |
+ postgres              | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           |                       | 7908 kB | pg_default | default administrative connection database
+ template0             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           | =c/postgres          +| 7673 kB | pg_default | unmodifiable empty database
+                       |          |          |                 |                     |                     |            |           | postgres=CTc/postgres |         |            |
+ template1             | postgres | UTF8     | libc            | Russian_Russia.1251 | Russian_Russia.1251 |            |           | =c/postgres          +| 7713 kB | pg_default | default template for new databases
+                       |          |          |                 |                     |                     |            |           | postgres=CTc/postgres |         |            |
+</div></section><section class="chapter"><h2 id="l_plus_db" data-toc="l_plus_db">Мета \l+ [имябазы]</h2><div class="code-block" data-lang="sql">
+SELECT
+    d.datname as &quot;Name&quot;,
+    pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;,
+    pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;,
+    CASE d.datlocprovider WHEN 'c' THEN 'libc' WHEN 'i' THEN 'icu' END AS &quot;Locale Provider&quot;,
+    d.datcollate as &quot;Collate&quot;,
+    d.datctype as &quot;Ctype&quot;,
+    d.daticulocale as &quot;ICU Locale&quot;,
+    d.daticurules as &quot;ICU Rules&quot;,
+    pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot;,
+    CASE WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+             THEN pg_catalog.pg_size_pretty(pg_catalog.pg_database_size(d.datname))
+         ELSE 'No Access'
+        END as &quot;Size&quot;,
+    t.spcname as &quot;Tablespace&quot;,
+    pg_catalog.shobj_description(d.oid, 'pg_database') as &quot;Description&quot;
+FROM pg_catalog.pg_database d
+         JOIN pg_catalog.pg_tablespace t on d.dattablespace = t.oid
+WHERE d.datname OPERATOR(pg_catalog.~) '^(dvdrental)$' COLLATE pg_catalog.default
+ORDER BY 1;
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-usepsqlcmd.html" class="navigation-links__prev">Использование psql</a><a href="psqlmeta-d.html" class="navigation-links__next">Мета d</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

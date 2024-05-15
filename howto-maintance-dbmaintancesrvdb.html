@@ -1,0 +1,407 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.025916"><title>Автоматизация обслуживания и протоколирование | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-bdlage_6","level":0,"title":"База и таблица для протоколов выполнения обслуживания базы данных","anchor":"#-bdlage_6"},{"id":"powershell","level":0,"title":"Скрипт на Powershell для обслуживания базы","anchor":"#powershell"},{"id":"bash","level":0,"title":"Скрипт на bash для обслуживания базы","anchor":"#bash"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Автоматизация обслуживания и протоколирование | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-maintance-dbmaintancesrvdb.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Автоматизация обслуживания и протоколирование | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-maintance-dbmaintancesrvdb.html#webpage",
+    "url": "writerside-documentation/howto-maintance-dbmaintancesrvdb.html",
+    "name": "Автоматизация обслуживания и протоколирование | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-maintance-dbmaintancesrvdb" data-main-title="Автоматизация обслуживания и протоколирование" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-maintance.md|Обслуживание (MAINTENANCE)"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-maintance-dbmaintancesrvdb" id="howto-maintance-dbmaintancesrvdb.md">Автоматизация обслуживания и протоколирование</h1><p id="-bdlage_2">Автоматизация обслуживания для базы данных состоит из</p><ul class="list _bullet" id="-bdlage_3"><li class="list__item" id="-bdlage_4"><p>таблицы протоколов, в которой содержится информация о том что и когда выполнялось</p></li><li class="list__item" id="-bdlage_5"><p>скрипта по обслуживанию для powershell или bash в зависимости от используемой операционной системы.</p></li></ul><section class="chapter"><h2 id="-bdlage_6" data-toc="-bdlage_6">База и таблица для протоколов выполнения обслуживания базы данных</h2><p id="-bdlage_7">Создаем отдельную базу для хранения протоколов обслуживания</p><div class="code-block" data-lang="sql">
+create database postgremaintenance;
+</div><p id="-bdlage_9">Таблица для протоколирования</p><div class="code-block" data-lang="sql">
+drop table if exists public.maintenance_actions_log;
+create table public.maintenance_actions_log
+(
+    id            int not null generated always as identity,
+    period        timestamp not null,
+    database_name text,
+    schema_name   text not null,
+    table_name    text not null,
+    index_name    text not null,
+    operation     text not null,
+    sql_command   text not null
+);
+</div><p id="-bdlage_11">В дальнейшем для просмотра результатов</p><div class="code-block" data-lang="sql">
+select * from public.maintenance_actions_log;
+</div><div class="code-block" data-lang="sql">
+select count(*) as datacount from public.maintenance_actions_log;
+</div><p id="-bdlage_14">Для очистки</p><div class="code-block" data-lang="sql">
+truncate public.maintenance_actions_log;
+</div></section><section class="chapter"><h2 id="powershell" data-toc="powershell">Скрипт на Powershell для обслуживания базы</h2><section class="chapter"><h3 id="-bdlage_16" data-toc="-bdlage_16">Обслуживания одной базы</h3><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Обслуживание PostgreSQL из PowerShell в части очистки от &quot;мертвых&quot; строк и обновления статистики.">
+&lt;#
+Обслуживание PostgreSQL из PowerShell в части очистки от &quot;мертвых&quot; строк и обновления статистики.
+Подходит как для Windows, так и для *.nix систем.
+#&gt;
+
+# Путь PostgreSQL (!!! измените на нужную версию 
+# или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+# Эта часть в основном акттуальна для Windows.
+# Наиболее венроятным расположением будут
+# &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+# &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+# &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+$pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+# Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+# Альтернативный подход - добавить этот каталог в параметры окружения
+#Set-Location $pgDirectory;
+Push-Location $pgDirectory;
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1
+$env:PGHOST = 'localhost'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = '&lt;ПарольПользователяPostgreSQL&gt;';
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252
+$env:PGCLIENTENCODING = 'WIN1251' #'UTF8'
+
+# База данных для обслуживания
+$databaseName = 'devtestclusteridx' # '&lt;БазаДанныхДляОбслуживания&gt;'
+# Граница количества 'мертвых' строк, от которого начинается обслуживание
+$deadTuplesThreshold = 10000
+# Мин. количество часов с последней операции VACUUM, после которого нужно выполнять повторное обслуживание
+$minHoursLeftAfterLastVacuum = 0 # 12 
+# Мин. количество часов с последней операции ANALYZE, после которого нужно выполнять повторное обслуживание
+$minHoursLeftAfterLastAnalyze = 0 # 12
+# Использовать  служебную базу мониторинга
+$useServiceDatabase = $true
+# Имя служебной базы мониторинга
+$serviceDatabaseName = 'postgremaintenance'
+
+# Игнорируем служебные базы данных
+$sqlQuery = &quot;select v.datname from pg_catalog.pg_stat_database as v where datname='$databaseName';&quot;;
+
+$dblist = $(.\psql.exe -d $databaseName -c $sqlQuery --csv | ConvertFrom-Csv)
+if ($dblist.Count -eq 1)
+{
+    Write-Host &quot;Database $databaseName exists!&quot;;
+}
+else {
+    Write-Host &quot;Database not found&quot;;
+    return -1;
+}
+$sqlQuery = @&quot;
+    select
+    tables.schemaname, tables.tablename
+from
+    (select
+        nspname as schemaname,
+        relname as tablename,
+        pg_class.oid as objectid
+    from
+        pg_catalog.pg_class,
+        pg_catalog.pg_namespace,
+        pg_catalog.pg_roles
+    where
+        pg_class.relnamespace = pg_namespace.oid
+        and pg_namespace.nspowner = pg_roles.oid
+        and pg_class.relkind = 'r'
+    ) as tables(schemaname, tablename, objectid)
+    left join (
+        select
+            relid,
+            n_dead_tup,
+            coalesce(last_vacuum,last_autovacuum) as last_vacuum_period,
+            coalesce(last_analyze,last_autoanalyze) as last_analyze_period
+        from pg_stat_all_tables	
+    ) as stat on stat.relid = tables.objectid
+ where 
+    -- Обслуживаем только таблицы c мертвыми строками, превышающие или равные параметру DEAD_TUPLES_THRESHOLD
+    stat.n_dead_tup &gt;= $deadTuplesThreshold 
+    -- Или обслуживаем таблицы, по которым есть мертвые строки 
+    -- и очистка или обновление статистики выполнялось более
+    -- больше определенного количества часов в настройках
+    OR (
+        stat.n_dead_tup &gt; 0
+        AND (
+            coalesce(date_part('hour', now() - last_vacuum_period), 0) &gt;= $minHoursLeftAfterLastVacuum 
+            OR coalesce(date_part('hour', now() - last_analyze_period), 0) &gt;= $minHoursLeftAfterLastAnalyze  
+            )
+        );
+&quot;@
+
+$tablelist = $(.\psql.exe -d $databaseName -c $sqlQuery --csv | ConvertFrom-Csv)
+foreach($tableListRow in $tablelist)
+{
+    $currentObjectName =  &quot;`&quot;{0}`&quot;.`&quot;{1}`&quot;&quot; -f $tableListRow.schemaname, $tableListRow.tablename;
+    $sqlQuery = &quot;VACUUM (ANALYZE) $currentObjectName;&quot;
+    Write-Host $sqlQuery;
+    $actionResult = $(.\psql.exe -d $databaseName -c $sqlQuery)
+
+    if($useServiceDatabase -eq $true)
+    {
+        $sqlQuery = @&quot;
+        insert into public.maintenance_actions_log(period, database_name, schema_name, table_name, index_name, operation, sql_command) 
+VALUES(now(), '$databaseName', '$($tableListRow.schemaname)', '$($tableListRow.tablename)', '', 'VACUUM ANALYZE', '$sqlQuery');
+&quot;@
+        $serviceDbActionResult = $(.\psql.exe -d $serviceDatabaseName -c $sqlQuery)
+    }
+}
+
+Pop-Location;
+</div></section><section class="chapter"><h3 id="-bdlage_18" data-toc="-bdlage_18">Обслуживания нескольких баз</h3><ul class="list _bullet" id="-bdlage_19"><li class="list__item" id="-bdlage_20"><p>Можно дополнительно указать несколько баз для обслуживания.</p></li><li class="list__item" id="-bdlage_21"><p>Можно указать схемы, исключаемые из анализа.</p></li><li class="list__item" id="-bdlage_22"><p>Выбор операции для Vaсuum Analize или FULL</p></li></ul><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Обслуживание PostgreSQL из PowerShell в части очистки от &quot;мертвых&quot; строк и обновления статистики.">
+&lt;#
+Обслуживание PostgreSQL из PowerShell в части очистки от &quot;мертвых&quot; строк и обновления статистики.
+Подходит как для Windows, так и для *.nix систем.
+#&gt;
+
+# Путь PostgreSQL (!!! измените на нужную версию 
+# или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+# Эта часть в основном акттуальна для Windows.
+# Наиболее венроятным расположением будут
+# &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+# &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+# &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+$pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+# Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+# Альтернативный подход - добавить этот каталог в параметры окружения
+Push-Location $pgDirectory;
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1
+$env:PGHOST = 'localhost'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252
+$env:PGCLIENTENCODING = 'WIN1251' #'UTF8'
+
+# Базы данных для обслуживания
+$databaseName = @('devtestclusteridx', 'dvdrental'); # '&lt;БазаДанныхДляОбслуживания&gt;'
+# Использовать FULL или ANALIZE
+$useAnalize = $true;
+# Граница количества мертвых строк, от которого начинается обслуживание
+$deadTuplesThreshold = 10000; # 10000, 20000, 50000, 0 - для отладки
+# Мин. количество часов с последней операции VACUUM, после которого нужно выполнять повторное обслуживание
+$minHoursLeftAfterLastVacuum = 12; # 12
+# Мин. количество часов с последней операции ANALYZE, после которого нужно выполнять повторное обслуживание
+$minHoursLeftAfterLastAnalyze = 12; # 12
+# Схемы исключенные из проверки
+$excludeSchemaNames = @('pg_catalog', 'information_schema', 'pg_toast')
+# Использовать  служебную базу мониторинга
+$useServiceDatabase = $true
+# Имя служебной базы мониторинга
+$serviceDatabaseName = 'postgremaintenance'
+
+# Игнорируем служебные базы данных
+$sqlQuery = &quot;select v.datname 
+from pg_catalog.pg_stat_database as v 
+where v.datid&gt;0 and v.datname not in('postgres', 'template1', 'template0');&quot;;
+
+$vacuumOption = &quot;FULL&quot;;
+if($useAnalize){
+    $vacuumOption = &quot;ANALYZE&quot;;
+}
+
+$dblist = $(.\psql.exe -d &quot;postgres&quot; -c $sqlQuery --csv | ConvertFrom-Csv)
+foreach($dbListRow in $dblist)
+{
+    $currentDB = $dbListRow.datname;
+    # Пропускаем базы, которые не относятся к указанному имени в параметре databaseName
+    if(-not $databaseName.Contains($currentDB))
+    {
+        continue;
+    }   
+   
+    Write-Host $(&quot;Current database: $currentDB&quot;)
+    # \`
+    $sqlQuery = @&quot;
+    select
+    tables.schemaname, tables.tablename
+from
+    (select
+        nspname as schemaname,
+        relname as tablename,
+        pg_class.oid as objectid
+    from
+        pg_catalog.pg_class,
+        pg_catalog.pg_namespace,
+        pg_catalog.pg_roles
+    where
+        pg_class.relnamespace = pg_namespace.oid
+        and pg_namespace.nspowner = pg_roles.oid
+        and pg_class.relkind = 'r'
+    ) as tables(schemaname, tablename, objectid)
+    left join (
+        select
+            relid,
+            n_dead_tup,
+            coalesce(last_vacuum,last_autovacuum) as last_vacuum_period,
+            coalesce(last_analyze,last_autoanalyze) as last_analyze_period
+        from pg_stat_all_tables	
+    ) as stat on stat.relid = tables.objectid
+ where 
+    -- Обслуживаем только таблицы c мертвыми строками, превышающие или равные параметру DEAD_TUPLES_THRESHOLD
+    stat.n_dead_tup &gt;= $deadTuplesThreshold 
+    -- Или обслуживаем таблицы, по которым есть мертвые строки 
+    -- и очистка или обновление статистики выполнялось более
+    -- больше определенного количества часов в настройках
+    OR (
+        stat.n_dead_tup &gt; 0
+        AND (
+            coalesce(date_part('hour', now() - last_vacuum_period), 0) &gt;= $minHoursLeftAfterLastVacuum 
+            OR coalesce(date_part('hour', now() - last_analyze_period), 0) &gt;= $minHoursLeftAfterLastAnalyze  
+            )
+        );
+&quot;@
+
+    $tablelist = $(.\psql.exe -d $currentDB -c $sqlQuery --csv | ConvertFrom-Csv)
+    foreach($tableListRow in $tablelist)
+    {
+        # Исключение из обработки необходимых схем
+        if($excludeSchemaNames.Contains($tableListRow.schemaname))
+        {
+            continue;
+        }
+        $currentObjectName =  &quot;`&quot;{0}`&quot;.`&quot;{1}`&quot;&quot; -f $tableListRow.schemaname, $tableListRow.tablename;
+        $sqlQuery = &quot;VACUUM ($vacuumOption) $currentObjectName;&quot;
+        Write-Host &quot;Process database $currentDB query: $sqlQuery&quot;;
+        $actionResult = $(.\psql.exe -d $currentDB -c $sqlQuery)
+
+        if($useServiceDatabase -eq $true)
+        {
+            $sqlQuery = @&quot;
+            insert into public.maintenance_actions_log(period, database_name, schema_name, table_name, index_name, operation, sql_command) 
+VALUES(now(), '$currentDB', '$($tableListRow.schemaname)', '$($tableListRow.tablename)', '', 'VACUUM $vacuumOption', '$sqlQuery');
+&quot;@
+            $serviceDbActionResult = $(.\psql.exe -d $serviceDatabaseName -c $sqlQuery)
+            #Write-Host $serviceDbActionResult
+        }
+    }
+}
+
+Pop-Location;
+</div></section></section><section class="chapter"><h2 id="bash" data-toc="bash">Скрипт на bash для обслуживания базы</h2><p id="-bdlage_24">TODO!!!</p><div class="code-block" data-lang="bash">
+#! /bin/bash
+
+# Обслуживание PostgreSQL из PowerShell в части очистки от &quot;мертвых&quot; строк и обновления статистики.
+
+# Необязательные параметры подключения к PostgreSQL
+# С их помощью можно задать напрямую в скрипте параметры подключения для утилиты psql.
+#export PGHOST=localhost
+#export PGPORT=5432
+#export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+#export PGPASSWORD=postgres # Пароль этого пользователя
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+# База данных для обслуживания
+DBNAME=dvdrental 
+# Граница количества 'мертвых' строк, от которого начинается обслуживание
+DEAD_TUPLES_THRESHOLD= 10000
+# Мин. количество часов с последней операции VACUUM, после которого нужно выполнять повторное обслуживание
+MIN_HOURS_LEFT_AFTER_LAST_VACUUM= 12
+# Мин. количество часов с последней операции ANALYZE, после которого нужно выполнять повторное обслуживание
+MIN_HOURS_LEFT_AFTER_LAST_ANALYZE= 12
+# Использовать  служебную базу мониторинга
+USE_SERVICE_DBNAME=true
+# Имя служебной базы мониторинга
+SERVICE_DBNAME='postgremaintenance'
+
+dblist=$(psql -d postgres -c &quot;copy (
+    select v.datname 
+from pg_catalog.pg_stat_database as v 
+where v.datid&gt;0 and v.datname not in('postgres', 'template1', 'template0')) to stdout&quot;)
+for db in $dblist ; do
+    # Игнорируем служебные базы данных
+    if [[ $db == template0 ]] ||  [[ $db == template1 ]] || [[ $db == postgres ]] ; then
+        continue
+    fi
+
+    # Пропускаем базы, которые не относятся к указанному имени в параметре PGDBNAME
+    if [[ $db != &quot;$DBNAME&quot; ]] ; then
+        continue
+    fi
+
+    echo &quot;$db&quot;
+
+       psql -d &quot;$db&quot; -t --field-separator ' ' \
+        --set ON_ERROR_STOP=on \
+        --no-align \
+       -c &quot;
+        select tables.schemaname, tables.tablename 
+        from
+            (select
+                nspname as schemaname,
+                relname as tablename,
+                pg_class.oid as objectid
+            from
+                pg_catalog.pg_class,
+                pg_catalog.pg_namespace,
+                pg_catalog.pg_roles
+            where
+                pg_class.relnamespace = pg_namespace.oid
+                and pg_namespace.nspowner = pg_roles.oid
+                and pg_class.relkind = 'r'
+            ) as tables(schemaname, tablename, objectid)
+            left join (
+                select
+                    relid,
+                    n_dead_tup,
+                    coalesce(last_vacuum,last_autovacuum) as \&quot;last_vacuum_period\&quot;,
+                    coalesce(last_analyze,last_autoanalyze) as \&quot;last_analyze_period\&quot;
+                from pg_stat_all_tables	
+            ) as stat on stat.relid = tables.objectid
+        where 
+            -- Обслуживаем только таблицы с 'мертвыми' строками, превышающие или равные параметру DEAD_TUPLES_THRESHOLD
+            stat.n_dead_tup &gt;= $DEAD_TUPLES_THRESHOLD
+            -- Или обслуживаем таблицы, по которым есть 'мертвые' строки 
+            -- и очистка или обновление статистики выполнялось более
+            -- больше определенного количества часов в настройках
+            OR (
+                stat.n_dead_tup &gt; 0
+                AND (
+                    coalesce(date_part('hour', now() - last_vacuum_period), 0) &gt;= $MIN_HOURS_LEFT_AFTER_LAST_VACUUM
+                    OR coalesce(date_part('hour', now() - last_analyze_period), 0) &gt;= $MIN_HOURS_LEFT_AFTER_LAST_ANALYZE
+                )
+            )            
+        &quot; \
+    | while read -a Record ; do
+        #echo $Record
+        tableschema=${Record[0]}
+        tablename=${Record[1]}
+
+        #echo &quot;  fulltablename: $fulltablename&quot;
+        #echo &quot;  tableschema: $tableschema&quot;
+        #echo &quot;  tablename: $tablename&quot;
+
+        sql=&quot;VACUUM (ANALYZE) \&quot;$tableschema\&quot;.\&quot;$tablename\&quot;;&quot;
+        action_result=$(psql -d &quot;$db&quot; -e -a -c &quot;$sql&quot;)
+        echo &quot;$action_result&quot;
+
+        if [ &quot;$USE_SERVICE_DBNAME&quot; = true ] ; then
+            service_db_action_result=$(psql -d $SERVICE_DBNAME -e -a -c &quot;
+                INSERT INTO public.maintenance_actions_log
+                (period, database_name, schema_name, table_name, index_name, operation, sql_command)
+                VALUES(now(), '$db', '$tableschema', '$tablename', '', 'VACUUM ANALYZE', '$sql');
+            &quot;)
+            echo &quot;$service_db_action_result&quot;
+        fi
+    done
+done
+
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-maintance-dbmaintancevacuum.html" class="navigation-links__prev">Сборка мусора и анализ</a><a href="howto-monitor.html" class="navigation-links__next">Мониторинг запросов</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

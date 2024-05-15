@@ -1,0 +1,450 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.2189157"><title>Использование PowerShell | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"powershell","level":0,"title":"Базовые объекты PowerShell","anchor":"#powershell"},{"id":"psql","level":0,"title":"Основной блок подключения и выполнения psql","anchor":"#psql"},{"id":"npgsql","level":0,"title":"Использование NpgSql","anchor":"#npgsql"},{"id":"npgsql-dapper","level":0,"title":"Использование NpgSql и Dapper","anchor":"#npgsql-dapper"},{"id":"npgsql-dapper-generic","level":0,"title":"Использование NpgSql и Dapper и Generic","anchor":"#npgsql-dapper-generic"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование PowerShell | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-shellprograms-pws.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование PowerShell | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-shellprograms-pws.html#webpage",
+    "url": "writerside-documentation/postgres-shellprograms-pws.html",
+    "name": "Использование PowerShell | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-shellprograms-pws" data-main-title="Использование PowerShell" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_calling_generic_methods?view\u003dpowershell-7.4&quot;,&quot;text&quot;:&quot;Generic в Powershell&quot;},{&quot;url&quot;:&quot;https://www.learndapper.com/database-providers&quot;,&quot;text&quot;:&quot;Database Providers With Dapper&quot;},{&quot;url&quot;:&quot;https://github.com/DapperLib/Dapper&quot;,&quot;text&quot;:&quot;Dapper&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-shellprograms.md|Использование bash, powershell и других возможностей"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-shellprograms-pws" id="postgres-shellprograms-pws.md">Использование PowerShell</h1><p id="-wfaizv_1498">Powershell v7 и выше.</p><aside class="prompt" data-type="tip" data-title="" id="-wfaizv_1499"><p id="-wfaizv_1500">Для работы с PowerShell в nix системах не забывайте сохранять файлы с LF переводом строки, в таком виде они будут работать и в nix и в windows</p></aside><p id="-wfaizv_1501">Для запуска скриптов PowerShell в nix не забывайте дать им соответствующее разрешение <code class="code" id="-wfaizv_1502">chmod +x &lt;имяфайла.ps1&gt;</code></p><p id="-wfaizv_1503">Используйте модификатор запуска в заголовке файла</p><div class="code-block" data-lang="bash">
+#!/usr/bin/env pwsh
+</div><section class="chapter"><h2 id="powershell" data-toc="powershell">Базовые объекты PowerShell</h2><div class="code-block" data-lang="bash">
+$array = @(1, 2, 3)
+Write-Output &quot;Array Count: $($array.Count)&quot;
+$dictionary = @{A=1; B=2; C=3; D=4}
+Write-Output &quot;Dictionary Count: $($dictionary.Count)
+
+$object = [PSCustomObject]@{A=1; B=2; C=3; D=4; E=5}
+</div><div class="code-block" data-lang="bash">
+try {
+    $array = @(1, 2, 3)
+    $i = -1
+    Write-Output &quot;Array ForEach: $($array.ForEach({$i += 1; $i}))&quot;
+} catch {
+    Write-Output &quot;Array ForEach threw: $_&quot;
+}
+try {
+    $dictionary = @{A=1; B=2; C=3; D=4}
+    $i = -1
+    Write-Output &quot;Dictionary ForEach: $($dictionary.ForEach({$i += 1; $i}))&quot;
+} catch {
+    Write-Output &quot;Dictionary ForEach threw: $_&quot;
+}
+try {
+    $number = 5
+    $i = -1
+    Write-Output &quot;Number ForEach: $($number.ForEach({$i += 1; $i}))&quot;
+} catch {
+    Write-Output &quot;Number ForEach threw: $_&quot;
+}
+try {
+    $string = 'hello there'
+    $i = -1
+    Write-Output &quot;String ForEach: $($string.ForEach({$i += 1; $i}))&quot;
+} catch {
+    Write-Output &quot;String ForEach threw: $_&quot;
+}
+
+try {
+    $object = [PSCustomObject]@{A=1; B=2; C=3; D=4; E=5}
+    $i = -1
+    Write-Output &quot;PSCustomObject ForEach: $($object.ForEach({$i += 1; $i}))&quot;
+} catch {
+    Write-Output &quot;PSCustomObject object ForEach threw: $_&quot;
+}
+</div><div class="code-block" data-lang="bash">
+class C {
+    [String] Func1() {
+        Write-Output 'Func1: writing string to stdout'
+        return 'Func1: returning a string'
+    }
+    [String] Func2() {
+        cmd /c 'echo Func2: writing string to stdout'
+        return 'Func2: returning a string'
+    }
+    [UInt32] Func3() {
+        Write-Output 'Func3: writing string to stdout'
+        return 3
+    }
+    [UInt32] Func4() {
+        cmd /c 'echo Func4: writing string to stdout'
+        return 4
+    }
+    [Void] Func5() {
+        Write-Output 'Func5: writing string to stdout'
+    }
+    [Void] Func6() {
+        cmd /c 'echo Func6: writing string to stdout'
+    }
+}
+$c = [C]::new()
+$c.Func1()
+$c.Func2()
+$c.Func3()
+$c.Func4()
+$c.Func5()
+$c.Func6()
+</div></section><section class="chapter"><h2 id="psql" data-toc="psql">Основной блок подключения и выполнения psql</h2><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Универсальный выриант для PowerShell для запуска в nix или windows">
+&lt;#
+Универсальный выриант для PowerShell для запуска в nix или windows
+#&gt;
+
+# Определяем платформу
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию 
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    # &quot;/usr/lib/postgresql/16/bin/psql&quot; - postgres16
+    # &quot;/opt/pgpro/std-16/bin/&quot; - postgres16pro-std
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252
+$env:PGCLIENTENCODING = 'WIN1251' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# Информация о версии
+$serviceDbActionResult = $(.\psql -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d &quot;postgres&quot; -c &quot;\conninfo&quot;);
+Write-Host $serviceDbActionResult
+Write-Host $(&quot;-&quot; * 50)
+
+# Возврат в каталог
+Pop-Location
+</div></section><section class="chapter"><h2 id="npgsql" data-toc="npgsql">Использование NpgSql</h2><p id="-wfaizv_1509">Использование библиотек NpgSql и Powershell дают дополнительные преимущества, поскольку можно использовать не только утилиту psql для решения задач.</p><p id="-wfaizv_1510">Для использования нужны дополнительные пакеты</p><ul class="list _bullet" id="-wfaizv_1511"><li class="list__item" id="-wfaizv_1512"><p><a href="https://www.nuget.org/packages/Npgsql" id="-wfaizv_1513" data-external="true" rel="noopener noreferrer">Npgsql</a></p></li><li class="list__item" id="-wfaizv_1514"><p><a href="https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions" id="-wfaizv_1515" data-external="true" rel="noopener noreferrer">Microsoft.Extensions.Logging.Abstractions</a></p></li><li class="list__item" id="-wfaizv_1516"><p><a href="https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions" id="-wfaizv_1517" data-external="true" rel="noopener noreferrer">Microsoft.Extensions.DependencyInjection.Abstractions</a></p></li></ul><p id="-wfaizv_1518">Скачиваем nuget пакет, переименовываем в расширение zip, распаковываем<br> находим соответствие по папкам в нужных пакетах и помещаем необходимые файлы в одну папку</p><figure id="-wfaizv_1520"><img alt="usenpgposhe.png" src="images/usenpgposhe.png" title="usenpgposhe.png" width="415" height="328"></figure><p id="-wfaizv_1521">Пример выполнения sql запроса</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="# Использование Npgsql в Powershell">
+# Использование Npgsql в Powershell
+# https://www.nuget.org/packages/Npgsql
+# https://www.npgsql.org/doc/index.html
+
+# для удобства поместим все зависимый и необходимые файлы в одну папку
+# нам нужны пакеты 
+# https://www.nuget.org/packages/Npgsql
+# https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions
+# https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions
+# Как вариант - 
+# скачиваем nuget пакет, переименовываем в расширение zip, распаковываем
+# находим соответствие по папкам в нужных пакетах и помещаем необходимые файлы в одну папку
+
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.Logging.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Npgsql.dll} 
+catch {
+    Write-Host(&quot;Use Npgsql.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+
+#[NpgsqlTypes.NpgsqlDbType]::TimestampTz
+
+$connectionString = &quot;Host=192.168.0.133;Username=postgres;Password=postgres;Database=postgres;Port=5433;&quot;;
+
+$conn = New-Object Npgsql.NpgsqlConnection $connectionString
+$conn.Open();
+
+$cmd = New-Object Npgsql.NpgsqlCommand &quot;select version()&quot;, $conn;
+$objResult = $cmd.ExecuteScalar();
+Write-Host $objResult
+
+try {
+    $conn.Close();
+    $conn.Dispose();
+    $cmd.Dispose();
+    $conn = $null;
+    $cmd = $null;
+    [System.GC]::Collect();
+    [System.GC]::WaitForPendingFinalizers();
+    [System.GC]::Collect();    
+}
+catch {
+    Write-Host(&quot;Has error!&quot;) Write-Host -ForegroundColor Red
+}
+</div><p id="-wfaizv_1523">Пример получения набора данных</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="# https://www.nuget.org/packages/Npgsql">
+# https://www.nuget.org/packages/Npgsql
+# https://www.npgsql.org/doc/index.html
+
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.Logging.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Npgsql.dll} 
+catch {
+    Write-Host(&quot;Use Npgsql.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1
+$PGHOST = 'localhost'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# База по умолчанию
+$PGDATABASE = 'postgres'
+
+
+$connectionString = &quot;Host=$PGHOST;Username=$PGUSER;Password=$PGPASSWORD;Database=$PGDATABASE;Port=$PGPORT;&quot;;
+
+$conn = New-Object Npgsql.NpgsqlConnection $connectionString
+$conn.Open();
+
+$cmd = New-Object Npgsql.NpgsqlCommand &quot;select version()&quot;, $conn;
+$objResult = $cmd.ExecuteScalar();
+Write-Host $objResult
+Write-Host $(&quot;-&quot; * 50)
+
+$cmd = New-Object Npgsql.NpgsqlCommand &quot;select table_schema, table_name from information_schema.tables limit 10;&quot;, $conn;
+$objReader = $cmd.ExecuteReader();
+
+while ($objReader.Read()) {
+
+    # Пример для проверки на NULL
+    $tblschema = $objReader.IsDBNull(0)?&quot;is null&quot;: $objReader.GetString(0);
+    $tblname = $objReader.GetString(1);
+    
+    Write-Host &quot;Shema: $tblschema and table $tblname&quot; ;
+}
+
+try {
+    $conn.Close();
+    $conn.Dispose();
+    $cmd.Dispose();
+    $conn = $null;
+    $cmd = $null;
+
+    $objReader.Close();
+    $objReader.Dispose()
+    $objReader=$null;
+
+    [System.GC]::Collect();
+    [System.GC]::WaitForPendingFinalizers();
+    [System.GC]::Collect();    
+}
+catch {
+    Write-Host(&quot;Has error!&quot;) Write-Host -ForegroundColor Red
+}
+</div></section><section class="chapter"><h2 id="npgsql-dapper" data-toc="npgsql-dapper">Использование NpgSql и Dapper</h2><aside class="prompt" data-type="tip" data-title="" id="-wfaizv_1525"><p id="-wfaizv_1526">Если вы знаете сто такое Dapper, то понимаете что использовать C# будет значительно проще.</p></aside><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="# https://www.nuget.org/packages/Npgsql">
+# https://www.nuget.org/packages/Npgsql
+# https://www.npgsql.org/doc/index.html
+
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.Logging.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Npgsql.dll} 
+catch {
+    Write-Host(&quot;Use Npgsql.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Dapper.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1
+$PGHOST = 'localhost'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# База по умолчанию
+$PGDATABASE = 'postgres'
+
+
+$connectionString = &quot;Host=$PGHOST;Username=$PGUSER;Password=$PGPASSWORD;Database=$PGDATABASE;Port=$PGPORT;&quot;;
+
+$conn = New-Object Npgsql.NpgsqlConnection $connectionString
+$conn.Open();
+
+$cmd = New-Object Npgsql.NpgsqlCommand &quot;select version()&quot;, $conn;
+$objResult = $cmd.ExecuteScalar();
+Write-Host $objResult
+Write-Host $(&quot;-&quot; * 50)
+
+$sql = &quot;select table_schema, table_name from information_schema.tables limit 10;&quot;;
+$resReaderData  = [Dapper.SqlMapper]::Query($conn, $sql);
+foreach ($dataRow in $resReaderData) {
+    #Write-Host $dataRow;
+    #Write-Host $dataRow[&quot;table_schema&quot;]  $dataRow[&quot;table_name&quot;];
+    Write-Host $dataRow.table_schema $dataRow.table_name
+} 
+
+
+try {
+    $conn.Close();
+    $conn.Dispose();
+    $cmd.Dispose();
+    $conn = $null;
+    $cmd = $null;
+
+    $resReaderData.Dispose()
+    $resReaderData=$null;
+
+    [System.GC]::Collect();
+    [System.GC]::WaitForPendingFinalizers();
+    [System.GC]::Collect();    
+}
+catch {
+    Write-Host(&quot;Has error!&quot;) Write-Host -ForegroundColor Red
+}
+</div></section><section class="chapter"><h2 id="npgsql-dapper-generic" data-toc="npgsql-dapper-generic">Использование NpgSql и Dapper и Generic</h2><p id="-wfaizv_1528">Использование типизированных результатов требуется PowerShell v&gt;=7.3</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="# https://www.nuget.org/packages/Npgsql">
+# https://www.nuget.org/packages/Npgsql
+# https://www.npgsql.org/doc/index.html
+
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.Logging.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+try {Add-Type -Path .\npgsql802\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Npgsql.dll} 
+catch {
+    Write-Host(&quot;Use Npgsql.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+try {Add-Type -Path .\npgsql802\net8.0\Dapper.dll} 
+catch {
+    Write-Host(&quot;Use DependencyInjection.Abstractions.dl has error!&quot;) Write-Host -ForegroundColor Yellow
+    Write-Warning $Error[0];
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1
+$PGHOST = 'localhost'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# База по умолчанию
+$PGDATABASE = 'postgres'
+
+
+$connectionString = &quot;Host=$PGHOST;Username=$PGUSER;Password=$PGPASSWORD;Database=$PGDATABASE;Port=$PGPORT;&quot;;
+
+$conn = New-Object Npgsql.NpgsqlConnection $connectionString
+$conn.Open();
+
+$cmd = New-Object Npgsql.NpgsqlCommand &quot;select version()&quot;, $conn;
+$objResult = $cmd.ExecuteScalar();
+Write-Host $objResult
+Write-Host $(&quot;-&quot; * 50)
+
+$sourceCode = @&quot;
+public class ModelInfoSchema
+{
+    public string table_schema { get; set; }
+    public string table_name { get; set; }
+}
+&quot;@
+add-type -TypeDefinition $sourceCode
+
+$sql = &quot;select table_schema, table_name from information_schema.tables limit 10;&quot;;
+#$testObj = New-Object -TypeName ModelInfoSchema
+
+$resReaderData  = [Dapper.SqlMapper]::Query[ModelInfoSchema]($conn, $sql);
+foreach ($dataRow in $resReaderData) {
+    Write-Host $dataRow.table_schema $dataRow.table_name;
+} 
+
+
+try {
+    $conn.Close();
+    $conn.Dispose();
+    $cmd.Dispose();
+    $conn = $null;
+    $cmd = $null;
+
+    $resReaderData=$null;
+
+    [System.GC]::Collect();
+    [System.GC]::WaitForPendingFinalizers();
+    [System.GC]::Collect();    
+}
+catch {
+    Write-Host(&quot;Has error!&quot;) Write-Host -ForegroundColor Red
+}
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-shellprograms-bash.html" class="navigation-links__prev">Использование bash скриптов</a><a href="postgres-pwsh-psql-toscrean.html" class="navigation-links__next">Выполнение psql и вывод на экран или файл</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

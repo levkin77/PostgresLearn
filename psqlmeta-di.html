@@ -1,0 +1,128 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0709213"><title>Мета di | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"di","level":0,"title":"Мета \\di","anchor":"#di"},{"id":"di_plus","level":0,"title":"Мета \\di+","anchor":"#di_plus"},{"id":"di_index","level":0,"title":"Мета \\di [индекс]","anchor":"#di_index"},{"id":"di_plus_index","level":0,"title":"Мета \\di+ [индекс]","anchor":"#di_plus_index"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Мета di | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/psqlmeta-di.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Мета di | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/psqlmeta-di.html#webpage",
+    "url": "writerside-documentation/psqlmeta-di.html",
+    "name": "Мета di | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="psqlmeta-di" data-main-title="Мета di" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-usepsqlcmd.md|Использование psql///psqlmeta-d.md|Мета d"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="psqlmeta-di" id="psqlmeta-di.md">Мета di</h1><p id="-pgclzr_18">Информация об индексах</p><section class="chapter"><h2 id="di" data-toc="di">Мета \di</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  c2.relname as &quot;Table&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+     LEFT JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid
+     LEFT JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid
+WHERE c.relkind IN ('i','I','')
+      AND n.nspname &lt;&gt; 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname &lt;&gt; 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pgclzr_20">Результат</p><div class="code-block" data-lang="plaintext">
+                                     List of relations
+  Schema  |                   Name                    | Type  |  Owner   |      Table
+----------+-------------------------------------------+-------+----------+-----------------
+ bookings | aircrafts_pkey                            | index | postgres | aircrafts_data
+ bookings | airports_data_pkey                        | index | postgres | airports_data
+ bookings | boarding_passes_flight_id_boarding_no_key | index | postgres | boarding_passes
+ bookings | boarding_passes_flight_id_seat_no_key     | index | postgres | boarding_passes
+ bookings | boarding_passes_pkey                      | index | postgres | boarding_passes
+ bookings | bookings_pkey                             | index | postgres | bookings
+ bookings | flights_flight_no_scheduled_departure_key | index | postgres | flights
+ bookings | flights_pkey                              | index | postgres | flights
+ bookings | seats_pkey                                | index | postgres | seats
+ bookings | ticket_flights_pkey                       | index | postgres | ticket_flights
+ bookings | tickets_pkey                              | index | postgres | tickets
+</div></section><section class="chapter"><h2 id="di_plus" data-toc="di_plus">Мета \di+</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  c2.relname as &quot;Table&quot;,
+  CASE c.relpersistence WHEN 'p' THEN 'permanent' WHEN 't' THEN 'temporary' WHEN 'u' THEN 'unlogged' END as &quot;Persistence&quot;,
+  am.amname as &quot;Access method&quot;,
+  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as &quot;Size&quot;,
+  pg_catalog.obj_description(c.oid, 'pg_class') as &quot;Description&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+     LEFT JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid
+     LEFT JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid
+WHERE c.relkind IN ('i','I','')
+      AND n.nspname &lt;&gt; 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname &lt;&gt; 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pgclzr_23">результат</p><div class="code-block" data-lang="plaintext">
+                                                                List of relations
+  Schema  |                   Name                    | Type  |  Owner   |      Table      | Persistence | Access method |  Size   | Description
+----------+-------------------------------------------+-------+----------+-----------------+-------------+---------------+---------+-------------
+ bookings | aircrafts_pkey                            | index | postgres | aircrafts_data  | permanent   | btree         | 16 kB   |
+ bookings | airports_data_pkey                        | index | postgres | airports_data   | permanent   | btree         | 16 kB   |
+ bookings | boarding_passes_flight_id_boarding_no_key | index | postgres | boarding_passes | permanent   | btree         | 12 MB   |
+ bookings | boarding_passes_flight_id_seat_no_key     | index | postgres | boarding_passes | permanent   | btree         | 12 MB   |
+ bookings | boarding_passes_pkey                      | index | postgres | boarding_passes | permanent   | btree         | 22 MB   |
+ bookings | bookings_pkey                             | index | postgres | bookings        | permanent   | btree         | 5784 kB |
+ bookings | flights_flight_no_scheduled_departure_key | index | postgres | flights         | permanent   | btree         | 1032 kB |
+ bookings | flights_pkey                              | index | postgres | flights         | permanent   | btree         | 744 kB  |
+ bookings | seats_pkey                                | index | postgres | seats           | permanent   | btree         | 48 kB   |
+ bookings | ticket_flights_pkey                       | index | postgres | ticket_flights  | permanent   | btree         | 41 MB   |
+ bookings | tickets_pkey                              | index | postgres | tickets         | permanent   | btree         | 11 MB   |
+</div></section><section class="chapter"><h2 id="di_index" data-toc="di_index">Мета \di [индекс]</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  c2.relname as &quot;Table&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+     LEFT JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid
+     LEFT JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid
+WHERE c.relkind IN ('i','I','s','')
+  AND c.relname OPERATOR(pg_catalog.~) '^(aircrafts_pkey)$' COLLATE pg_catalog.default
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pgclzr_27">результат</p><div class="code-block" data-lang="plaintext">
+                       List of relations
+  Schema  |      Name      | Type  |  Owner   |     Table
+----------+----------------+-------+----------+----------------
+ bookings | aircrafts_pkey | index | postgres | aircrafts_data
+</div></section><section class="chapter"><h2 id="di_plus_index" data-toc="di_plus_index">Мета \di+ [индекс]</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  c2.relname as &quot;Table&quot;,
+  CASE c.relpersistence WHEN 'p' THEN 'permanent' WHEN 't' THEN 'temporary' WHEN 'u' THEN 'unlogged' END as &quot;Persistence&quot;,
+  am.amname as &quot;Access method&quot;,
+  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as &quot;Size&quot;,
+  pg_catalog.obj_description(c.oid, 'pg_class') as &quot;Description&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+     LEFT JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid
+     LEFT JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid
+WHERE c.relkind IN ('i','I','s','')
+  AND c.relname OPERATOR(pg_catalog.~) '^(aircrafts_pkey)$' COLLATE pg_catalog.default
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pgclzr_31">результат</p><div class="code-block" data-lang="plaintext">
+                                                 List of relations
+  Schema  |      Name      | Type  |  Owner   |     Table      | Persistence | Access method | Size  | Description
+----------+----------------+-------+----------+----------------+-------------+---------------+-------+-------------
+ bookings | aircrafts_pkey | index | postgres | aircrafts_data | permanent   | btree         | 16 kB |
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="psqlmeta-d.html" class="navigation-links__prev">Мета d</a><a href="psqlmeta-da.html" class="navigation-links__next">Мета dA</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

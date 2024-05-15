@@ -1,0 +1,172 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.1639218"><title>Регулярное тяжелое обслуживание | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Регулярное тяжелое обслуживание | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-maintance-dbmaintancehard.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Регулярное тяжелое обслуживание | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-maintance-dbmaintancehard.html#webpage",
+    "url": "writerside-documentation/howto-maintance-dbmaintancehard.html",
+    "name": "Регулярное тяжелое обслуживание | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-maintance-dbmaintancehard" data-main-title="Регулярное тяжелое обслуживание" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-maintance.md|Обслуживание (MAINTENANCE)"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-maintance-dbmaintancehard" id="howto-maintance-dbmaintancehard.md">Регулярное тяжелое обслуживание</h1><p id="-eutcf_2">Для nix систем</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="#! /bin/bash">
+#! /bin/bash
+export PGHOST=localhost
+export PGPORT=5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+# Получаем список баз данных
+dblist=`psql -d postgres -c &quot;copy (select datname from pg_stat_database) to stdout&quot;`
+for db in $dblist ; do
+
+    # Игнорируем служебные базы данных
+    if [[ $db == template0 ]] ||  [[ $db == template1 ]] || [[ $db == postgres ]] ; then
+        continue
+    fi
+
+    # Выполняем сборку мусора
+    psql -d $db -e -a -c &quot;VACUUM;&quot;
+    # Перестраиваем системные индексы
+    psql -d $db -e -a -c &quot;REINDEX SYSTEM $db;&quot;
+    # Сохраняем список таблиц во временный файл
+    cp /dev/null tables.txt
+    psql -d $db -c &quot;copy (select '\&quot;'||tables.schemaname||'\&quot;.' || '\&quot;'||tables.tablename||'\&quot;' from (select nspname as schemaname, relname as tablename from pg_catalog.pg_class, pg_catalog.pg_namespace, pg_catalog.pg_roles where pg_class.relnamespace = pg_namespace.oid and pg_namespace.nspowner = pg_roles.oid and pg_class.relkind='r' and (pg_namespace.nspname = 'public' or pg_roles.rolsuper = 'false' ) ) as tables(schemaname, tablename)) to stdout;&quot; &gt; tables.txt
+    
+    while read line; do
+        
+        # Экранируем в именах таблицы служебный символ $
+        line=`echo $line |sed 's/\\\$/\\\\\\\$/g'`
+        
+        # Выполняем полную очистку
+        psql -d $db -e -a -c &quot;VACUUM FULL $line;&quot;
+        # Перестраиваем индексы таблицы
+        psql -d $db -e -a -c &quot;REINDEX TABLE $line;&quot;
+
+    done &lt;tables.txt
+done
+</div><p id="-eutcf_4">PowerShell для windows и nix. Используется PowerShell Core</p><ul class="list _bullet" id="-eutcf_5"><li class="list__item" id="-eutcf_6"><p>Обслуживаем все базы, кроме системных</p></li><li class="list__item" id="-eutcf_7"><p>Можно указать базы, которые нет необходимости обслуживать</p></li><li class="list__item" id="-eutcf_8"><p>Можно указать схемы исключенные из проверки</p></li></ul><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Обслуживание PostgreSQL из PowerShell для nix и windows">
+&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию 
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252
+$env:PGCLIENTENCODING = 'WIN1251' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# Базы данных, которые мы исключаем из обслуживания
+$databaseNameExcludeList = @('postgres', 'devtestindex', 'devtestclusteridx'); 
+# Схемы исключенные из проверки
+$excludeSchemaNames = @('pg_catalog', 'information_schema', 'pg_toast')
+
+# Информация о версии
+$serviceDbActionResult = (.\psql -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d &quot;postgres&quot; -c &quot;\conninfo&quot;);
+Write-Host $serviceDbActionResult
+Write-Host $(&quot;-&quot; * 50)
+
+
+# Игнорируем служебные базы данных
+$sqlQuery = &quot;select v.datname 
+from pg_catalog.pg_stat_database as v 
+where v.datid&gt;0 and v.datname not in('postgres', 'template1', 'template0');&quot;;
+
+$dblist = $(.\psql -d &quot;postgres&quot; -c $sqlQuery --csv | ConvertFrom-Csv)
+foreach($dbListRow in $dblist)
+{
+    $currentDB = $dbListRow.datname;
+    # Пропускаем базы, которые не относятся к указанному имени в параметре databaseName
+    if($databaseNameExcludeList.Contains($currentDB))
+    {
+        continue;
+    }  
+    Write-Host $(&quot;Current database: $currentDB&quot;);
+    #psql -d $db -e -a -c &quot;VACUUM;&quot;
+    # -a Отправляет в стандартный вывод все непустые входные строки по мере их чтения
+    # -e Посылает все команды SQL, отправленные на сервер, ещё и на стандартный вывод
+    # -c Передаёт psql команду для выполнения
+    # Варианты VACUUM, VACUUM FULL, VACUUM (VERBOSE, ANALYZE)
+    $serviceDbActionResult = $(.\psql -d $currentDB -e -a -c &quot;VACUUM;&quot;);
+    # Перестраиваем системные индексы
+    $serviceDbActionResult = $(.\psql -d $currentDB -e -a -c &quot;REINDEX SYSTEM $currentDB;&quot;);
+
+    $serviceDbActionResult = $(.\psql -d $currentDB -e -a -c &quot;REINDEX SYSTEM $currentDB;&quot;);
+    #Write-Host $serviceDbActionResult
+
+    $sqlQuery = @&quot;
+    select i.table_schema as schemaname, i.table_name as tablename 
+    from information_schema.tables i 
+    where 
+    i.table_schema not in('pg_catalog', 'information_schema') 
+    and i.table_type='BASE TABLE';
+&quot;@
+    $tablelist = $(.\psql -d $currentDB -c $sqlQuery --csv | ConvertFrom-Csv)
+
+    foreach($tableListRow in $tablelist)
+    {
+        # Исключение из обработки необходимых схем
+        if($excludeSchemaNames.Contains($tableListRow.schemaname))
+        {
+            continue;
+        }
+        $currentObjectName =  &quot;`&quot;{0}`&quot;.`&quot;{1}`&quot;&quot; -f $tableListRow.schemaname, $tableListRow.tablename;
+        # Выполняем полную очистку
+        $sqlQuery = &quot;VACUUM FULL $currentObjectName;&quot;;
+        Write-Host &quot;Process database $currentDB VACUUM FULL of table, query: $sqlQuery&quot;;
+        $actionResult = $(.\psql -d $currentDB -e -a -c $sqlQuery);
+        # Перестраиваем индексы таблицы
+        $sqlQuery = &quot;REINDEX TABLE $currentObjectName;&quot;;
+        Write-Host &quot;Process database $currentDB with REINDEX TABLE, query: $sqlQuery&quot;;
+        $actionResult = $(.\psql -d $currentDB -e -a -c $sqlQuery);
+        
+    }
+}
+Write-Host $(&quot;-&quot; * 50)
+</div><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-maintance-dbmaintancelite.html" class="navigation-links__prev">Регулярное легкое обслуживание</a><a href="howto-maintance-dbmaintancevacuum.html" class="navigation-links__next">Сборка мусора и анализ</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

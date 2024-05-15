@@ -1,0 +1,44 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0799191"><title>Активные запросы | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Активные запросы | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-monitor-activequery.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Активные запросы | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-monitor-activequery.html#webpage",
+    "url": "writerside-documentation/howto-monitor-activequery.html",
+    "name": "Активные запросы | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-monitor-activequery" data-main-title="Активные запросы" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-monitor.md|Мониторинг запросов"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-monitor-activequery" id="howto-monitor-activequery.md">Активные запросы</h1><div class="code-block" data-lang="sql">
+select
+    query as query, -- Текст активного запроса
+    usesysid as user_id, -- Идентификатор пользователя
+    usename as user_name, -- Имя пользователя
+    datid as db_id, -- Идентификатор базы
+    datname as db_name, -- Имя базы данных
+    query_start as query_start, -- Начало выполнения запроса
+    pid as db_name, -- Идентификатор серверного процесса
+    client_addr as client_address, -- Информация о клиенте
+    client_hostname as client_hostname,
+    client_port as client_port,
+    xact_start as xact_start, -- Время начала транзакции
+    wait_event_type as wait_event_type, -- Тип события, которого ждет процесс
+    wait_event as wait_event, -- Имя ожидаемого события
+    -- Общее текущее состояние этого серверного процесса.
+    /*
+    active: серверный процесс выполняет запрос.
+    idle: серверный процесс ожидает новой команды от клиента.
+    idle in transaction: серверный процесс находится внутри транзакции, но в настоящее время не выполняет никакой запрос.
+    idle in transaction (aborted): Это состояние подобно idle in transaction, за исключением того,
+        что один из операторов в транзакции вызывал ошибку.
+    fastpath function call: серверный процесс выполняет fast-path функцию.
+    disabled: Это состояние отображается для серверных процессов, у которых параметр track_activities отключён.
+    */
+    state as state
+from pg_catalog.pg_stat_activity
+where state = 'active'
+</div><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-monitor.html" class="navigation-links__prev">Мониторинг запросов</a><a href="howto-monitor-transidle.html" class="navigation-links__next">Плохие транзакции</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

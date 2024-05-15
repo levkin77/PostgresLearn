@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T07:10:27.8712307"><title>Примеры процедур | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-gyllxg_110","level":0,"title":"Вставка данных с использованием процедуы","anchor":"#-gyllxg_110"},{"id":"-gyllxg_114","level":0,"title":"Отображение сообщения","anchor":"#-gyllxg_114"},{"id":"-gyllxg_118","level":0,"title":"Управление транзакцией","anchor":"#-gyllxg_118"},{"id":"-gyllxg_131","level":0,"title":"Использование типов данных колонки","anchor":"#-gyllxg_131"},{"id":"notices-warnings-and-info","level":0,"title":"Отображение notices, warnings, and INFO","anchor":"#notices-warnings-and-info"},{"id":"exceptions","level":0,"title":"Вызов exceptions","anchor":"#exceptions"},{"id":"for-loop","level":0,"title":"Перебор записей таблицы используя FOR loop","anchor":"#for-loop"},{"id":"security-invoker","level":0,"title":"Использование SECURITY INVOKER","anchor":"#security-invoker"},{"id":"security-definer","level":0,"title":"Использование SECURITY DEFINER","anchor":"#security-definer"},{"id":"-gyllxg_142","level":0,"title":"Установка параметров","anchor":"#-gyllxg_142"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="icon-192.png"><link rel="icon" type="image/png" sizes="16x16" href="icon-192.png"><meta name="msapplication-TileImage" content="mstile-144x144.png"><meta name="msapplication-square70x70logo" content="mstile-70x70.png"><meta name="msapplication-square150x150logo" content="mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="mstile-310x150.png"><meta name="msapplication-square310x310logo" content="mstile-310x150.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Примеры процедур | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-procsamples.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Примеры процедур | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.142923"><title>Примеры процедур | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"a121tv_38","level":0,"title":"Вставка данных с использованием процедуы","anchor":"#a121tv_38"},{"id":"a121tv_42","level":0,"title":"Отображение сообщения","anchor":"#a121tv_42"},{"id":"a121tv_46","level":0,"title":"Управление транзакцией","anchor":"#a121tv_46"},{"id":"a121tv_59","level":0,"title":"Использование типов данных колонки","anchor":"#a121tv_59"},{"id":"notices-warnings-and-info","level":0,"title":"Отображение notices, warnings, and INFO","anchor":"#notices-warnings-and-info"},{"id":"exceptions","level":0,"title":"Вызов exceptions","anchor":"#exceptions"},{"id":"for-loop","level":0,"title":"Перебор записей таблицы используя FOR loop","anchor":"#for-loop"},{"id":"security-invoker","level":0,"title":"Использование SECURITY INVOKER","anchor":"#security-invoker"},{"id":"security-definer","level":0,"title":"Использование SECURITY DEFINER","anchor":"#security-definer"},{"id":"a121tv_70","level":0,"title":"Установка параметров","anchor":"#a121tv_70"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Примеры процедур | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-procsamples.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Примеры процедур | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/postgres-procsamples.html#webpage",
@@ -13,7 +13,7 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="postgres-procsamples" data-main-title="Примеры процедур" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-procsamples" id="postgres-procsamples.md">Примеры процедур</h1><section class="chapter"><h2 id="-gyllxg_110" data-toc="-gyllxg_110">Вставка данных с использованием процедуы</h2><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="postgres-procsamples" data-main-title="Примеры процедур" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-func-base.md|Функции на языке SQL"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-procsamples" id="postgres-procsamples.md">Примеры процедур</h1><section class="chapter"><h2 id="a121tv_38" data-toc="a121tv_38">Вставка данных с использованием процедуы</h2><div class="code-block" data-lang="sql">
 create or replace procedure genre_insert_data(&quot;GenreId&quot; integer, &quot;Name&quot; character varying)
     language SQL
 as
@@ -21,9 +21,9 @@ $$
 insert into public.&quot;Genre&quot;
 values (&quot;GenreId&quot;, &quot;Name&quot;);
 $$;
-</div><p id="-gyllxg_112">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="a121tv_40">Пример вызова</p><div class="code-block" data-lang="sql">
 CALL genre_insert_data(26,'Pop');
-</div></section><section class="chapter"><h2 id="-gyllxg_114" data-toc="-gyllxg_114">Отображение сообщения</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="a121tv_42" data-toc="a121tv_42">Отображение сообщения</h2><div class="code-block" data-lang="sql">
 create or replace procedure display_message(inout msg text)
 as
 $$
@@ -32,9 +32,9 @@ begin
 end ;
 $$
     language plpgsql;
-</div><p id="-gyllxg_116">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="a121tv_44">Пример вызова</p><div class="code-block" data-lang="sql">
 call display_message('This is my test case');
-</div></section><section class="chapter"><h2 id="-gyllxg_118" data-toc="-gyllxg_118">Управление транзакцией</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="a121tv_46" data-toc="a121tv_46">Управление транзакцией</h2><div class="code-block" data-lang="sql">
 create or replace procedure control_transaction()
     language plpgsql
 as
@@ -49,11 +49,11 @@ begin
     rollback;
 end
 $$;
-</div><p id="-gyllxg_120">Пример вызова</p><div class="code-block" data-lang="sql">
+</div><p id="a121tv_48">Пример вызова</p><div class="code-block" data-lang="sql">
 call control_transaction();
-</div><p id="-gyllxg_122">Проверка таблиц</p><div class="code-block" data-lang="sql">
+</div><p id="a121tv_50">Проверка таблиц</p><div class="code-block" data-lang="sql">
 select oid, relname from pg_class where relname like '%test%';
-</div><div class="table-wrapper"><table class="wide" id="-gyllxg_124"><thead><tr class="ijRowHead" id="-gyllxg_125"><th id="-gyllxg_126"><p>oid</p></th><th id="-gyllxg_127"><p>relname</p></th></tr></thead><tbody><tr id="-gyllxg_128"><td id="-gyllxg_129"><p>474291</p></td><td id="-gyllxg_130"><p>test1</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="-gyllxg_131" data-toc="-gyllxg_131">Использование типов данных колонки</h2><div class="code-block" data-lang="sql">
+</div><div class="table-wrapper"><table class="wide" id="a121tv_52"><thead><tr class="ijRowHead" id="a121tv_53"><th id="a121tv_54"><p>oid</p></th><th id="a121tv_55"><p>relname</p></th></tr></thead><tbody><tr id="a121tv_56"><td id="a121tv_57"><p>474291</p></td><td id="a121tv_58"><p>test1</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="a121tv_59" data-toc="a121tv_59">Использование типов данных колонки</h2><div class="code-block" data-lang="sql">
 create or replace procedure genre_id_max()
     language plpgsql as
 $$
@@ -104,19 +104,19 @@ begin
         end loop;
 end;
 $$;
-</div></section><section class="chapter"><h2 id="security-invoker" data-toc="security-invoker">Использование SECURITY INVOKER</h2><p id="-gyllxg_136">Указывая SECURITY INVOKER - процедура будет вызываться с правами пользователя, осуществившего вызов</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="security-invoker" data-toc="security-invoker">Использование SECURITY INVOKER</h2><p id="a121tv_64">Указывая SECURITY INVOKER - процедура будет вызываться с правами пользователя, осуществившего вызов</p><div class="code-block" data-lang="sql">
 create or replace procedure genre_traverse()
     language plpgsql
     security invoker
 as
 .....
-</div></section><section class="chapter"><h2 id="security-definer" data-toc="security-definer">Использование SECURITY DEFINER</h2><p id="-gyllxg_138">Указывая SECURITY DEFINER - процедура будет вызываться с правами пользователя, являющегося ВЛАДЕЛЬЦЕМ процедуры</p><aside class="prompt" data-type="warning" data-title="" id="-gyllxg_139"><p id="-gyllxg_140">При использовании SECURITY DEFINER недоступно управление транзакцией</p></aside><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="security-definer" data-toc="security-definer">Использование SECURITY DEFINER</h2><p id="a121tv_66">Указывая SECURITY DEFINER - процедура будет вызываться с правами пользователя, являющегося ВЛАДЕЛЬЦЕМ процедуры</p><aside class="prompt" data-type="warning" data-title="" id="a121tv_67"><p id="a121tv_68">При использовании SECURITY DEFINER недоступно управление транзакцией</p></aside><div class="code-block" data-lang="sql">
 create or replace procedure genre_traverse()
     language plpgsql
     security definer
 as
 .....
-</div></section><section class="chapter"><h2 id="-gyllxg_142" data-toc="-gyllxg_142">Установка параметров</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="a121tv_70" data-toc="a121tv_70">Установка параметров</h2><div class="code-block" data-lang="sql">
 create or replace procedure datestyle_change()
     language plpgsql
     set datestyle to postgres, dmy
@@ -126,4 +126,4 @@ begin
     raise notice 'Current Date is : % ', now();
 end;
 $$;
-</div><p id="-gyllxg_144">После вызова параметры сохранятся и будут активными уже за пределами процедуры.</p></section><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-func-vs-proc.html" class="navigation-links__prev">Function vs Procedure</a><a href="postgres-parttables.html" class="navigation-links__next">Секционирование таблиц по UUID</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
+</div><p id="a121tv_72">После вызова параметры сохранятся и будут активными уже за пределами процедуры.</p></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-func-vs-proc.html" class="navigation-links__prev">Function vs Procedure</a><a href="postgres-parttables.html" class="navigation-links__next">Секционирование таблиц по UUID</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

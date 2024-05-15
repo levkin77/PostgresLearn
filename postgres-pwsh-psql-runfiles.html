@@ -1,0 +1,175 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.3029272"><title>Выполнение sql файлов из папки | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Выполнение sql файлов из папки | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-pwsh-psql-runfiles.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Выполнение sql файлов из папки | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-pwsh-psql-runfiles.html#webpage",
+    "url": "writerside-documentation/postgres-pwsh-psql-runfiles.html",
+    "name": "Выполнение sql файлов из папки | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-pwsh-psql-runfiles" data-main-title="Выполнение sql файлов из папки" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-shellprograms.md|Использование bash, powershell и других возможностей///postgres-shellprograms-pws.md|Использование PowerShell"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-pwsh-psql-runfiles" id="postgres-pwsh-psql-runfiles.md">Выполнение sql файлов из папки</h1><p id="hajh32_197">PowerShell v7.2<br> psql v16.2</p><ul class="list _bullet" id="hajh32_199"><li class="list__item" id="hajh32_200"><p>Выполнение sql файлов из указанной папки</p></li><li class="list__item" id="hajh32_201"><p>Все sql файлы или только указанные в списке</p></li></ul><div class="code-block" data-lang="bash" data-disable-link-processing="true">#!/usr/bin/env pwsh
+
+&lt;#
+PostgreSQL и PowerShell для nix и windows
+Выполнение списка указанных sql файлов
+или всех файлов в папке
+
+2024.05.11
+Для nix не забываем поставить chmod +x &lt;имяфайла.ps1&gt;
+#&gt;
+
+# Только печатать сформированную строку выполнения, но не выполнять
+$useExecute = $true;
+# Использовать файл .pgpass или переменные окружения из файла
+$optionUsePGPass = $true;
+
+$platform = $PSVersionTable.Platform.ToLower();
+Write-Host &quot;Текущая платформа: $platform&quot; -ForegroundColor DarkBlue
+Write-Host &quot;Кодировка ввода/вывода консоли:&quot;([Console]::OutputEncoding.CodePage)&quot;/&quot;([Console]::InputEncoding.CodePage) -ForegroundColor DarkBlue;
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot;
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+
+    if(([Console]::OutputEncoding.CodePage) -ne &quot;65001&quot;)
+    {
+        Write-Host &quot;установка текущей кодовой страницы в UTF8&quot;;
+        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new();
+    }
+}
+else {
+    #/usr/lib/postgresql/16/bin
+    #&quot;/opt/pgpro/std-16/bin/&quot;
+    $pgDirectory =&quot;/usr/lib/postgresql/16/bin&quot;;
+}
+Push-Location $pgDirectory;
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432. Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+if($optionUsePGPass) {$env:PGPASSWORD =''} #Если используем .pgpass
+else{$env:PGPASSWORD = 'postgres'}
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# База с котрой будем работать
+$currentDB = &quot;devschematree&quot;; # postgres
+# папка скриптов sql для выполнения
+# заменяем просто на полный путь при необходимости
+$sqlScriptFolder = Join-Path -Path $PSScriptRoot &quot;sqltoexec/&quot;
+
+# Использовать список указанных файлов или все файлы
+$optionUseListSqlFiles = $false;
+# список файлов для выполнения
+$fileListToexec = @('1first.sql', '2second.sql');
+# Полный путь к файлу вывода
+$currentResultFileName = ($platform -eq $platformUNIX)? &quot;$env:HOME/tmp/$currentDB`_resulexec.sql&quot;: &quot;d:\tmp\$currentDB`_resultexec.sql&quot;;
+
+#----------------------------
+$customArgOtion =&quot;&quot;;
+if($optionUsePGPass)
+{
+    $customArgOtion += '--no-password ';
+}
+
+# Полный путь к psql
+$psqlexeFullPath = (Join-Path $pgDirectory &quot;psql&quot;) + $(($platform -eq $platformWIN32)?&quot;.exe&quot;:&quot;&quot;);
+$psqlexeFullPath = $psqlexeFullPath.Contains(' ')? &quot;`&quot;$psqlexeFullPath`&quot;&quot;: $psqlexeFullPath;
+# Информация о версии
+$serviceDbActionResult = Invoke-Expression -Command (&quot;&amp; $psqlexeFullPath -V&quot;);
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $serviceDbActionResult -ForegroundColor Green
+
+# Информация о подключении
+# Информация о подключении
+$command = &quot;$psqlexeFullPath -d $currentDB $customArgOtion--no-psqlrc -c `&quot;\conninfo`&quot;&quot;
+$actionResult = Invoke-Expression -Command &quot;&amp; $command 2&gt;&amp;1&quot;;
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $actionResult -ForegroundColor Green
+
+$command = &quot;$psqlexeFullPath -d $currentDB $customArgOtion--no-psqlrc -q --no-align -t -c `&quot;begin; select version();SHOW server_encoding; SHOW client_encoding; commit;`&quot;&quot;
+$actionResult = Invoke-Expression -Command &quot;&amp; $command 2&gt;&amp;1&quot;;
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host (&quot;$($actionResult[0])$([System.Environment]::NewLine)server encoding: $($actionResult[1]);client: $($actionResult[2])&quot;) -ForegroundColor Green;
+Write-Host $(&quot;-&quot; * 50);
+#----------------------------
+# https://postgrespro.ru/docs/postgresql/16/app-psql
+# --quiet без вывода дополнительных сообщений
+#         Этот же эффект можно получить, установив для переменной QUIET значение on
+# --echo-queries Посылает все команды SQL, отправленные на сервер, ещё и на стандартный вывод
+# --echo-all Отправляет в стандартный вывод все непустые входные строки по мере их чтения
+# --log-file=имя_файла В дополнение к обычному выводу, записывает вывод результатов всех запросов в файл имя_файла.
+# --record-separator=разделитель Использовать разделитель как разделитель записей при невыровненном режиме вывода
+# --tuples-only Отключает вывод имён столбцов и результирующей строки с количеством выбранных записей. Равнозначно команде \t или \pset tuples_only
+# --no-psqlrc Не читать стартовые файлы (ни общесистемный файл psqlrc, ни пользовательский файл ~/.psqlrc)
+# --echo-errors Выводит все команды SQL с ошибками в стандартный канал ошибок
+# --set=присваивание Выполняет присваивание значения переменной, как метакоманда \set.
+#                    Обратите внимание, что необходимо разделить имя переменной и значение (при наличии)
+#                    знаком равенства в командной строке. Чтобы сбросить переменную, оставьте имя
+#                    переменной без знака равенства. Чтобы установить пустое значение,
+#                    добавьте знак равенства, но опустите значение. Эти присваивания выполняются во время
+#                    обработки командной строки, так что переменные, отражающие состояние соединения,
+#                    будут перезаписаны позже
+#$sqlScriptFolder
+
+# если выполняем все файлы в папке
+if (!($optionUseListSqlFiles))
+{
+$fileListToexec = Get-ChildItem -Path $sqlScriptFolder -Filter *.sql | Where-Object {$_.PSIsContainer -eq $false}| Sort-Object Name | Select-Object -ExpandProperty Name
+}
+foreach ($currentSqlItemFile in $fileListToexec) {
+$fullpath = Join-Path $sqlScriptFolder $currentSqlItemFile;
+$command = &quot;$psqlexeFullPath -d $currentDB $customArgOtion--quiet --set=ON_ERROR_STOP=on -f `&quot;$fullpath`&quot;&quot;
+Write-Host $command -ForegroundColor DarkGray;
+
+if($useExecute)
+{
+#\set ON_ERROR_STOP on
+#; $Success=$?
+Write-Host &quot;Выполнение файла $($currentSqlItemFile)&quot; -ForegroundColor Yellow;
+$actionResult = Invoke-Expression -Command &quot;&amp; $command #2&gt;&amp;1&quot;;
+# результат завершения psql
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+# вывод данных при выполнении
+Write-Host $actionResult -Separator ([System.Environment]::NewLine); #&quot;`n&quot;
+}
+}
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)</div><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-pwsh-psql-toscrean.html" class="navigation-links__prev">Выполнение psql и вывод на экран или файл</a><a href="postgres-customextention.html" class="navigation-links__next">Ресурсы и ссылки на дополнительные расширения</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

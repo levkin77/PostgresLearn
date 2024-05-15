@@ -1,0 +1,475 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0419186"><title>Мета d | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"d","level":0,"title":"Мета \\d","anchor":"#d"},{"id":"meta_dplus","level":0,"title":"Мета \\d+","anchor":"#meta_dplus"},{"id":"ds","level":0,"title":"Мета \\dS","anchor":"#ds"},{"id":"ds_plus","level":0,"title":"Мета \\dS+","anchor":"#ds_plus"},{"id":"d_table","level":0,"title":"Мета \\d [таблица]","anchor":"#d_table"},{"id":"d_plus_table","level":0,"title":"Мета \\d+ [таблица]","anchor":"#d_plus_table"},{"id":"d_index","level":0,"title":"Мета \\d [индекс]","anchor":"#d_index"},{"id":"d_plus_index","level":0,"title":"Мета \\d+ [индекс]","anchor":"#d_plus_index"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Мета d | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/psqlmeta-d.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Мета d | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/psqlmeta-d.html#webpage",
+    "url": "writerside-documentation/psqlmeta-d.html",
+    "name": "Мета d | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="psqlmeta-d" data-main-title="Мета d" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-usepsqlcmd.md|Использование psql"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="psqlmeta-d" id="psqlmeta-d.md">Мета d</h1><p id="-pteexu_56">Для каждого отношения отношения (таблицы, представления, материализованного представления, индекса, последовательности, внешней таблицы) отображает соответствующую информацию</p><section class="chapter"><h2 id="d" data-toc="d">Мета \d</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','v','m','S','f','')
+      AND n.nspname &lt;&gt; 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname &lt;&gt; 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pteexu_58">результат:</p><div class="code-block" data-lang="plaintext">
+                   List of relations
+  Schema  |         Name          |   Type   |  Owner
+----------+-----------------------+----------+----------
+ bookings | aircrafts             | view     | postgres
+ bookings | aircrafts_data        | table    | postgres
+ bookings | airports              | view     | postgres
+ bookings | airports_data         | table    | postgres
+ bookings | boarding_passes       | table    | postgres
+ bookings | bookings              | table    | postgres
+ bookings | flights               | table    | postgres
+ bookings | flights_flight_id_seq | sequence | postgres
+ bookings | flights_v             | view     | postgres
+ bookings | routes                | view     | postgres
+ bookings | seats                 | table    | postgres
+ bookings | ticket_flights        | table    | postgres
+ bookings | tickets               | table    | postgres
+</div></section><section class="chapter"><h2 id="meta_dplus" data-toc="meta_dplus">Мета \d+</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  CASE c.relpersistence WHEN 'p' THEN 'permanent' WHEN 't' THEN 'temporary' WHEN 'u' THEN 'unlogged' END as &quot;Persistence&quot;,
+  am.amname as &quot;Access method&quot;,
+  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as &quot;Size&quot;,
+  pg_catalog.obj_description(c.oid, 'pg_class') as &quot;Description&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','v','m','S','f','')
+      AND n.nspname &lt;&gt; 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname &lt;&gt; 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div><p id="-pteexu_61">результат</p><div class="code-block" data-lang="plaintext">
+                                                       List of relations
+  Schema  |         Name          |   Type   |  Owner   | Persistence | Access method |    Size    |        Description
+----------+-----------------------+----------+----------+-------------+---------------+------------+---------------------------
+ bookings | aircrafts             | view     | postgres | permanent   |               | 0 bytes    | Aircrafts
+ bookings | aircrafts_data        | table    | postgres | permanent   | heap          | 16 kB      | Aircrafts (internal data)
+ bookings | airports              | view     | postgres | permanent   |               | 0 bytes    | Airports
+ bookings | airports_data         | table    | postgres | permanent   | heap          | 56 kB      | Airports (internal data)
+ bookings | boarding_passes       | table    | postgres | permanent   | heap          | 34 MB      | Boarding passes
+ bookings | bookings              | table    | postgres | permanent   | heap          | 13 MB      | Bookings
+ bookings | flights               | table    | postgres | permanent   | heap          | 3168 kB    | Flights
+ bookings | flights_flight_id_seq | sequence | postgres | permanent   |               | 8192 bytes |
+ bookings | flights_v             | view     | postgres | permanent   |               | 0 bytes    | Flights (extended)
+ bookings | routes                | view     | postgres | permanent   |               | 0 bytes    | Routes
+ bookings | seats                 | table    | postgres | permanent   | heap          | 96 kB      | Seats
+ bookings | ticket_flights        | table    | postgres | permanent   | heap          | 69 MB      | Flight segment
+ bookings | tickets               | table    | postgres | permanent   | heap          | 48 MB      | Tickets
+</div></section><section class="chapter"><h2 id="ds" data-toc="ds">Мета \dS</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','t','v','m','S','s','f','')
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div></section><section class="chapter"><h2 id="ds_plus" data-toc="ds_plus">Мета \dS+</h2><div class="code-block" data-lang="sql">
+SELECT n.nspname as &quot;Schema&quot;,
+  c.relname as &quot;Name&quot;,
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;,
+  pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot;,
+  CASE c.relpersistence WHEN 'p' THEN 'permanent' WHEN 't' THEN 'temporary' WHEN 'u' THEN 'unlogged' END as &quot;Persistence&quot;,
+  am.amname as &quot;Access method&quot;,
+  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as &quot;Size&quot;,
+  pg_catalog.obj_description(c.oid, 'pg_class') as &quot;Description&quot;
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','t','v','m','S','s','f','')
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+</div></section><section class="chapter"><h2 id="d_table" data-toc="d_table">Мета \d [таблица]</h2><div class="code-block" data-lang="sql">
+SELECT c.oid,
+n.nspname,
+c.relname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relname OPERATOR(pg_catalog.~) '^(store)$' COLLATE pg_catalog.default
+AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 2, 3;
+</div><div class="code-block" data-lang="sql">
+SELECT c.relchecks, c.relkind, c.relhasindex, c.relhasrules, c.relhastriggers, c.relrowsecurity, c.relforcerowsecurity, false AS relhasoids, c.relispartition, '', c.reltablespace, CASE WHEN c.reloftype = 0 THEN '' ELSE c.reloftype::pg_catalog.regtype::pg_catalog.text END, c.relpersistence, c.relreplident, am.amname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_class tc ON (c.reltoastrelid = tc.oid)
+LEFT JOIN pg_catalog.pg_am am ON (c.relam = am.oid)
+WHERE c.oid = '16538';
+</div><div class="code-block" data-lang="sql">
+SELECT a.attname,
+pg_catalog.format_type(a.atttypid, a.atttypmod),
+(SELECT pg_catalog.pg_get_expr(d.adbin, d.adrelid, true)
+FROM pg_catalog.pg_attrdef d
+WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef),
+a.attnotnull,
+(SELECT c.collname FROM pg_catalog.pg_collation c, pg_catalog.pg_type t
+WHERE c.oid = a.attcollation AND t.oid = a.atttypid AND a.attcollation &lt;&gt; t.typcollation) AS attcollation,
+a.attidentity,
+a.attgenerated
+FROM pg_catalog.pg_attribute a
+WHERE a.attrelid = '16538' AND a.attnum &gt; 0 AND NOT a.attisdropped
+ORDER BY a.attnum;
+</div><div class="code-block" data-lang="sql">
+SELECT c2.relname, i.indisprimary, i.indisunique, i.indisclustered, i.indisvalid, pg_catalog.pg_get_indexdef(i.indexrelid, 0, true),
+pg_catalog.pg_get_constraintdef(con.oid, true), contype, condeferrable, condeferred, i.indisreplident, c2.reltablespace
+FROM pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_index i
+LEFT JOIN pg_catalog.pg_constraint con ON (conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x'))
+WHERE c.oid = '16538' AND c.oid = i.indrelid AND i.indexrelid = c2.oid
+ORDER BY i.indisprimary DESC, c2.relname;
+</div><div class="code-block" data-lang="sql">
+SELECT true as sametable, conname,
+pg_catalog.pg_get_constraintdef(r.oid, true) as condef,
+conrelid::pg_catalog.regclass AS ontable
+FROM pg_catalog.pg_constraint r
+WHERE r.conrelid = '16538' AND r.contype = 'f'
+AND conparentid = 0
+ORDER BY conname
+</div><div class="code-block" data-lang="sql">
+SELECT conname, conrelid::pg_catalog.regclass AS ontable,
+pg_catalog.pg_get_constraintdef(oid, true) AS condef
+FROM pg_catalog.pg_constraint c
+WHERE confrelid IN (SELECT pg_catalog.pg_partition_ancestors('16538')
+UNION ALL VALUES ('16538'::pg_catalog.regclass))
+AND contype = 'f' AND conparentid = 0
+ORDER BY conname;
+</div><div class="code-block" data-lang="sql">
+SELECT pol.polname, pol.polpermissive,
+CASE WHEN pol.polroles = '{0}' THEN NULL ELSE pg_catalog.array_to_string(array(select rolname from pg_catalog.pg_roles where oid = any (pol.polroles) order by 1),',') END,
+pg_catalog.pg_get_expr(pol.polqual, pol.polrelid),
+pg_catalog.pg_get_expr(pol.polwithcheck, pol.polrelid),
+CASE pol.polcmd
+WHEN 'r' THEN 'SELECT'
+WHEN 'a' THEN 'INSERT'
+WHEN 'w' THEN 'UPDATE'
+WHEN 'd' THEN 'DELETE'
+END AS cmd
+FROM pg_catalog.pg_policy pol
+WHERE pol.polrelid = '16538' ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT oid, stxrelid::pg_catalog.regclass, stxnamespace::pg_catalog.regnamespace::pg_catalog.text AS nsp, stxname,
+pg_catalog.pg_get_statisticsobjdef_columns(oid) AS columns,
+'d' = any(stxkind) AS ndist_enabled,
+'f' = any(stxkind) AS deps_enabled,
+'m' = any(stxkind) AS mcv_enabled,
+stxstattarget
+FROM pg_catalog.pg_statistic_ext
+WHERE stxrelid = '16538'
+ORDER BY nsp, stxname;
+</div><div class="code-block" data-lang="sql">
+SELECT pubname
+, NULL
+, NULL
+FROM pg_catalog.pg_publication p
+JOIN pg_catalog.pg_publication_namespace pn ON p.oid = pn.pnpubid
+JOIN pg_catalog.pg_class pc ON pc.relnamespace = pn.pnnspid
+WHERE pc.oid ='16538' and pg_catalog.pg_relation_is_publishable('16538')
+UNION
+SELECT pubname
+, pg_get_expr(pr.prqual, c.oid)
+, (CASE WHEN pr.prattrs IS NOT NULL THEN
+(SELECT string_agg(attname, ', ')
+FROM pg_catalog.generate_series(0, pg_catalog.array_upper(pr.prattrs::pg_catalog.int2[], 1)) s,
+pg_catalog.pg_attribute
+WHERE attrelid = pr.prrelid AND attnum = prattrs[s])
+ELSE NULL END) FROM pg_catalog.pg_publication p
+JOIN pg_catalog.pg_publication_rel pr ON p.oid = pr.prpubid
+JOIN pg_catalog.pg_class c ON c.oid = pr.prrelid
+WHERE pr.prrelid = '16538'
+UNION
+SELECT pubname
+, NULL
+, NULL
+FROM pg_catalog.pg_publication p
+WHERE p.puballtables AND pg_catalog.pg_relation_is_publishable('16538')
+ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT t.tgname, pg_catalog.pg_get_triggerdef(t.oid, true), t.tgenabled, t.tgisinternal,
+CASE WHEN t.tgparentid != 0 THEN
+(SELECT u.tgrelid::pg_catalog.regclass
+FROM pg_catalog.pg_trigger AS u,
+pg_catalog.pg_partition_ancestors(t.tgrelid) WITH ORDINALITY AS a(relid, depth)
+WHERE u.tgname = t.tgname AND u.tgrelid = a.relid
+AND u.tgparentid = 0
+ORDER BY a.depth LIMIT 1)
+END AS parent
+FROM pg_catalog.pg_trigger t
+WHERE t.tgrelid = '16538' AND (NOT t.tgisinternal OR (t.tgisinternal AND t.tgenabled = 'D'))
+ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT c.oid::pg_catalog.regclass
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhparent AND i.inhrelid = '16538'
+AND c.relkind != 'p' AND c.relkind != 'I'
+ORDER BY inhseqno;
+</div><p id="-pteexu_77">результат</p><div class="code-block" data-lang="plaintext">
+                Table &quot;bookings.aircrafts_data&quot;
+    Column     |     Type     | Collation | Nullable | Default
+---------------+--------------+-----------+----------+---------
+ aircraft_code | character(3) |           | not null |
+ model         | jsonb        |           | not null |
+ range         | integer      |           | not null |
+Indexes:
+    &quot;aircrafts_pkey&quot; PRIMARY KEY, btree (aircraft_code)
+Check constraints:
+    &quot;aircrafts_range_check&quot; CHECK (range &gt; 0)
+Referenced by:
+    TABLE &quot;flights&quot; CONSTRAINT &quot;flights_aircraft_code_fkey&quot; FOREIGN KEY (aircraft_code) REFERENCES aircrafts_data(aircraft_code)
+    TABLE &quot;seats&quot; CONSTRAINT &quot;seats_aircraft_code_fkey&quot; FOREIGN KEY (aircraft_code) REFERENCES aircrafts_data(aircraft_code) ON DELETE CASCADE
+</div><div class="code-block" data-lang="sql">
+SELECT c.oid::pg_catalog.regclass, c.relkind, inhdetachpending, pg_catalog.pg_get_expr(c.relpartbound, c.oid)
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhrelid AND i.inhparent = '16538'
+ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
+</div></section><section class="chapter"><h2 id="d_plus_table" data-toc="d_plus_table">Мета \d+ [таблица]</h2><div class="code-block" data-lang="sql">
+SELECT c.oid,
+n.nspname,
+c.relname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relname OPERATOR(pg_catalog.~) '^(store)$' COLLATE pg_catalog.default
+AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 2, 3;
+</div><div class="code-block" data-lang="sql">
+SELECT c.relchecks, c.relkind, c.relhasindex, c.relhasrules, c.relhastriggers, c.relrowsecurity, c.relforcerowsecurity, false AS relhasoids, c.relispartition, pg_catalog.array_to_string(c.reloptions || array(select 'toast.' || x from pg_catalog.unnest(tc.reloptions) x), ', ')
+, c.reltablespace, CASE WHEN c.reloftype = 0 THEN '' ELSE c.reloftype::pg_catalog.regtype::pg_catalog.text END, c.relpersistence, c.relreplident, am.amname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_class tc ON (c.reltoastrelid = tc.oid)
+LEFT JOIN pg_catalog.pg_am am ON (c.relam = am.oid)
+WHERE c.oid = '16538';
+</div><div class="code-block" data-lang="sql">
+SELECT a.attname,
+pg_catalog.format_type(a.atttypid, a.atttypmod),
+(SELECT pg_catalog.pg_get_expr(d.adbin, d.adrelid, true)
+FROM pg_catalog.pg_attrdef d
+WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef),
+a.attnotnull,
+(SELECT c.collname FROM pg_catalog.pg_collation c, pg_catalog.pg_type t
+WHERE c.oid = a.attcollation AND t.oid = a.atttypid AND a.attcollation &lt;&gt; t.typcollation) AS attcollation,
+a.attidentity,
+a.attgenerated,
+a.attstorage,
+a.attcompression AS attcompression,
+CASE WHEN a.attstattarget=-1 THEN NULL ELSE a.attstattarget END AS attstattarget,
+pg_catalog.col_description(a.attrelid, a.attnum)
+FROM pg_catalog.pg_attribute a
+WHERE a.attrelid = '16538' AND a.attnum &gt; 0 AND NOT a.attisdropped
+ORDER BY a.attnum;
+</div><div class="code-block" data-lang="sql">
+SELECT c2.relname, i.indisprimary, i.indisunique, i.indisclustered, i.indisvalid, pg_catalog.pg_get_indexdef(i.indexrelid, 0, true),
+pg_catalog.pg_get_constraintdef(con.oid, true), contype, condeferrable, condeferred, i.indisreplident, c2.reltablespace
+FROM pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_index i
+LEFT JOIN pg_catalog.pg_constraint con ON (conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x'))
+WHERE c.oid = '16538' AND c.oid = i.indrelid AND i.indexrelid = c2.oid
+ORDER BY i.indisprimary DESC, c2.relname;
+</div><div class="code-block" data-lang="sql">
+SELECT true as sametable, conname,
+pg_catalog.pg_get_constraintdef(r.oid, true) as condef,
+conrelid::pg_catalog.regclass AS ontable
+FROM pg_catalog.pg_constraint r
+WHERE r.conrelid = '16538' AND r.contype = 'f'
+AND conparentid = 0
+ORDER BY conname
+</div><div class="code-block" data-lang="sql">
+SELECT conname, conrelid::pg_catalog.regclass AS ontable,
+pg_catalog.pg_get_constraintdef(oid, true) AS condef
+FROM pg_catalog.pg_constraint c
+WHERE confrelid IN (SELECT pg_catalog.pg_partition_ancestors('16538')
+UNION ALL VALUES ('16538'::pg_catalog.regclass))
+AND contype = 'f' AND conparentid = 0
+ORDER BY conname;
+</div><div class="code-block" data-lang="sql">
+SELECT pol.polname, pol.polpermissive,
+CASE WHEN pol.polroles = '{0}' THEN NULL ELSE pg_catalog.array_to_string(array(select rolname from pg_catalog.pg_roles where oid = any (pol.polroles) order by 1),',') END,
+pg_catalog.pg_get_expr(pol.polqual, pol.polrelid),
+pg_catalog.pg_get_expr(pol.polwithcheck, pol.polrelid),
+CASE pol.polcmd
+WHEN 'r' THEN 'SELECT'
+WHEN 'a' THEN 'INSERT'
+WHEN 'w' THEN 'UPDATE'
+WHEN 'd' THEN 'DELETE'
+END AS cmd
+FROM pg_catalog.pg_policy pol
+WHERE pol.polrelid = '16538' ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT oid, stxrelid::pg_catalog.regclass, stxnamespace::pg_catalog.regnamespace::pg_catalog.text AS nsp, stxname,
+pg_catalog.pg_get_statisticsobjdef_columns(oid) AS columns,
+'d' = any(stxkind) AS ndist_enabled,
+'f' = any(stxkind) AS deps_enabled,
+'m' = any(stxkind) AS mcv_enabled,
+stxstattarget
+FROM pg_catalog.pg_statistic_ext
+WHERE stxrelid = '16538'
+ORDER BY nsp, stxname;
+</div><div class="code-block" data-lang="sql">
+SELECT pubname
+, NULL
+, NULL
+FROM pg_catalog.pg_publication p
+JOIN pg_catalog.pg_publication_namespace pn ON p.oid = pn.pnpubid
+JOIN pg_catalog.pg_class pc ON pc.relnamespace = pn.pnnspid
+WHERE pc.oid ='16538' and pg_catalog.pg_relation_is_publishable('16538')
+UNION
+SELECT pubname
+, pg_get_expr(pr.prqual, c.oid)
+, (CASE WHEN pr.prattrs IS NOT NULL THEN
+(SELECT string_agg(attname, ', ')
+FROM pg_catalog.generate_series(0, pg_catalog.array_upper(pr.prattrs::pg_catalog.int2[], 1)) s,
+pg_catalog.pg_attribute
+WHERE attrelid = pr.prrelid AND attnum = prattrs[s])
+ELSE NULL END) FROM pg_catalog.pg_publication p
+JOIN pg_catalog.pg_publication_rel pr ON p.oid = pr.prpubid
+JOIN pg_catalog.pg_class c ON c.oid = pr.prrelid
+WHERE pr.prrelid = '16538'
+UNION
+SELECT pubname
+, NULL
+, NULL
+FROM pg_catalog.pg_publication p
+WHERE p.puballtables AND pg_catalog.pg_relation_is_publishable('16538')
+ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT t.tgname, pg_catalog.pg_get_triggerdef(t.oid, true), t.tgenabled, t.tgisinternal,
+CASE WHEN t.tgparentid != 0 THEN
+(SELECT u.tgrelid::pg_catalog.regclass
+FROM pg_catalog.pg_trigger AS u,
+pg_catalog.pg_partition_ancestors(t.tgrelid) WITH ORDINALITY AS a(relid, depth)
+WHERE u.tgname = t.tgname AND u.tgrelid = a.relid
+AND u.tgparentid = 0
+ORDER BY a.depth LIMIT 1)
+END AS parent
+FROM pg_catalog.pg_trigger t
+WHERE t.tgrelid = '16538' AND (NOT t.tgisinternal OR (t.tgisinternal AND t.tgenabled = 'D'))
+ORDER BY 1;
+</div><div class="code-block" data-lang="sql">
+SELECT c.oid::pg_catalog.regclass
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhparent AND i.inhrelid = '16538'
+AND c.relkind != 'p' AND c.relkind != 'I'
+ORDER BY inhseqno;
+</div><div class="code-block" data-lang="sql">
+SELECT c.oid::pg_catalog.regclass, c.relkind, inhdetachpending, pg_catalog.pg_get_expr(c.relpartbound, c.oid)
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhrelid AND i.inhparent = '16538'
+ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
+</div><p id="-pteexu_93">результат</p><div class="code-block" data-lang="plaintext">
+                                                   Table &quot;bookings.aircrafts_data&quot;
+    Column     |     Type     | Collation | Nullable | Default | Storage  | Compression | Stats target |         Description
+---------------+--------------+-----------+----------+---------+----------+-------------+--------------+-----------------------------
+ aircraft_code | character(3) |           | not null |         | extended |             |              | Aircraft code, IATA
+ model         | jsonb        |           | not null |         | extended |             |              | Aircraft model
+ range         | integer      |           | not null |         | plain    |             |              | Maximal flying distance, km
+Indexes:
+    &quot;aircrafts_pkey&quot; PRIMARY KEY, btree (aircraft_code)
+Check constraints:
+    &quot;aircrafts_range_check&quot; CHECK (range &gt; 0)
+Referenced by:
+    TABLE &quot;flights&quot; CONSTRAINT &quot;flights_aircraft_code_fkey&quot; FOREIGN KEY (aircraft_code) REFERENCES aircrafts_data(aircraft_code)
+    TABLE &quot;seats&quot; CONSTRAINT &quot;seats_aircraft_code_fkey&quot; FOREIGN KEY (aircraft_code) REFERENCES aircrafts_data(aircraft_code) ON DELETE CASCADE
+Access method: heap
+</div></section><section class="chapter"><h2 id="d_index" data-toc="d_index">Мета \d [индекс]</h2><div class="code-block" data-lang="sql">
+SELECT c.oid,
+n.nspname,
+c.relname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relname OPERATOR(pg_catalog.~) '^(store_pkey)$' COLLATE pg_catalog.default
+AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 2, 3;
+</div><div class="code-block" data-lang="sql">
+SELECT c.relchecks, c.relkind, c.relhasindex, c.relhasrules, c.relhastriggers, c.relrowsecurity, c.relforcerowsecurity, false AS relhasoids, c.relispartition, '', c.reltablespace, CASE WHEN c.reloftype = 0 THEN '' ELSE c.reloftype::pg_catalog.regtype::pg_catalog.text END, c.relpersistence, c.relreplident, am.amname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_class tc ON (c.reltoastrelid = tc.oid)
+LEFT JOIN pg_catalog.pg_am am ON (c.relam = am.oid)
+WHERE c.oid = '16581';
+</div><div class="code-block" data-lang="sql">
+SELECT a.attname,
+pg_catalog.format_type(a.atttypid, a.atttypmod),
+CASE WHEN a.attnum &lt;= (SELECT i.indnkeyatts FROM pg_catalog.pg_index i WHERE i.indexrelid = '16581') THEN 'yes' ELSE 'no' END AS is_key,
+pg_catalog.pg_get_indexdef(a.attrelid, a.attnum, TRUE) AS indexdef
+FROM pg_catalog.pg_attribute a
+WHERE a.attrelid = '16581' AND a.attnum &gt; 0 AND NOT a.attisdropped
+ORDER BY a.attnum;
+</div><div class="code-block" data-lang="sql">
+SELECT i.indisunique, i.indisprimary, i.indisclustered, i.indisvalid,
+(NOT i.indimmediate) AND EXISTS (SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x') AND condeferrable) AS condeferrable,
+(NOT i.indimmediate) AND EXISTS (SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x') AND condeferred) AS condeferred,
+i.indisreplident,
+i.indnullsnotdistinct,
+a.amname, c2.relname, pg_catalog.pg_get_expr(i.indpred, i.indrelid, true)
+FROM pg_catalog.pg_index i, pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_am a
+WHERE i.indexrelid = c.oid AND c.oid = '16581' AND c.relam = a.oid
+AND i.indrelid = c2.oid;
+</div><p id="-pteexu_100">результат:</p><div class="code-block" data-lang="plaintext">
+           Index &quot;bookings.aircrafts_pkey&quot;
+    Column     |     Type     | Key? |  Definition
+---------------+--------------+------+---------------
+ aircraft_code | character(3) | yes  | aircraft_code
+primary key, btree, for table &quot;bookings.aircrafts_data&quot;
+</div></section><section class="chapter"><h2 id="d_plus_index" data-toc="d_plus_index">Мета \d+ [индекс]</h2><div class="code-block" data-lang="sql">
+SELECT c.oid,
+n.nspname,
+c.relname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relname OPERATOR(pg_catalog.~) '^(store_pkey)$' COLLATE pg_catalog.default
+AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 2, 3;
+</div><div class="code-block" data-lang="sql">
+SELECT c.relchecks, c.relkind, c.relhasindex, c.relhasrules, c.relhastriggers, c.relrowsecurity, c.relforcerowsecurity, false AS relhasoids, c.relispartition, pg_catalog.array_to_string(c.reloptions || array(select 'toast.' || x from pg_catalog.unnest(tc.reloptions) x), ', ')
+, c.reltablespace, CASE WHEN c.reloftype = 0 THEN '' ELSE c.reloftype::pg_catalog.regtype::pg_catalog.text END, c.relpersistence, c.relreplident, am.amname
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_class tc ON (c.reltoastrelid = tc.oid)
+LEFT JOIN pg_catalog.pg_am am ON (c.relam = am.oid)
+WHERE c.oid = '16581';
+</div><div class="code-block" data-lang="sql">
+SELECT a.attname,
+pg_catalog.format_type(a.atttypid, a.atttypmod),
+CASE WHEN a.attnum &lt;= (SELECT i.indnkeyatts FROM pg_catalog.pg_index i WHERE i.indexrelid = '16581') THEN 'yes' ELSE 'no' END AS is_key,
+pg_catalog.pg_get_indexdef(a.attrelid, a.attnum, TRUE) AS indexdef,
+a.attstorage,
+CASE WHEN a.attstattarget=-1 THEN NULL ELSE a.attstattarget END AS attstattarget
+FROM pg_catalog.pg_attribute a
+WHERE a.attrelid = '16581' AND a.attnum &gt; 0 AND NOT a.attisdropped
+ORDER BY a.attnum;
+</div><div class="code-block" data-lang="sql">
+SELECT i.indisunique, i.indisprimary, i.indisclustered, i.indisvalid,
+(NOT i.indimmediate) AND EXISTS (SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x') AND condeferrable) AS condeferrable,
+(NOT i.indimmediate) AND EXISTS (SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid = i.indrelid AND conindid = i.indexrelid AND contype IN ('p','u','x') AND condeferred) AS condeferred,
+i.indisreplident,
+i.indnullsnotdistinct,
+a.amname, c2.relname, pg_catalog.pg_get_expr(i.indpred, i.indrelid, true)
+FROM pg_catalog.pg_index i, pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_am a
+WHERE i.indexrelid = c.oid AND c.oid = '16581' AND c.relam = a.oid
+AND i.indrelid = c2.oid;
+</div><p id="-pteexu_107">результат:</p><div class="code-block" data-lang="plaintext">
+                        Index &quot;bookings.aircrafts_pkey&quot;
+    Column     |     Type     | Key? |  Definition   | Storage  | Stats target
+---------------+--------------+------+---------------+----------+--------------
+ aircraft_code | character(3) | yes  | aircraft_code | extended |
+primary key, btree, for table &quot;bookings.aircrafts_data&quot;
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="psqlmeta-l.html" class="navigation-links__prev">Мета l</a><a href="psqlmeta-di.html" class="navigation-links__next">Мета di</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

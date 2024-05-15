@@ -1,0 +1,288 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.1739196"><title>Использование bash скриптов | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"mhpim7_66","level":0,"title":"Копирование таблицы","anchor":"#mhpim7_66"},{"id":"mhpim7_68","level":0,"title":"Копирование таблицы с произвольным запросом","anchor":"#mhpim7_68"},{"id":"mhpim7_70","level":0,"title":"Получение одного единственного результата","anchor":"#mhpim7_70"},{"id":"mhpim7_72","level":0,"title":"Как получить одно скалярное значение выбора в переменной оболочки","anchor":"#mhpim7_72"},{"id":"bash","level":0,"title":"Как получить выбор из одной строки в переменных bash, названных для каждого столбца в строке","anchor":"#bash"},{"id":"mhpim7_77","level":0,"title":"Перебор значений результата запроса","anchor":"#mhpim7_77"},{"id":"sql","level":0,"title":"Запустите батч команд sql в одной транзакции.","anchor":"#sql"},{"id":"sqlmultyline_bash","level":0,"title":"Красивое выполнение многострочных sql","anchor":"#sqlmultyline_bash"},{"id":"mhpim7_87","level":0,"title":"Хороший способ получить определение таблицы","anchor":"#mhpim7_87"},{"id":"mhpim7_89","level":0,"title":"Скрипт для отправки содержимого столбца байта в файл","anchor":"#mhpim7_89"},{"id":"mhpim7_91","level":0,"title":"Скрипт для отображения статистики конкретной таблицы в конкретной базе данных","anchor":"#mhpim7_91"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование bash скриптов | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-shellprograms-bash.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование bash скриптов | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-shellprograms-bash.html#webpage",
+    "url": "writerside-documentation/postgres-shellprograms-bash.html",
+    "name": "Использование bash скриптов | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-shellprograms-bash" data-main-title="Использование bash скриптов" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///postgres-shellprograms.md|Использование bash, powershell и других возможностей"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-shellprograms-bash" id="postgres-shellprograms-bash.md">Использование bash скриптов</h1><section class="chapter"><h2 id="mhpim7_66" data-toc="mhpim7_66">Копирование таблицы</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+psql \
+    -X \
+    -U user_name \
+    -h host_name1 \
+    -d database_name \
+    -c &quot;\\copy tbl_Students to stdout&quot; \
+| \
+psql \
+    -X \
+    -U user_name \
+    -h host_name2 \
+    -d database_name \
+    -c &quot;\\copy tbl_Students from stdin&quot;
+</div></section><section class="chapter"><h2 id="mhpim7_68" data-toc="mhpim7_68">Копирование таблицы с произвольным запросом</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+psql \
+    -X \
+    -U user_name \
+    -h host_name1 \
+    -d database_name \
+    -c &quot;\\copy (SELECT Rno, Studname FROM tbl_Students) to stdout&quot; \
+| \
+psql \
+    -X \
+    -U user_name \
+    -h host_name2 \
+    -d database_name \
+    -c &quot;\\copy tbl_Students from stdin&quot;
+</div></section><section class="chapter"><h2 id="mhpim7_70" data-toc="mhpim7_70">Получение одного единственного результата</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+
+DB_NAME=$1
+RecordCount1=$( psql -d ${DB_NAME} -c &quot;select count(*) from information_schema.tables;&quot; )
+RecordCount2=$( psql -d ${DB_NAME} -t -c &quot;select count(*) from information_schema.tables;&quot; )
+ 
+echo &quot;RecordCount1:&quot;$RecordCount1
+echo &quot;RecordCount2:&quot;$RecordCount2
+</div></section><section class="chapter"><h2 id="mhpim7_72" data-toc="mhpim7_72">Как получить одно скалярное значение выбора в переменной оболочки</h2><div class="code-block" data-lang="bash">
+CURRENT_ID=$($PSQL -X -U $PROD_USER -h myhost -P t -P format=unaligned $PROD_DB -c &quot;select max(id) from users&quot;)
+let NEXT_ID=CURRENT_ID+1
+echo &quot;next user.id is $NEXT_ID&quot;
+
+echo &quot;about to reset user id sequence on other database&quot;
+$PSQL -X -U $DEV_USER $DEV_DB -c &quot;alter sequence user_ids restart with $NEXT_ID&quot;
+</div></section><section class="chapter"><h2 id="bash" data-toc="bash">Как получить выбор из одной строки в переменных bash, названных для каждого столбца в строке</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+
+read table_schema table_name &lt;&lt;&lt; $(psql \
+    -X \
+    -d postgres \
+    --single-transaction \
+    --set ON_ERROR_STOP=on \
+    --no-align \
+    -t \
+    --field-separator ' ' \
+    --quiet \
+    -c &quot;select table_schema, table_name from information_schema.tables limit 1;&quot;)
+
+echo &quot;table_schema: $table_schema, table_name: $table_name&quot;
+</div><p id="mhpim7_75">Это просто. Другой способ - прочитать его в массив:</p><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+declare -a ROW=($(psql \
+    -X \
+    -d postgres \
+    --single-transaction \
+    --set AUTOCOMMIT=off \
+    --set ON_ERROR_STOP=on \
+    --no-align \
+    -t \
+    --field-separator ' ' \
+    --quiet \
+    -c &quot;select table_schema, table_name from information_schema.tables limit 1;&quot;))
+
+table_schema=${ROW[0]}
+table_name=${ROW[1]}
+
+echo &quot;table_schema: $table_schema, table_name: $table_name&quot;
+</div></section><section class="chapter"><h2 id="mhpim7_77" data-toc="mhpim7_77">Перебор значений результата запроса</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+
+psql \
+    -X \
+    -d postgres \
+    --single-transaction \
+    --set AUTOCOMMIT=off \
+    --set ON_ERROR_STOP=on \
+    --no-align \
+    -t \
+    --field-separator ' ' \
+    --quiet \
+    -c &quot;select table_schema, table_name from information_schema.tables limit 10;&quot; \
+    | while read -a Record ; do
+    ts=${Record[0]}
+    tn=${Record[1]}
+    echo &quot;table_schema: $ts, table_name: $tn&quot;
+
+    done
+</div><p id="mhpim7_79">Более продвинутый вариант</p><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+export PGHOST=192.168.0.133 # localhost
+export PGPORT=5433 # 5432
+export PGUSER=postgres # Пользователь, от которого запустится обслуживание
+export PGPASSWORD=postgres # Пароль этого пользователя
+
+
+psql \
+    -X \
+    -d postgres \
+    --single-transaction \
+    --set AUTOCOMMIT=off \
+    --set ON_ERROR_STOP=on \
+    --no-align \
+    -t \
+    --field-separator ' ' \
+    --quiet \
+    -c &quot;select table_schema, table_name from information_schema.tables limit 10;&quot; \
+    | while read table_schema table_name ; do
+    
+    echo &quot;data: $table_schema, $table_name&quot;
+
+    done
+</div></section><section class="chapter"><h2 id="sql" data-toc="sql">Запустите батч команд sql в одной транзакции.</h2><div class="code-block" data-lang="bash">
+psql \
+    -X \
+    -U myuser \
+    -h myhost \
+    -f /path/to/sql/file.sql \
+    --echo-all \
+    --single-transaction \
+    --set AUTOCOMMIT=off \
+    --set ON_ERROR_STOP=on \
+    mydatabase
+</div><p id="mhpim7_82">Для примера содержание file.sql</p><div class="code-block" data-lang="sql">
+insert into footable (bar) values ('baz');
+insert into msgtable (mycol) values ('hello');
+</div></section><section class="chapter"><h2 id="sqlmultyline_bash" data-toc="sqlmultyline_bash">Красивое выполнение многострочных sql</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+RUN_ON_MYDB=&quot;psql -X -U myuser -h myhost --set ON_ERROR_STOP=on --set AUTOCOMMIT=off mydb&quot;
+
+$RUN_ON_MYDB &lt;&lt;SQL
+drop schema if exists new_myuser_schema;
+create table new_myuser_schema.my_new_table (like my_schema.my_table);
+create table new_myuser_schema.my_new_table2 (like my_schema.my_table2);
+commit;
+SQL
+
+$RUN_ON_MYDB &lt;&lt;SQL
+create index my_new_table_id_idx on new_myuser_schema.my_new_table(id);
+create index my_new_table2_id_idx on new_myuser_schema.my_new_table2(id);
+commit;
+SQL
+</div><p id="mhpim7_85">Также обратите внимание, что вы можете использовать забавные трюки bash для назначения многострочных переменных и подавать их в psql позже:</p><div class="code-block" data-lang="bash">
+CREATE_MY_TABLE_SQL=$(cat &lt;&lt;EOF
+    create table foo (
+        id bigint not null,
+        name text not null);
+EOF
+)
+
+$RUN_ON_MYDB &lt;&lt;SQL
+$CREATE_MY_TABLE_SQL
+commit;
+SQL
+</div></section><section class="chapter"><h2 id="mhpim7_87" data-toc="mhpim7_87">Хороший способ получить определение таблицы</h2><div class="code-block" data-lang="bash">
+pg_dump \
+    -U db_user \
+    -h db_host \
+    -p 5433 \
+    --table my_table \
+    --schema-only my_db
+</div></section><section class="chapter"><h2 id="mhpim7_89" data-toc="mhpim7_89">Скрипт для отправки содержимого столбца байта в файл</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+psql \
+    -P t \
+    -P format=unaligned \
+    -X \
+    -U myuser \
+    -h myhost \
+    -c &quot;select substring(my_bytea_col::text from 3) from my_table where id = 12&quot; \
+    mydb \
+| xxd -r -p &gt; dump.txt
+</div></section><section class="chapter"><h2 id="mhpim7_91" data-toc="mhpim7_91">Скрипт для отображения статистики конкретной таблицы в конкретной базе данных</h2><div class="code-block" data-lang="bash">
+#!/bin/bash
+
+set -e
+set -u
+
+if [ -z &quot;$1&quot; ]; then
+    echo &quot;Usage: $0 table [db]&quot;
+    exit 1
+fi
+
+SCMTBL=&quot;$1&quot;
+SCHEMANAME=&quot;${SCMTBL%%.*}&quot;  # everything before the dot (or SCMTBL if there is no dot)
+TABLENAME=&quot;${SCMTBL#*.}&quot;  # everything after the dot (or SCMTBL if there is no dot)
+
+if [ &quot;${SCHEMANAME}&quot; = &quot;${TABLENAME}&quot; ]; then
+    SCHEMANAME=&quot;public&quot;
+fi
+
+if [ -n &quot;$2&quot; ]; then
+    DB=&quot;$2&quot;
+else
+    DB=&quot;my_default_db&quot;
+fi
+
+PSQL=&quot;psql -U my_default_user -h my_default_host -d $DB -x -c &quot;
+
+$PSQL &quot;
+select '-----------' as \&quot;-------------\&quot;, 
+       schemaname,
+       tablename,
+       attname,
+       null_frac,
+       avg_width,
+       n_distinct,
+       correlation,
+       most_common_vals,
+       most_common_freqs,
+       histogram_bounds
+  from pg_stats
+ where schemaname='$SCHEMANAME'
+   and tablename='$TABLENAME';
+&quot; | grep -v &quot;\-\[ RECORD &quot;
+</div><p id="mhpim7_93">Для использования</p><div class="code-block" data-lang="bash">
+./table-stats.sh myschema.mytable
+</div><p id="mhpim7_95">Для таблицы из указанной базы</p><div class="code-block" data-lang="bash">
+./table-stats.sh mytable myotherdb
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="postgres-shellprograms.html" class="navigation-links__prev">Использование bash, powershell и других возможностей</a><a href="postgres-shellprograms-pws.html" class="navigation-links__next">Использование PowerShell</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

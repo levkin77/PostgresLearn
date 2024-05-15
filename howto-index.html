@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-04-17T07:10:27.852234"><title>Индексы | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="icon-192.png"><link rel="icon" type="image/png" sizes="16x16" href="icon-192.png"><meta name="msapplication-TileImage" content="mstile-144x144.png"><meta name="msapplication-square70x70logo" content="mstile-70x70.png"><meta name="msapplication-square150x150logo" content="mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="mstile-310x150.png"><meta name="msapplication-square310x310logo" content="mstile-310x150.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Индексы | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-index.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Индексы | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.0409202"><title>Индексы | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"pq7kg9_2","level":0,"title":"Список индексов в базе","anchor":"#pq7kg9_2"},{"id":"pq7kg9_4","level":0,"title":"Список индексов с выводом колонок","anchor":"#pq7kg9_4"},{"id":"pq7kg9_8","level":0,"title":"Статистика использования индексов","anchor":"#pq7kg9_8"},{"id":"pq7kg9_10","level":0,"title":"Кандидаты на индексирование","anchor":"#pq7kg9_10"},{"id":"pq7kg9_12","level":0,"title":"Неиспользуемые индексы","anchor":"#pq7kg9_12"},{"id":"pq7kg9_14","level":0,"title":"Анализ состояния индексов","anchor":"#pq7kg9_14"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Индексы | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-index.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Индексы | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-index.html#webpage",
@@ -13,4 +13,125 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-index" data-main-title="Индексы" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-index" id="howto-index.md">Индексы</h1><div class="last-modified">Last modified: 17 апреля 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-temptablespases.html" class="navigation-links__prev">Простраство temp_tablespaces</a><a href="howto-index-uniqnull.html" class="navigation-links__next">Индексы и уникальность на NULL</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
+}</script><!-- End Schema.org --></head><body data-id="howto-index" data-main-title="Индексы" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-index" id="howto-index.md">Индексы</h1><section class="chapter"><h2 id="pq7kg9_2" data-toc="pq7kg9_2">Список индексов в базе</h2><div class="code-block" data-lang="sql">
+select
+    schemaname, -- Имя схемы
+    tablename, -- Имя таблицы
+    indexname, -- Имя индекса
+    indexdef -- Команда создания индекса
+from pg_catalog.pg_indexes
+where schemaname not in('pg_catalog')
+order by schemaname, tablename, indexname;
+</div></section><section class="chapter"><h2 id="pq7kg9_4" data-toc="pq7kg9_4">Список индексов с выводом колонок</h2><div class="code-block" data-lang="sql">
+select
+    ns.nspname, -- Имя схемы
+    t.relname as table_name, -- Имя таблицы
+    i.relname as index_name, -- Имя индекса
+    string_agg(a.attname, ',') as column_name -- Список колонок
+from pg_catalog.pg_class t,
+     pg_catalog.pg_class i,
+     pg_catalog.pg_index ix,
+     pg_catalog.pg_attribute a,
+     pg_catalog.pg_namespace ns
+where t.oid = ix.indrelid
+  and i.oid = ix.indexrelid
+  and a.attrelid = t.oid
+  and a.attnum = any (ix.indkey)
+  and t.relkind = 'r'
+  and t.relnamespace = ns.oid
+  and t.relname not like 'pg_%'
+group by ns.nspname, t.relname, i.relname
+order by t.relname,
+         i.relname;
+</div><p id="pq7kg9_6">или</p><div class="code-block" data-lang="sql">
+select ns.nspname                                            as schema_name,
+       i.relname                                             as index_name,
+       (select array_agg(a.attname)
+        from (select t.oid, unnest(string_to_array(ix.indkey::text, ' ')) as colnum) as b
+                 join pg_attribute a on
+            a.attrelid = b.oid and a.attnum = b.colnum::int) as column_names
+from pg_catalog.pg_class t
+         join pg_catalog.pg_index ix on ix.indrelid = t.oid
+         join pg_catalog.pg_class i on i.oid = ix.indexrelid
+         join pg_catalog.pg_namespace ns on t.relnamespace = ns.oid
+where t.relkind = 'r'
+  and ns.nspname = 'public';
+</div></section><section class="chapter"><h2 id="pq7kg9_8" data-toc="pq7kg9_8">Статистика использования индексов</h2><div class="code-block" data-lang="sql">
+select pt.schemaname                                                       as table_schema,
+       pt.tablename                                                        as table_name,
+       t.index_name                                                        as index_name,
+       pc.reltuples                                                        as total_rows,
+       pg_size_pretty(pg_relation_size(quote_ident(pt.tablename)::text))   as table_size,
+       pg_size_pretty(pg_relation_size(quote_ident(t.indexrelname)::text)) as index_size,
+       t.idx_scan                                                          as total_number_ofscan,
+       t.idx_tup_read                                                      as total_tuple_read,
+       t.idx_tup_fetch                                                     as total_tuple_fetched
+from pg_tables as pt
+         left outer join pg_class as pc
+                         on pt.tablename = pc.relname
+         left outer join
+     (select pc.relname  as table_Name,
+             pc2.relname as index_name,
+             psai.idx_scan,
+             psai.idx_tup_read,
+             psai.idx_tup_fetch,
+             psai.indexrelname
+      from pg_index as pi
+               join pg_class as pc
+                    on pc.oid = pi.indrelid
+               join pg_class as pc2
+                    on pc2.oid = pi.indexrelid
+               join pg_stat_all_indexes as psai
+                    on pi.indexrelid = psai.indexrelid) as t
+     on pt.tablename = t.table_name
+where pt.schemaname = 'public'
+order by table_schema, table_name, index_name;
+</div></section><section class="chapter"><h2 id="pq7kg9_10" data-toc="pq7kg9_10">Кандидаты на индексирование</h2><div class="code-block" data-lang="sql">
+select relname,
+       seq_scan - idx_scan as too_much_seq,
+       case
+           when seq_scan - coalesce(idx_scan, 0) &gt; 0
+               then 'Missing Index?'
+           else 'OK' end is_missing,
+       pg_relation_size(relname::regclass) as rel_size,
+       seq_scan,
+       idx_scan
+from pg_stat_all_tables
+where schemaname = 'public'
+  and pg_relation_size(relname::regclass) &gt; 80000
+order by too_much_seq desc;
+</div></section><section class="chapter"><h2 id="pq7kg9_12" data-toc="pq7kg9_12">Неиспользуемые индексы</h2><div class="code-block" data-lang="sql">
+select * from pg_stat_all_indexes
+where idx_scan = 0 and schemaname not in('pg_catalog', 'pg_toast');
+</div></section><section class="chapter"><h2 id="pq7kg9_14" data-toc="pq7kg9_14">Анализ состояния индексов</h2><div class="code-block" data-lang="sql">
+/*
+Для работы скрипта в базе необходимо установить расширение pgstatindex командой:
+CREATE EXTENSION pgstattuple;
+*/
+
+select n.nspname,                                  -- Схема
+       ti.relname as table_name,                   -- Таблица
+       i.indexrelid::regclass as index_name,       -- Имя индекса
+       s.leaf_fragmentation as leaf_fragmentation, -- Фрагментация на уровне листьев
+       s.index_size as index_size_bytes,           -- Общий объём индекса в байтах
+       s.version,                                  -- Номер версии B-дерева
+       s.tree_level,                               -- Уровень корневой страницы в дереве
+       s.root_block_no,                            -- Расположение страницы корня (0, если её нет)
+       s.internal_pages,                           -- Количество «внутренних» страниц (верхнего уровня)
+       s.leaf_pages,                               -- Количество страниц на уровне листьев
+       s.empty_pages,                              -- Количество пустых страниц
+       s.deleted_pages,                            -- Количество удалённых страниц
+       s.avg_leaf_density                          -- Средняя плотность страниц на уровне листьев
+from pg_catalog.pg_index as i
+         join pg_catalog.pg_class as t on i.indexrelid = t.oid
+         join pg_catalog.pg_opclass as opc on i.indclass[0] = opc.oid
+         join pg_catalog.pg_am on opc.opcmethod = pg_am.oid
+         cross join lateral pgstatindex(i.indexrelid) as s
+         join pg_catalog.pg_class ti on ti.oid = i.indrelid
+         left join pg_catalog.pg_namespace n on n.oid = ti.relnamespace
+where t.relkind = 'i'
+  and pg_am.amname = 'btree'
+  and ti.relkind = any (array ['r', 't'])
+  and n.nspname not in('pg_catalog', 'pg_toast')
+order by s.leaf_fragmentation desc
+</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-temptablespases.html" class="navigation-links__prev">Простраство temp_tablespaces</a><a href="howto-index-uniqnull.html" class="navigation-links__next">Индексы и уникальность на NULL</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

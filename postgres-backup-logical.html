@@ -1,0 +1,807 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.2209176"><title>Резервное копирование и восстановление | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-pabbzd_1022","level":0,"title":"О резервном копировании","anchor":"#-pabbzd_1022"},{"id":"-pabbzd_1030","level":0,"title":"Общая схема логического и физического резервирования","anchor":"#-pabbzd_1030"},{"id":"-pabbzd_1032","level":0,"title":"Логическое копирование","anchor":"#-pabbzd_1032"},{"id":"-pabbzd_1134","level":0,"title":"Восстановление","anchor":"#-pabbzd_1134"},{"id":"-pabbzd_1150","level":0,"title":"Форматы при логическом копировании и восстановлении","anchor":"#-pabbzd_1150"},{"id":"-pabbzd_1184","level":0,"title":"Выбор стратегии резервного копирования и восстановления","anchor":"#-pabbzd_1184"},{"id":"linux-lz4","level":0,"title":"Linux lz4","anchor":"#linux-lz4"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Резервное копирование и восстановление | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/postgres-backup-logical.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Резервное копирование и восстановление | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/postgres-backup-logical.html#webpage",
+    "url": "writerside-documentation/postgres-backup-logical.html",
+    "name": "Резервное копирование и восстановление | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="postgres-backup-logical" data-main-title="Резервное копирование и восстановление" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/app-psql&quot;,&quot;text&quot;:&quot;psql&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/app-pgdump&quot;,&quot;text&quot;:&quot;pg_dump&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/app-pg-dumpall&quot;,&quot;text&quot;:&quot;pg_dumpall&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgresql/16/app-pgrestore&quot;,&quot;text&quot;:&quot;pg_restore&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="postgres-backup-logical" id="postgres-backup-logical.md">Резервное копирование и восстановление</h1><section class="chapter"><h2 id="-pabbzd_1022" data-toc="-pabbzd_1022">О резервном копировании</h2><p id="-pabbzd_1023">Основные причины отсутствия резервного копирования:</p><ul class="list _bullet" id="-pabbzd_1024"><li class="list__item" id="-pabbzd_1025"><p>некомпетентность админа</p></li><li class="list__item" id="-pabbzd_1026"><p>лень</p></li><li class="list__item" id="-pabbzd_1027"><p>жадность компании</p></li><li class="list__item" id="-pabbzd_1028"><p>маленькая зарплата</p></li></ul><svg aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 621.28515625 1517.567138671875" height="1517.567138671875" xmlns="http://www.w3.org/2000/svg" width="621.28515625" id="mermaid"><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="10" viewBox="0 0 12 20" class="marker flowchart" id="flowchart-pointEnd"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="0" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-pointStart"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="11" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleEnd"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleStart"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="12" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossEnd"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="-1" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossStart"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path marker-end="url(#flowchart-pointEnd)" style="stroke:#D50000;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" id="L-A-B-0" d="M147.94220868751265,157.03595868751265L129.69142390626055,172.37371557292718C111.44063912500843,187.71147245834177,74.93906956250422,218.3869862291709,56.688284781252115,260.00208686458546C38.4375,301.6171875,38.4375,354.171875,38.4375,406.7265625C38.4375,459.28125,38.4375,511.8359375,38.4375,572.0299479166666C38.4375,632.2239583333334,38.4375,700.0572916666666,38.4375,767.890625C38.4375,835.7239583333334,38.4375,903.5572916666666,38.4375,964.578125C38.4375,1025.5989583333333,38.4375,1079.8072916666667,38.4375,1134.015625C38.4375,1188.2239583333333,38.4375,1242.4322916666667,44.94812134806483,1280.8219973246257C51.45874269612966,1319.2117029825847,64.47998539225931,1341.7827809651692,70.99060674032414,1353.0683199564617L77.50122808838897,1364.353858947754"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#00C853;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-CAL" id="L-A-CAL-0" d="M244.38174068375162,176.64950931624838L251.07658077812633,188.71834109687367C257.7714208725011,200.78717287749893,271.1611010612505,224.92483643874948,277.9392744889586,242.82700155270808C284.7174479166667,260.7291666666667,284.8841145833333,272.3958333333333,284.9674479166667,278.2291666666667L285.05078125,284.0625"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#D50000;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CAL LE-B" id="L-CAL-B-0" d="M225.05090632623694,470.39075007623694L210.00661464686414,486.05739589686414C194.9623229674913,501.7240417174913,164.87373960874564,533.0573333587457,149.82944792937283,582.6406458460395C134.78515625,632.2239583333334,134.78515625,700.0572916666666,134.78515625,767.890625C134.78515625,835.7239583333334,134.78515625,903.5572916666666,134.78515625,964.578125C134.78515625,1025.5989583333333,134.78515625,1079.8072916666667,134.78515625,1134.015625C134.78515625,1188.2239583333333,134.78515625,1242.4322916666667,132.21294527057506,1280.8219973246257C129.64073429115012,1319.2117029825847,124.49631233230026,1341.7827809651692,121.92410135287533,1353.0683199564617L119.3518903734504,1364.353858947754"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#00C853;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CAL LE-CB" id="L-CAL-CB-0" d="M333.4315015316139,482.0099047183861L342.28471481801154,495.7400247653218C351.13792810440924,509.4701448122574,368.8443546772046,536.9303849061288,377.7809012969356,556.4938382863977C386.7174479166667,576.0572916666666,386.8841145833333,587.7239583333334,386.9674479166667,593.5572916666666L387.05078125,599.390625"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#D50000;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CB LE-B" id="L-CB-B-0" d="M320.40643601190476,870.7462797619048L309.347160218254,887.5203373015873C298.2878844246032,904.2943948412699,276.1693328373016,937.8425099206348,265.1100570436508,981.7207341269841C254.05078125,1025.5989583333333,254.05078125,1079.8072916666667,254.05078125,1134.015625C254.05078125,1188.2239583333333,254.05078125,1242.4322916666667,240.2352280194939,1280.8219973246257C226.41967478898778,1319.2117029825847,198.78856832797555,1341.7827809651692,184.9730150974694,1353.0683199564617L171.1574618669633,1364.353858947754"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#00C853;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CB LE-CCA" id="L-CB-CCA-0" d="M438.40387334471376,886.0375329052862L444.5663788289282,900.2630482544051C450.7288843131425,914.4885636035242,463.0538952815712,942.9395943017621,469.29973409911895,962.9984429842143C475.5455729166667,983.0572916666666,475.7122395833333,994.7239583333334,475.7955729166667,1000.5572916666666L475.87890625,1006.390625"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#D50000;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CCA LE-B" id="L-CCA-B-0" d="M422.74265955371703,1209.504378303717L412.3096381697642,1224.027086086431C401.87661678581134,1238.5497938691447,381.01057401790564,1267.5952094345723,346.38679742561953,1293.5804789568965C311.7630208333333,1319.5657484792207,263.3815104166667,1342.4908719584416,239.19075520833334,1353.953433698052L215,1365.4159954376623"></path><path marker-end="url(#flowchart-pointEnd)" style="stroke:#00C853;fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-CCA LE-CCB" id="L-CCA-CCB-0" d="M491.3941274964111,1247.125403753589L492.45929895534255,1255.3779406279907C493.52447041427405,1263.6304775023925,495.65481333213705,1280.1355512511964,496.7199847910685,1294.1380881255982C497.78515625,1308.140625,497.78515625,1319.640625,497.78515625,1325.390625L497.78515625,1331.140625"></path></g><g class="edgeLabels"><g transform="translate(38.4375, 767.890625)" class="edgeLabel"><g transform="translate(-14.53125, -9.5)" class="label"><foreignObject height="19" width="29.0625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">НЕТ<br></span></div></foreignObject></g></g><g transform="translate(284.55078125, 249.0625)" class="edgeLabel"><g transform="translate(-10.28125, -9.5)" class="label"><foreignObject height="19" width="20.5625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">ДА</span></div></foreignObject></g></g><g transform="translate(134.78515625, 971.390625)" class="edgeLabel"><g transform="translate(-10.28125, -9.5)" class="label"><foreignObject height="19" width="20.5625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">ДА</span></div></foreignObject></g></g><g transform="translate(386.55078125, 564.390625)" class="edgeLabel"><g transform="translate(-14.53125, -9.5)" class="label"><foreignObject height="19" width="29.0625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">НЕТ</span></div></foreignObject></g></g><g transform="translate(254.05078125, 1134.015625)" class="edgeLabel"><g transform="translate(-14.53125, -9.5)" class="label"><foreignObject height="19" width="29.0625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">НЕТ</span></div></foreignObject></g></g><g transform="translate(475.37890625, 971.390625)" class="edgeLabel"><g transform="translate(-10.28125, -9.5)" class="label"><foreignObject height="19" width="20.5625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">ДА</span></div></foreignObject></g></g><g transform="translate(360.14453125, 1296.640625)" class="edgeLabel"><g transform="translate(-14.53125, -9.5)" class="label"><foreignObject height="19" width="29.0625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">НЕТ</span></div></foreignObject></g></g><g transform="translate(497.78515625, 1296.640625)" class="edgeLabel"><g transform="translate(-10.28125, -9.5)" class="label"><foreignObject height="19" width="20.5625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">ДА</span></div></foreignObject></g></g></g><g class="nodes"><g transform="translate(205.46875, 107.28125)" id="flowchart-A-584" class="node default default flowchart-label"><polygon style="stroke:#2962FF;" transform="translate(-107.28125,107.28125)" class="label-container" points="107.28125,0 214.5625,-107.28125 107.28125,-214.5625 0,-107.28125"></polygon><g transform="translate(-47.78125, -44.5)" style="" class="label"><rect></rect><foreignObject style="width: 95.5625px; height: 89px;" height="89" width="95.5625"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Резервное <br>копирование <br>настроено?</p></span></div></foreignObject></g></g><g transform="translate(107.5, 1416.353858947754)" id="flowchart-B-585" class="node default default flowchart-label"><rect height="104" width="215" y="-52" x="-107.5" ry="0" rx="0" style="stroke:#D50000;" class="basic label-container"></rect><g transform="translate(-100, -44.5)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 89px;" height="89" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Все плохо<br> Вскоре вы потеряете данные!!!</p></span></div></foreignObject></g></g><g transform="translate(284.55078125, 406.7265625)" id="flowchart-CAL-587" class="node default default flowchart-label"><polygon style="stroke:#2962FF;" transform="translate(-123.1640625,123.1640625)" class="label-container" points="123.1640625,0 246.328125,-123.1640625 123.1640625,-246.328125 0,-123.1640625"></polygon><g transform="translate(-73.1640625, -35)" style="" class="label"><rect></rect><foreignObject style="width: 146.328px; height: 70px;" height="70" width="146.328125"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Резервная копия на <br>том же сервере?</p></span></div></foreignObject></g></g><g transform="translate(386.55078125, 767.890625)" id="flowchart-CB-591" class="node default default flowchart-label"><polygon style="stroke:#2962FF;" transform="translate(-169,169)" class="label-container" points="169,0 338,-169 169,-338 0,-169"></polygon><g transform="translate(-100, -54)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 108px;" height="108" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Резервная копия на <br>другом сервере, в облаке?<br>В количестве двух и более экземпляров?</p></span></div></foreignObject></g></g><g transform="translate(475.37890625, 1134.015625)" id="flowchart-CCA-595" class="node default default flowchart-label"><polygon style="stroke:#2962FF;" transform="translate(-128.125,128.125)" class="label-container" points="128.125,0 256.25,-128.125 128.125,-256.25 0,-128.125"></polygon><g transform="translate(-59.125, -54)" style="" class="label"><rect></rect><foreignObject style="width: 118.25px; height: 108px;" height="108" width="118.25"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Вы проверяете <br>возможность <br>восстановления <br>бекапа?</p></span></div></foreignObject></g></g><g transform="translate(497.78515625, 1416.353858947754)" id="flowchart-CCB-599" class="node default default flowchart-label"><path transform="translate(-107.5,-85.21323529411765)" d="M 0,15.808823529411764 a 107.5,15.808823529411764 0,0,0 215 0 a 107.5,15.808823529411764 0,0,0 -215 0 l 0,138.80882352941177 a 107.5,15.808823529411764 0,0,0 215 0 l 0,-138.80882352941177" style="stroke:#00C853;"></path><g transform="translate(-100, -54)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 108px;" height="108" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Поздравляем!<br>У вас неплохие шансы.<br>Сбой всё равно произойдет.</p></span></div></foreignObject></g></g></g></g></g></svg></section><section class="chapter"><h2 id="-pabbzd_1030" data-toc="-pabbzd_1030">Общая схема логического и физического резервирования</h2><svg aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 723.515625 485"  xmlns="http://www.w3.org/2000/svg" width="723.515625" id="mermaid"><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="10" viewBox="0 0 12 20" class="marker flowchart" id="flowchart-pointEnd"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="0" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-pointStart"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="11" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleEnd"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleStart"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="12" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossEnd"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="-1" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossStart"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" id="L-A-B-0" d="M293.60546875,59.15170153267829L260.2141927083333,69.20975127723192C226.82291666666666,79.26780102178553,160.04036458333334,99.38390051089277,126.64908854166667,118.35861692211306C93.2578125,137.33333333333334,93.2578125,155.16666666666666,93.2578125,164.08333333333334L93.2578125,173"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" id="L-A-C-0" d="M404.16796875,76.45033803782286L415.8509114583333,83.62528169818572C427.5338541666667,90.80022535854857,450.8997395833333,105.15011267927429,462.5826822916667,118.07505633963713C474.265625,131,474.265625,142.5,474.265625,148.25L474.265625,154"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-BA" id="L-B-BA-0" d="M93.2578125,258L93.2578125,265.3333333333333C93.2578125,272.6666666666667,93.2578125,287.3333333333333,93.2578125,303.5833333333333C93.2578125,319.8333333333333,93.2578125,337.6666666666667,93.2578125,346.5833333333333L93.2578125,355.5"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-CAA" id="L-C-CAA-0" d="M381.6601336705202,277L375.3860488921002,281.1666666666667C369.1119641136802,285.3333333333333,356.5637945568401,293.6666666666667,350.28970977842005,302C344.015625,310.3333333333333,344.015625,318.6666666666667,344.015625,322.8333333333333L344.015625,327"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-CAB" id="L-C-CAB-0" d="M566.8711163294797,277L573.1452011078998,281.1666666666667C579.4192858863198,285.3333333333333,591.9674554431599,293.6666666666667,598.24154022158,306.75C604.515625,319.8333333333333,604.515625,337.6666666666667,604.515625,346.5833333333333L604.515625,355.5"></path></g><g class="edgeLabels"><g transform="translate(93.2578125, 119.5)" class="edgeLabel"><g transform="translate(-43.109375, -9.5)" class="label"><foreignObject height="19" width="86.21875"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Логическое</span></div></foreignObject></g></g><g transform="translate(474.265625, 119.5)" class="edgeLabel"><g transform="translate(-44.0859375, -9.5)" class="label"><foreignObject height="19" width="88.171875"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Физическое</span></div></foreignObject></g></g><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g transform="translate(348.88671875, 42.5)" id="flowchart-A-628" class="node default default flowchart-label"><rect height="85" width="110.5625" y="-42.5" x="-55.28125" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-47.78125, -35)" style="" class="label"><rect></rect><foreignObject style="width: 95.5625px; height: 70px;" height="70" width="95.5625"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Резервное <br>копирование</p></span></div></foreignObject></g></g><g transform="translate(93.2578125, 215.5)" id="flowchart-B-630" class="node default default flowchart-label"><rect height="85" width="146.15625" y="-42.5" x="-73.078125" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-65.578125, -35)" style="" class="label"><rect></rect><foreignObject style="width: 131.156px; height: 70px;" height="70" width="131.15625"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Очень просто: <br>pg_dump или psql<br></p></span></div></foreignObject></g></g><g transform="translate(474.265625, 215.5)" id="flowchart-C-632" class="node default default flowchart-label"><rect height="123" width="215" y="-61.5" x="-107.5" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-100, -54)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 108px;" height="108" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Надежнее: <br> физическое копирование каталога<br>Копируем кластер</p></span></div></foreignObject></g></g><g transform="translate(93.2578125, 398)" id="flowchart-BA-634" class="node default default flowchart-label"><rect height="85" width="186.515625" y="-42.5" x="-93.2578125" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-85.7578125, -35)" style="" class="label"><rect></rect><foreignObject style="width: 171.516px; height: 70px;" height="70" width="171.515625"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Копируем всю базу <br>или выбранный объект</p></span></div></foreignObject></g></g><g transform="translate(344.015625, 398)" id="flowchart-CAA-636" class="node default default flowchart-label"><rect height="142" width="215" y="-71" x="-107.5" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-100, -63.5)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 127px;" height="127" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Копирование каталога с<br> остановкой сервера базы данных или снимком данных файловой системы</p></span></div></foreignObject></g></g><g transform="translate(604.515625, 398)" id="flowchart-CAB-638" class="node default default flowchart-label"><rect height="85" width="206" y="-42.5" x="-103" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-95.5, -35)" style="" class="label"><rect></rect><foreignObject style="width: 191px; height: 70px;" height="70" width="191"><div style="display: table-cell; white-space: nowrap; max-width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Горячее копирование <br> по протоколу репликации</p></span></div></foreignObject></g></g></g></g></g></svg></section><section class="chapter"><h2 id="-pabbzd_1032" data-toc="-pabbzd_1032">Логическое копирование</h2><svg aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 526.046875 204"  xmlns="http://www.w3.org/2000/svg" width="526.046875" id="mermaid"><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="10" viewBox="0 0 12 20" class="marker flowchart" id="flowchart-pointEnd"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="0" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-pointStart"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="11" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleEnd"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleStart"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="12" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossEnd"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="-1" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossStart"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" id="L-A-B-0" d="M209.34887378246754,85L196.6826552353896,90.75C184.0164366883117,96.5,158.68399959415584,108,146.01778104707793,119.5C133.3515625,131,133.3515625,142.5,133.3515625,148.25L133.3515625,154"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" id="L-A-C-0" d="M302.96875,85L302.96875,90.75C302.96875,96.5,302.96875,108,302.96875,119.5C302.96875,131,302.96875,142.5,302.96875,148.25L302.96875,154"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-D" id="L-A-D-0" d="M379.749898538961,85L390.13793628246754,90.75C400.525974025974,96.5,421.302049512987,108,431.69008725649354,119.5C442.078125,131,442.078125,142.5,442.078125,148.25L442.078125,154"></path></g><g class="edgeLabels"><g transform="translate(133.3515625, 119.5)" class="edgeLabel"><g transform="translate(-133.3515625, -9.5)" class="label"><foreignObject height="19" width="266.703125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Один объект или результат запроса</span></div></foreignObject></g></g><g transform="translate(302.96875, 119.5)" class="edgeLabel"><g transform="translate(-16.265625, -9.5)" class="label"><foreignObject height="19" width="32.53125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Базу</span></div></foreignObject></g></g><g transform="translate(442.078125, 119.5)" class="edgeLabel"><g transform="translate(-67.96875, -9.5)" class="label"><foreignObject height="19" width="135.9375"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Объекты кластера</span></div></foreignObject></g></g></g><g class="nodes"><g transform="translate(302.96875, 42.5)" id="flowchart-A-653" class="node default default flowchart-label"><rect height="85" width="215" y="-42.5" x="-107.5" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-100, -35)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 70px;" height="70" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Инструменты логического копирование</p></span></div></foreignObject></g></g><g transform="translate(133.3515625, 171)" id="flowchart-B-655" class="node default default flowchart-label"><rect height="34" width="44.03125" y="-17" x="-22.015625" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-14.515625, -9.5)" style="" class="label"><rect></rect><foreignObject height="19" width="29.03125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">psql</span></div></foreignObject></g></g><g transform="translate(302.96875, 171)" id="flowchart-C-657" class="node default default flowchart-label"><rect height="34" width="80.1875" y="-17" x="-40.09375" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-32.59375, -9.5)" style="" class="label"><rect></rect><foreignObject height="19" width="65.1875"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">pg_dump</span></div></foreignObject></g></g><g transform="translate(442.078125, 171)" id="flowchart-D-659" class="node default default flowchart-label"><rect height="34" width="98.03125" y="-17" x="-49.015625" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-41.515625, -9.5)" style="" class="label"><rect></rect><foreignObject height="19" width="83.03125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">pg_dumpall</span></div></foreignObject></g></g></g></g></g></svg><svg aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 434.546875 204"  xmlns="http://www.w3.org/2000/svg" width="434.546875" id="mermaid"><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="10" viewBox="0 0 12 20" class="marker flowchart" id="flowchart-pointEnd"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="0" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-pointStart"><path style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="11" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleEnd"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-circleStart"><circle style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5" cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="12" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossEnd"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11" markerUnits="userSpaceOnUse" refY="5.2" refX="-1" viewBox="0 0 11 11" class="marker cross flowchart" id="flowchart-crossStart"><path style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" id="L-A-B-0" d="M182.47450791396105,85L174.28735034496754,90.75C166.10019277597402,96.5,149.725877637987,108,141.5387200689935,119.5C133.3515625,131,133.3515625,142.5,133.3515625,148.25L133.3515625,154"></path><path marker-end="url(#flowchart-pointEnd)" style="fill:none;" class="edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" id="L-A-C-0" d="M303.502054586039,85L311.68921215503246,90.75C319.876369724026,96.5,336.250684862013,108,344.43784243100646,119.5C352.625,131,352.625,142.5,352.625,148.25L352.625,154"></path></g><g class="edgeLabels"><g transform="translate(133.3515625, 119.5)" class="edgeLabel"><g transform="translate(-133.3515625, -9.5)" class="label"><foreignObject height="19" width="266.703125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Один объект или результат запроса</span></div></foreignObject></g></g><g transform="translate(352.625, 119.5)" class="edgeLabel"><g transform="translate(-65.921875, -9.5)" class="label"><foreignObject height="19" width="131.84375"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel">Базу или объекты</span></div></foreignObject></g></g></g><g class="nodes"><g transform="translate(242.98828125, 42.5)" id="flowchart-A-670" class="node default default flowchart-label"><rect height="85" width="215" y="-42.5" x="-107.5" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-100, -35)" style="" class="label"><rect></rect><foreignObject style="width: 200px; height: 70px;" height="70" width="200"><div style="display: table; white-space: break-spaces; max-width: 200px; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel markdown-node-label"><p>Инструменты логического восстановления</p></span></div></foreignObject></g></g><g transform="translate(133.3515625, 171)" id="flowchart-B-672" class="node default default flowchart-label"><rect height="34" width="44.03125" y="-17" x="-22.015625" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-14.515625, -9.5)" style="" class="label"><rect></rect><foreignObject height="19" width="29.03125"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">psql</span></div></foreignObject></g></g><g transform="translate(352.625, 171)" id="flowchart-C-674" class="node default default flowchart-label"><rect height="34" width="91.640625" y="-17" x="-45.8203125" ry="0" rx="0" style="" class="basic label-container"></rect><g transform="translate(-38.3203125, -9.5)" style="" class="label"><rect></rect><foreignObject height="19" width="76.640625"><div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">pg_restore</span></div></foreignObject></g></g></g></g></g></svg><p id="-pabbzd_1035">Для логического резервирования используется утилита <a href="https://postgrespro.ru/docs/postgresql/16/app-pgdump" id="-pabbzd_1036" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1037">pg_dump</span></a>, <a href="https://postgrespro.ru/docs/postgresql/16/app-pgrestore" id="-pabbzd_1038" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1039">pg_restore</span></a>, <a href="https://postgrespro.ru/docs/postgresql/16/app-pg-dumpall" id="-pabbzd_1040" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1041">pg_dumpall</span></a>.</p><aside class="prompt" data-type="tip" data-title="" id="-pabbzd_1042"><p id="-pabbzd_1043">Какое расширения для имени файла бекапа?</p><p id="-pabbzd_1044"><span class="emphasis" id="-pabbzd_1045"><span class="control" id="-pabbzd_1046">Нет явной привязки - тип резевной копии=расширение.</span></span><br> Если при резевном копировании использовать расширения файлов<br><span class="control" id="-pabbzd_1049">bak</span>, <span class="control" id="-pabbzd_1050">sql</span> - для <span class="control" id="-pabbzd_1051"><span class="emphasis" id="-pabbzd_1052">plain</span></span> формата, <br><span class="control" id="-pabbzd_1054">custom</span>, <span class="control" id="-pabbzd_1055">custombak</span> - для <span class="control" id="-pabbzd_1056"><span class="emphasis" id="-pabbzd_1057">custom</span></span> формата, <br> будет немного проще ориентироваться</p></aside><section class="chapter"><h3 id="-pabbzd_1059" data-toc="-pabbzd_1059">Копирование одного объекта</h3><p id="-pabbzd_1060">Для копирования данных одной таблицы используем <a href="https://postgrespro.ru/docs/postgresql/16/app-psql" id="-pabbzd_1061" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1062">psql</span></a> и команду \copy</p><div class="code-block" data-lang="bash">
+ \copy youtablename to filename
+</div><p id="-pabbzd_1064">Для восстановления</p><div class="code-block" data-lang="bash">
+ \copy youtablename from filename
+</div><aside class="prompt" data-type="note" data-title="" id="-pabbzd_1066"><p id="-pabbzd_1067">Вместо <span class="control" id="-pabbzd_1068"><span class="emphasis" id="-pabbzd_1069">youtablename</span></span> может быть указан запрос на <span class="control" id="-pabbzd_1070">SELECT</span></p></aside><p id="-pabbzd_1071">для копирования в\из потока - используем <span class="control" id="-pabbzd_1072">stdout</span></p><div class="code-block" data-lang="bash">
+copy youtablename to stdout
+</div><p id="-pabbzd_1074">Для команды copy есть дополнительные опции, определяемые <span class="control" id="-pabbzd_1075">WITH</span>:</p><div class="code-block" data-lang="bash">
+\copy youtablename from filename with(format csv)
+</div><p id="-pabbzd_1077">Полезные скрипты на Powershell:</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Резервное копирование одной таблицы" data-disable-link-processing="true">&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию 
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS 
+
+# Поставьте по умолчанию, чтобы не заморачиваться
+$env:LC_MESSAGES = 'English'
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# База с котрой будем работать
+$currentDB = &quot;devschematree&quot;; # postgres
+# Таблица с котрой будем работать
+$currentTable = &quot;treedata&quot;; 
+# Полный путь к файлу
+$currentFileName = &quot;d:\tmp\$currentTable.sql&quot;; 
+
+
+#----------------------------
+# Информация о версии
+$serviceDbActionResult = (.\psql -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d $currentDB -c &quot;\conninfo&quot;);
+$Result = $LASTEXITCODE;
+if($Result -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $serviceDbActionResult
+#$serviceDbActionResult = $(.\psql -d $currentDB -c &quot;\! chcp&quot;);
+#Write-Host $serviceDbActionResult
+
+$currentsrvenc = $(.\psql -d $currentDB -q --no-align -t -c &quot;SHOW server_encoding; SHOW client_encoding;&quot;);
+Write-Host (&quot;server encoding: $($currentsrvenc[0]);client: $($currentsrvenc[1])&quot;);
+Write-Host $(&quot;-&quot; * 50)
+#----------------------------
+
+# -a Отправляет в стандартный вывод все непустые входные строки по мере их чтения
+# --no-align Переключает на невыровненный режим вывода. (По умолчанию используется другой режим, aligned.)
+# -q тихий режим Указывает, что psql должен работать без вывода дополнительных сообщений
+# --quiet
+# \q или \quit Выход из psql 
+# --csv Переключает в режим вывода CSV (Comma Separated Values, Значения, разделённые запятыми
+# -e Посылает все команды SQL, отправленные на сервер, ещё и на стандартный вывод
+# -E Отображает фактические запросы, генерируемые \d и другими командами, начинающимися с \.
+# -f имя_файла Читает команды из файла имя_файла
+# -F разделитель
+# -L имя_файла В дополнение к обычному выводу, записывает вывод результатов всех запросов в файл имя_файла.
+# -o имя_файла Записывает вывод результатов всех запросов в файл имя_файла. Эквивалентно команде \o
+# -t Отключает вывод имён столбцов и результирующей строки с количеством выбранных записей
+
+#При нормальном завершении psql возвращает 0 в командную оболочку ОС, 
+#1 — если произошла критическая ошибка в самом psql (например, нехватка памяти, файл не найден), 
+#2 — при неудачном соединении с сервером неинтерактивного сеанса, 
+#3 — при ошибке в скрипте и установленной переменной ON_ERROR_STOP.
+
+$actionResult = $(.\psql -d $currentDB -c &quot;\copy $currentTable to $currentFileName&quot;); 
+# результат завершения psql
+$Result = $LASTEXITCODE;
+Write-Host $actionResult;
+Write-Host &quot;Данные сохранены в файл: $currentFileName&quot;;
+   
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)
+Pop-Location;</div><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Резервное копирование нескольких таблицы" data-disable-link-processing="true">&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию 
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot; 
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS 
+
+# Поставьте по умолчанию, чтобы не заморачиваться
+$env:LC_MESSAGES = 'English'
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# База с котрой будем работать
+$currentDB = &quot;devschematree&quot;; # postgres
+# Таблицы с которыми будем работать
+$currentTables = @('treedata', 'treedatav2'); 
+# Полный путь каталогу бекапов
+$currentBakFolder = &quot;d:\tmp\&quot;; 
+
+
+#----------------------------
+# Информация о версии
+$serviceDbActionResult = (.\psql -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d $currentDB -c &quot;\conninfo&quot;);
+$Result = $LASTEXITCODE;
+if($Result -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $serviceDbActionResult
+#$serviceDbActionResult = $(.\psql -d $currentDB -c &quot;\! chcp&quot;);
+#Write-Host $serviceDbActionResult
+
+$currentsrvenc = $(.\psql -d $currentDB -q --no-align -t -c &quot;SHOW server_encoding; SHOW client_encoding;&quot;);
+Write-Host (&quot;server encoding: $($currentsrvenc[0]);client: $($currentsrvenc[1])&quot;);
+Write-Host $(&quot;-&quot; * 50)
+#----------------------------
+
+# -a Отправляет в стандартный вывод все непустые входные строки по мере их чтения
+# --no-align Переключает на невыровненный режим вывода. (По умолчанию используется другой режим, aligned.)
+# -q тихий режим Указывает, что psql должен работать без вывода дополнительных сообщений
+# --quiet
+# \q или \quit Выход из psql 
+# --csv Переключает в режим вывода CSV (Comma Separated Values, Значения, разделённые запятыми
+# -e Посылает все команды SQL, отправленные на сервер, ещё и на стандартный вывод
+# -E Отображает фактические запросы, генерируемые \d и другими командами, начинающимися с \.
+# -f имя_файла Читает команды из файла имя_файла
+# -F разделитель
+# -L имя_файла В дополнение к обычному выводу, записывает вывод результатов всех запросов в файл имя_файла.
+# -o имя_файла Записывает вывод результатов всех запросов в файл имя_файла. Эквивалентно команде \o
+# -t Отключает вывод имён столбцов и результирующей строки с количеством выбранных записей
+
+#При нормальном завершении psql возвращает 0 в командную оболочку ОС, 
+#1 — если произошла критическая ошибка в самом psql (например, нехватка памяти, файл не найден), 
+#2 — при неудачном соединении с сервером неинтерактивного сеанса, 
+#3 — при ошибке в скрипте и установленной переменной ON_ERROR_STOP.
+
+foreach($currentTable in $currentTables)
+{
+    $currentFileName = (Join-Path -Path $currentBakFolder -ChildPath &quot;$currentTable.sql&quot;);
+    $actionResult = $(.\psql -d $currentDB -c &quot;\copy $currentTable to $currentFileName&quot;); 
+    $Result = $LASTEXITCODE;
+    if($Result -ne 0)
+    {
+        Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+    }
+    Write-Host $actionResult;
+    Write-Host &quot;Данные сохранены в файл: $currentFileName&quot;;    
+}
+
+   
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)
+Pop-Location;</div><p id="-pabbzd_1080"><a href="https://postgrespro.ru/docs/postgresql/16/sql-copy" id="-pabbzd_1081" data-external="true" rel="noopener noreferrer">Документация sql-copy</a></p></section><section class="chapter"><h3 id="-pabbzd_1082" data-toc="-pabbzd_1082">Копия базы</h3><p id="-pabbzd_1083">Используется <a href="https://postgrespro.ru/docs/postgresql/16/app-pgdump" id="-pabbzd_1084" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1085">pg_dump</span></a></p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Получение справки для pg_dump">
+pg_dump --help
+</div><p id="-pabbzd_1087">В самом простом варианте - вывод в консоль</p><div class="code-block" data-lang="bash">
+pg_dump -d dbnametobackup
+</div><p id="-pabbzd_1089">Сохранить в файл</p><div class="code-block" data-lang="bash">
+pg_dump -d dbnametobackup -f filename
+</div><p id="-pabbzd_1091">Полезная опция установки кодировки в UTF8</p><div class="code-block" data-lang="bash">
+pg_dump -E UTF8
+</div><p id="-pabbzd_1093">Если вам достался файл в кодировке, которую нужно преобразовать в nix есть отличная команда</p><div class="code-block" data-lang="bash">
+iconv --help
+</div><p id="-pabbzd_1095">Полезные ключи при частичной выгрузке и загрузке данных</p><div class="table-wrapper"><table class="wide" id="-pabbzd_1096"><thead><tr class="ijRowHead" id="-pabbzd_1097"><th id="-pabbzd_1098"><p>--data-only</p></th><th id="-pabbzd_1099"><p>выгрузить только данные, без схемы</p></th></tr></thead><tbody><tr id="-pabbzd_1100"><td id="-pabbzd_1101"><p>--schema-only</p></td><td id="-pabbzd_1102"><p>выгрузить только схему, без данных</p></td></tr></tbody></table></div><p id="-pabbzd_1103">Полезные ключи при восстановлении на чистой или заполненной системе</p><div class="table-wrapper"><table class="wide" id="-pabbzd_1104"><thead><tr class="ijRowHead" id="-pabbzd_1105"><th id="-pabbzd_1106"><p>--clean</p></th><th id="-pabbzd_1107"><p>очистить (удалить) объекты БД при восстановлении</p></th></tr></thead><tbody><tr id="-pabbzd_1108"><td id="-pabbzd_1109"><p>--create</p></td><td id="-pabbzd_1110"><p>добавить в копию команды создания базы данных</p></td></tr></tbody></table></div><p id="-pabbzd_1111">При использовании формата <span class="control" id="-pabbzd_1112">directory</span> доступно использование нескольких потоков, что существенно увеличит скорость создания для больших баз и хороших дисковых систем, количество потоков определяется ключом <span class="control" id="-pabbzd_1113">--jobs</span>. Значение подбирается опытным путем.</p><div class="code-block" data-lang="bash">
+pg_dump -d dbname --format=directory --jobs=2 -f filebak
+</div><p id="-pabbzd_1115">Полезные скрипты на Powershell:</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Резервное копирование одной базы" data-disable-link-processing="true">&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+Резервное копирование одной базы в sql файл
+
+2024.05.14
+Для nix не забываем поставить chmod +x &lt;имяфайла.ps1&gt;
+#&gt;
+
+# Использовать файл .pgpass или переменные окружения из файла
+$optionUsePGPass = $false;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном акттуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot;
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    #Push-Location $pgDirectory;
+}
+else {
+    $pgDirectory = &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+if($optionUsePGPass) {$env:PGPASSWORD =''} #Если используем .pgpass
+else{$env:PGPASSWORD = 'postgres'}
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS
+
+# Поставьте по умолчанию, чтобы не заморачиваться
+$env:LC_MESSAGES = 'English'
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+
+# База с котрой будем работать
+$currentDB = &quot;devschematree&quot;;
+# Полный путь к файлу
+$currentBakFolder = &quot;d:\tmp\&quot;;
+
+#----------------------------
+# Полный путь к psql
+$psqlexeFullPath = (Join-Path $pgDirectory &quot;psql&quot;) + $(($platform -eq $platformWIN32)?&quot;.exe&quot;:&quot;&quot;);
+$psqlexeFullPath = $psqlexeFullPath.Contains(' ')? &quot;`&quot;$psqlexeFullPath`&quot;&quot;: $psqlexeFullPath;
+
+# Полный путь к pg_dump
+$pgdumpexeFullPath = (Join-Path $pgDirectory &quot;pg_dump&quot;) + $(($platform -eq $platformWIN32)?&quot;.exe&quot;:&quot;&quot;);
+$pgdumpexeFullPath = $pgdumpexeFullPath.Contains(' ')? &quot;`&quot;$pgdumpexeFullPath`&quot;&quot;: $pgdumpexeFullPath;
+
+# Информация о версии psql
+$serviceDbActionResult = Invoke-Expression -Command (&quot;&amp; $psqlexeFullPath -V&quot;);
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $serviceDbActionResult -ForegroundColor Green
+# Информация о версии pgdump
+$serviceDbActionResult = Invoke-Expression -Command (&quot;&amp; $pgdumpexeFullPath -V&quot;);
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $serviceDbActionResult -ForegroundColor Green
+
+# Информация о подключении
+$command = &quot;$psqlexeFullPath -d $currentDB $customArgOtion--no-psqlrc -c `&quot;\conninfo`&quot;&quot;
+$actionResult = Invoke-Expression -Command &quot;&amp; $command 2&gt;&amp;1&quot;;
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $actionResult -ForegroundColor Green
+
+$command = &quot;$psqlexeFullPath -d $currentDB $customArgOtion--no-psqlrc -q --no-align -t -c `&quot;SHOW server_encoding; SHOW client_encoding;`&quot;&quot;
+$actionResult = Invoke-Expression -Command &quot;&amp; $command 2&gt;&amp;1&quot;;
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host (&quot;server encoding: $($actionResult[0]);client: $($actionResult[1])&quot;) -ForegroundColor Green;
+Write-Host $(&quot;-&quot; * 50)
+#----------------------------
+$currentFileName =  Join-Path -Path $currentBakFolder &quot;$($currentDB)_$(Get-Date -Format &quot;yyyyMMdd_hhmm&quot;)_bakup.sql&quot;;
+$command = &quot;$pgdumpexeFullPath -v -d $currentDB -f $currentFileName&quot;
+Write-Host $command -ForegroundColor DarkGray;
+# 2&gt;&amp;1 - это дополнительное перенаправление вывода для ошибок
+$actionResult = Invoke-Expression -Command &quot;&amp; $command 2&gt;&amp;1&quot;;
+# результат завершения psql
+if($LASTEXITCODE -ne 0) {Write-Error 'Что-то пошло не так!' -ErrorAction Stop}
+Write-Host $actionResult -Separator ([System.Environment]::NewLine)
+
+
+Write-Host $(&quot;-&quot; * 50)
+Write-Host &quot;Дата и время старта: $($startTime.ToString(&quot;yyyyMMdd hh:mm:ss&quot;))&quot; -ForegroundColor DarkYellow;
+$endTime = Get-Date;
+Write-Host &quot;Вряме создания резерной копии:$(New-TimeSpan –Start $startTime –End $endTime)&quot; -ForegroundColor DarkYellow;;
+Write-Host &quot;Данные сохранены в файл: $currentFileName&quot; -ForegroundColor DarkYellow;;
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)</div><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Резервное копирование нескольких базы" data-disable-link-processing="true">#!/usr/bin/env pwsh
+
+&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+Резервное копирование нексольких базы в файл
+2024.05.07
+
+$useBackupCompress - использовать сжатие
+$currentBakFolder - путь к каталогу резевных копий
+$jobsCount - Количество потоков для формата directoty
+
+Для nix:
+chmod +x backupDBV2.ps1
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном актуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot;
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+}
+else {
+    $pgDirectory = &quot;/opt/pgpro/std-16/bin/&quot;;
+}
+Push-Location $pgDirectory;
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS
+
+# Поставьте по умолчанию, чтобы не заморачиваться
+$env:LC_MESSAGES = 'English'
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+$connectCheckDB = 'postgres';
+# База с котрой будем работать
+$currentDBList = @('devschematree', 'devschemaeav2');
+#$currentDBList = @('devtesttablespace', 'devlearnpg', 'devdbtestfunc', 'devtestindex', 'devtestdatatypes', 'testsasist', 'devteststates', 'devtestclusteridx', 'postgremaintenance', 'devuuidtest', 'devschemaeav1', 'devschemaeav2', 'devschematree');
+# Полный путь к файлу
+$currentBakFolder =  ($platform -eq $platformUNIX)? &quot;/tmp/Test/dbbak/&quot;:&quot;d:\tmp\&quot;;
+#$currentBakFolder = &quot;/tmp/Test/dbbak/&quot; # nix Version
+# формат резевной копии
+# -F, --format=c|d|t|p         формат выводимых данных (пользовательский | каталог | tar | текстовый (по умолчанию))
+$backupFormat = 'd'; # c|d|t|p
+# --compress=уровень
+# --compress=метод[:строка_информации] gzip, lz4, zstd или none
+# например --compress=gzip:level=6
+$useBackupCompress = $true; # при значении $false не будет передаваться аргумент управления сжатием
+#$baskupCompress = 'none';
+$baskupCompress = 'gzip';
+#$baskupCompress = 'gzip:level=9'; # макс level=9
+#$baskupCompress = 'lz4';  # на windows не поддерживается!!!
+#$baskupCompress = 'lz4:level=9';  # на windows не поддерживается!!!
+#$baskupCompress = 'zstd'; # на windows не поддерживается!!!
+#$baskupCompress = 'zstd:level=9'; # на windows не поддерживается!!!
+
+# Количество потоков для формата directoty
+$jobsCount=4
+
+
+# https://postgrespro.ru/docs/postgresql/16/app-pgdump
+
+# Дополнительные опции при создании копии
+# -v, --verbose                режим подробных сообщений
+# -a, --data-only              выгрузить только данные, без схемы
+# -b, --large-objects          выгрузить большие объекты
+# -B, --no-large-objects       исключить из выгрузки большие объекты
+# -c, --clean                  очистить (удалить) объекты БД при восстановлении
+# -C, --create                 добавить в копию команды создания базы данных
+# -e, --extension=ШАБЛОН       выгрузить только указанное расширение(я)
+# -E, --encoding=КОДИРОВКА     выгружать данные в заданной кодировке
+# -n, --schema=ШАБЛОН          выгрузить только указанную схему(ы)
+# -N, --exclude-schema=ШАБЛОН  НЕ выгружать указанную схему(ы)
+# -O, --no-owner               не восстанавливать владение объектами при использовании текстового формата
+# -s, --schema-only            выгрузить только схему, без данных
+# -S, --superuser=ИМЯ          имя пользователя, который будет задействован при восстановлении из текстового формата
+# -t, --table=ШАБЛОН           выгрузить только указанную таблицу(ы)
+# -T, --exclude-table=ШАБЛОН   НЕ выгружать указанную таблицу(ы)
+# -x, --no-privileges          не выгружать права (назначение/отзыв)
+# --binary-upgrade             только для утилит обновления БД
+# --column-inserts             выгружать данные в виде INSERT с именами столбцов
+# --disable-dollar-quoting     отключить спецстроки с $, выводить строки по стандарту SQL
+# --disable-triggers           отключить триггеры при восстановлении только данных, без схемы
+# --enable-row-security        включить защиту на уровне строк (выгружать только
+#                              те данные, которые доступны пользователю)
+# --exclude-table-and-children=ШАБЛОН
+#                              НЕ выгружать указанную таблицу(ы), а также
+#                              её секции и дочерние таблицы
+# --exclude-table-data=ШАБЛОН  НЕ выгружать данные указанной таблицы (таблиц)
+# --exclude-table-data-and-children=ШАБЛОН
+#                              НЕ выгружать данные указанной таблицы (таблиц),
+#                              а также её секций и дочерних таблиц
+# --extra-float-digits=ЧИСЛО   переопределить значение extra_float_digits
+# --if-exists                  применять IF EXISTS при удалении объектов
+# --include-foreign-data=ШАБЛОН
+#                              включать в копию данные сторонних таблиц с
+#                              серверов с именами, подпадающими под ШАБЛОН
+# --inserts                    выгрузить данные в виде команд INSERT, не COPY
+# --load-via-partition-root    загружать секции через главную таблицу
+# --no-comments                не выгружать комментарии
+# --no-publications            не выгружать публикации
+# --no-security-labels         не выгружать назначения меток безопасности
+# --no-subscriptions           не выгружать подписки
+# --no-table-access-method     не выгружать табличные методы доступа
+# --no-tablespaces             не выгружать назначения табличных пространств
+# --no-toast-compression       не выгружать методы сжатия TOAST
+# --no-unlogged-table-data     не выгружать данные нежурналируемых таблиц
+# --on-conflict-do-nothing     добавлять ON CONFLICT DO NOTHING в команды INSERT
+# --quote-all-identifiers      заключать в кавычки все идентификаторы,
+#                              а не только ключевые слова
+# --rows-per-insert=ЧИСЛО      число строк в одном INSERT; подразумевает --inserts
+# --section=РАЗДЕЛ             выгрузить заданный раздел
+#                              (pre-data, data или post-data)
+# --serializable-deferrable    дождаться момента для выгрузки данных без аномалий
+# --snapshot=СНИМОК            использовать при выгрузке заданный снимок
+# --strict-names               требовать, чтобы при указании шаблона включения
+#                              таблицы и/или схемы ему соответствовал минимум
+#                              один объект
+# --table-and-children=ШАБЛОН  выгрузить только указанную таблицу(ы), а также
+#                              её секции и дочерние таблицы
+# --use-set-session-authorization
+#                             устанавливать владельца, используя команды
+#                              SET SESSION AUTHORIZATION вместо ALTER OWNER
+
+
+#Наиболее распостраненное использование
+$optionList = '-v' # Самый обычный
+#$optionList = '-v --column-inserts' # структура и данные, режим column-insert
+#$optionList = '-v --data-only' # только данные
+#$optionList = '-v --data-only --inserts' # только данные и режим insert
+#$optionList = '-v --data-only --column-inserts' # только данные и режим column-insert
+# только данные и режим column-insert, вставлять по 100 строк
+#$optionList = '-v --data-only --column-inserts --rows-per-insert=100'
+
+#$optionList = '-v --create --clean' # создание базы, удалить объекты БД при восстановлении
+#$optionList = '-v --create --clean --schema-only'
+#$optionList = '-v --schema-only' # только структура
+#$optionList = '-v --schema-only --no-owner' # только структура, без владельца
+
+#----------------------------
+# Информация о версии
+$serviceDbActionResult = (.\pg_dump -V);
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d $connectCheckDB -c &quot;\conninfo&quot;);
+$Result = $LASTEXITCODE;
+if($Result -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $serviceDbActionResult
+$currentsrvenc = $(.\psql -d $connectCheckDB -q --no-align -t -c &quot;SHOW server_encoding; SHOW client_encoding;&quot;);
+Write-Host (&quot;server encoding: $($currentsrvenc[0]);client: $($currentsrvenc[1])&quot;);
+Write-Host $(&quot;-&quot; * 50)
+#----------------------------
+$startTimeTotal = Get-Date;
+$fileExtention = &quot;sql&quot;;
+#--format=c|d|t|p формат выводимых данных (пользовательский | каталог | tar | текстовый (по умолчанию))
+if($backupFormat -eq &quot;p&quot;){$fileExtention=&quot;.sql&quot;}
+elseif ($backupFormat -eq &quot;c&quot;){$fileExtention=&quot;.custom&quot;}
+elseif ($backupFormat -eq &quot;d&quot;){$fileExtention=&quot;_directory&quot;}
+elseif ($backupFormat -eq &quot;t&quot;){$fileExtention=&quot;.tar&quot;}
+
+
+$baskupCompressArg = '';
+if($useBackupCompress -and ($backupFormat -ne &quot;t&quot;))
+{
+    #gzip, lz4, zstd или none
+    $baskupCompressArg = &quot; --compress=$baskupCompress&quot;;
+    if($baskupCompress.StartsWith(&quot;gzip&quot;) -and ($backupFormat -eq &quot;p&quot;)){$fileExtention = &quot;_plain.gzip&quot;}
+    elseif($baskupCompress.StartsWith(&quot;gzip&quot;) -and ($backupFormat -eq &quot;c&quot;)){$fileExtention = &quot;_custom.gzip&quot;}
+    elseif($baskupCompress.StartsWith(&quot;gzip&quot;) -and ($backupFormat -eq &quot;d&quot;)){$fileExtention = &quot;_directorygzip&quot;}
+    elseif($baskupCompress.StartsWith(&quot;lz4&quot;) -and ($backupFormat -eq &quot;p&quot;)){$fileExtention = &quot;_plain.lz4&quot;}
+    elseif($baskupCompress.StartsWith(&quot;lz4&quot;) -and ($backupFormat -eq &quot;c&quot;)){$fileExtention = &quot;_custom.lz4&quot;}
+    elseif($baskupCompress.StartsWith(&quot;lz4&quot;) -and ($backupFormat -eq &quot;d&quot;)){$fileExtention = &quot;_directoryglz4&quot;}
+    elseif($baskupCompress.StartsWith(&quot;zstd&quot;) -and ($backupFormat -eq &quot;p&quot;)){$fileExtention = &quot;_plain.zstd&quot;}
+    elseif($baskupCompress.StartsWith(&quot;zstd&quot;) -and ($backupFormat -eq &quot;c&quot;)){$fileExtention = &quot;custom.zstd&quot;}
+    elseif($baskupCompress.StartsWith(&quot;zstd&quot;) -and ($backupFormat -eq &quot;d&quot;)){$fileExtention = &quot;_directoryzstd&quot;}
+    elseif($baskupCompress.StartsWith(&quot;none&quot;)){}
+    else {$fileExtention =&quot;.bak&quot;}
+};
+
+$backupJobsArg = '';
+if($backupFormat -eq 'd')
+{
+    $backupJobsArg = &quot; --jobs=$jobsCount&quot;;
+}
+
+foreach ($currentDB in $currentDBList) {
+    $startTime = Get-Date;
+    $currentFileName =  Join-Path -Path $currentBakFolder &quot;database_$($currentDB)_$(Get-Date -Format &quot;yyyyMMdd_hhmm&quot;)_bakup$fileExtention&quot;;
+    $command = &quot;.\pg_dump $optionList --format=$backupFormat$baskupCompressArg$backupJobsArg -d $currentDB -f $currentFileName&quot;;
+    Write-Host $command -ForegroundColor DarkGray;
+    Invoke-Expression -Command $command
+    # результат завершения psql
+    if($LASTEXITCODE -ne 0)
+    {
+        Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+    }
+    Write-Host $(&quot;-&quot; * 50)
+    Write-Host &quot;Дата и время старта: $($startTime.ToString(&quot;yyyyMMdd hh:mm:ss&quot;))&quot; -ForegroundColor DarkBlue;
+    $endTime = Get-Date;
+    Write-Host &quot;Вряме создания резерной копии:$(New-TimeSpan –Start $startTime –End $endTime)&quot; -ForegroundColor DarkBlue;
+    Write-Host &quot;Данные сохранены в файл: $currentFileName&quot; -ForegroundColor Blue;
+}
+if($currentDBList.Count -gt 1){
+    $endTime = Get-Date;
+    Write-Host &quot;Общее время создания всех резерных копии:$(New-TimeSpan –Start $startTimeTotal –End $endTime)&quot; -ForegroundColor Green;
+}
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)
+Pop-Location;</div><p id="-pabbzd_1118">Для копирования всех баз и дополнительных объектов на уровне PostgresSql используется <a href="https://postgrespro.ru/docs/postgresql/16/app-pg-dumpall" id="-pabbzd_1119" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1120">pg_dumpall</span></a> которая фактически вызывает <a href="https://postgrespro.ru/docs/postgresql/16/app-pgdump" id="-pabbzd_1121" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1122">pg_dump</span></a> для создания копии баз и обладает дополнительным функционалом для резервного копирования объектов кластера.</p><aside class="prompt" data-type="note" data-title="" id="-pabbzd_1123"><p id="-pabbzd_1124">При использовании <a href="https://postgrespro.ru/docs/postgresql/16/app-pg-dumpall" id="-pabbzd_1125" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1126">pg_dumpall</span></a> копия возможна только в текстовый формат.</p></aside><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Получение справки для pg_dumpall">
+pg_dumpall --help
+</div><p id="-pabbzd_1128">Полезные скрипты на Powershell:</p><div class="code-collapse" data-lang="bash" data-is-expanded="false" data-synopsis="Резервное копирование кластера " data-disable-link-processing="true">#!/usr/bin/env pwsh
+
+&lt;#
+Обслуживание PostgreSQL из PowerShell для nix и windows
+Резервное копирование кластера баз данных в sql файл
+2024.05.07
+
+https://postgrespro.ru/docs/postgresql/16/app-pg-dumpall
+
+Перед использованием
+ - установите правильные пути $pgDirectory
+ - Адрес, порт и учетные данные сервера Postgres
+
+Для nix:
+chmod +x backupClusterDumpAll.ps1
+#&gt;
+
+$platform = $PSVersionTable.Platform.ToLower();
+#unix or win32nt
+$platformWIN32 = &quot;win32nt&quot;;
+$platformUNIX = &quot;unix&quot;
+
+if($platform -eq $platformWIN32)
+{
+    # Путь PostgreSQL (!!! измените на нужную версию
+    # или отключине явную установку каталога + установите путь к исполняемому файлы psql в параметрах окружения)
+    # Эта часть в основном актуальна для Windows.
+    # Наиболее венроятным расположением будут
+    # &quot;C:\Program Files\PostgreSQL\14\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\15\bin&quot;
+    # &quot;C:\Program Files\PostgreSQL\16\bin&quot;
+    $pgDirectory =  &quot;d:\Program Files\PostgreSQL\16\bin&quot;
+    # Устанавливаем текущий каталог PostgreSQL для простого вызова утилиты psql
+    # Альтернативный подход - добавить этот каталог в параметры окружения
+    #Set-Location $pgDirectory;
+    Push-Location $pgDirectory;
+}
+else {
+    Push-Location &quot;/opt/pgpro/std-16/bin/&quot;
+}
+
+# https://www.postgresql.org/docs/current/libpq-envars.html
+# Адрес сервера PostgreSQL
+# localhost, 127.0.0.1, 192.168.0.133
+$env:PGHOST = '192.168.0.133'
+# Порт сервера PostgreSQL. Стандартный 5432.
+# Часто используемые 5432, 5433, 5434
+$env:PGPORT = 5433
+# Пользователь сервера PostgreSQL
+$env:PGUSER = 'postgres'
+# Пароль пользователя PostgreSQL
+$env:PGPASSWORD = 'postgres' #'&lt;ПарольПользователяPostgreSQL&gt;';
+# Имя приложения
+$env:PGAPPNAME ='pgpwsh'
+# Дополнительные опции
+#$env:PGOPTIONS
+
+# Поставьте по умолчанию, чтобы не заморачиваться
+$env:LC_MESSAGES = 'English'
+
+# Кодировка для PSQL (!!! настраивать в зависимости от ОС и кодировки на сервере PostgreSQL !!!)
+# Узнать клиентскую кодировку: SHOW server_encoding;
+# Узнать серверную кодировку: SHOW client_encoding;
+# Для русской windows - обычно WIN1251, для английской - WIN1252, 65001, russian_Russian.WIN1251
+$env:PGCLIENTENCODING = 'UTF8' #'UTF8'
+if($platform -eq $platformUNIX)
+{
+    $env:PGCLIENTENCODING = 'UTF8'
+}
+$connectCheckDB = 'postgres';
+
+# Полный путь к каталогу
+$currentBakFolder =  ($platform -eq $platformUNIX)? &quot;/tmp/Test/dbbak/&quot;:&quot;d:\tmp\&quot;;
+if(!(Test-Path $currentBakFolder))
+{
+    New-Item -ItemType Directory -Force -Path $currentBakFolder
+}
+
+# Дополнительные опции при создании копии
+# Наиболее распостраненное использование
+#$optionList = '-v' # Самый обычный
+# Выводить SQL-команды для DROP всех выгруженных баз данных, ролей и табличных пространств перед их воссозданием.
+#$optionList = '-v --clean'
+#$optionList = '-v --if-exists' # Используйте команды DROP ... IF EXISTS для удаления объектов в режиме
+# Не выгружать базы данных, имена которых соответствуют шаблону. Исключить имена по нескольким шаблонам
+# можно, добавив несколько ключей --exclude-database
+#$optionList = '-v --exclude-database=шаблон'
+#$optionList = '-v --exclude-database=devtestindex'
+#$optionList = '-v --no-owner' # Не генерировать команды, устанавливающие владение объектами, как в исходной базе данных.
+#$optionList = '-v --no-privileges' # Не выгружать права доступа (команды GRANT/REVOKE).
+
+#$optionList = '-v --data-only' # Выгружать только данные, без схемы
+#$optionList = '-v --data-only --disable-triggers' # Выгружать только данные, без схемы и отключающить триггеры в целевых таблицах на время загрузки данных
+#$optionList = '-v --no-unlogged-table-data' # Не выгружать содержимое нежурналируемых таблиц
+
+#$optionList = '-v --column-inserts' # Выгружать данные в виде команд INSERT с явно задаваемыми именами столбцов
+#$optionList = '-v --inserts' # Выгружать данные в виде команд INSERT, а не COPY
+
+#Выгружать только глобальные объекты (роли и табличные пространства), без баз данных
+#$optionList = '-v --globals-only'
+#$optionList = '-v --no-role-passwords' # Не выгружать пароли ролей. При восстановлении все роли получат пароль NULL и не смогут пройти проверку подлинности, пока им не будут назначены пароли
+$optionList = '-v --globals-only --no-role-passwords'
+#$optionList = '-v --roles-only' # Выгружать только роли, без баз данных и табличных пространств
+#$optionList = '-v --roles-only --no-role-passwords'
+#$optionList = '-v --schema-only' # Выгружать только определения объектов (схемы), без данных
+#$optionList = '-v --schema-only --no-role-passwords' #
+#$optionList = '-v --tablespaces-only' # Выгружать только табличные пространства, без баз данных и ролей
+
+
+#----------------------------
+# Информация о версии
+$serviceDbActionResult = (.\pg_dumpall -V);
+if($LASTEXITCODE -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $serviceDbActionResult
+
+# Информация о подключении
+$serviceDbActionResult = $(.\psql -d $connectCheckDB -c &quot;\conninfo&quot;);
+$Result = $LASTEXITCODE;
+if($Result -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $serviceDbActionResult
+$currentsrvenc = $(.\psql -d $connectCheckDB -q --no-align -t -c &quot;SHOW server_encoding; SHOW client_encoding;&quot;);
+Write-Host (&quot;server encoding: $($currentsrvenc[0]);client: $($currentsrvenc[1])&quot;);
+Write-Host $(&quot;-&quot; * 50)
+#----------------------------
+$startTime = Get-Date;
+
+$currentFileName =  Join-Path -Path $currentBakFolder &quot;clusterdumpall_$(Get-Date -Format &quot;yyyyMMdd_hhmm&quot;)_bakup.sql&quot;;
+$command = &quot;.\pg_dumpall $optionList --database $connectCheckDB -f $currentFileName&quot;;
+Write-Host $command -ForegroundColor DarkGray;
+Invoke-Expression -Command $command
+# результат завершения psql
+if($LASTEXITCODE -ne 0)
+{
+    Write-Error 'Что-то пошло не так!' -ErrorAction Stop
+}
+Write-Host $(&quot;-&quot; * 50)
+Write-Host &quot;Дата и время старта: $($startTime.ToString(&quot;yyyyMMdd hh:mm:ss&quot;))&quot; -ForegroundColor DarkBlue;
+$endTime = Get-Date;
+Write-Host &quot;Вряме создания резерной копии:$(New-TimeSpan –Start $startTime –End $endTime)&quot; -ForegroundColor DarkBlue;
+Write-Host &quot;Данные сохранены в файл: $currentFileName&quot; -ForegroundColor Blue;
+#----------------------------
+Write-Host $(&quot;-&quot; * 50)
+Pop-Location;</div><p id="-pabbzd_1130">Обратите внимание на опцию<br><span class="control" id="-pabbzd_1132">--globals-only</span> - выгружать только глобальные объекты (роли и табличные пространства), без баз данных. <br> Создайте для себя более подходящий вариант нужных опции, соответствующий необходимым требованиям.</p></section></section><section class="chapter"><h2 id="-pabbzd_1134" data-toc="-pabbzd_1134">Восстановление</h2><p id="-pabbzd_1135">Используется <a href="https://postgrespro.ru/docs/postgresql/16/app-psql" id="-pabbzd_1136" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1137">psql</span></a> - для текстовых форматов или <a href="https://postgrespro.ru/docs/postgresql/16/app-pgrestore" id="-pabbzd_1138" data-external="true" rel="noopener noreferrer"><span class="control" id="-pabbzd_1139">pg_restore</span></a> - для всех остальных.</p><aside class="prompt" data-type="note" data-title="" id="-pabbzd_1140"><p id="-pabbzd_1141">Рекомендуется выполнить ANALIZE после восстановления</p></aside><aside class="prompt" data-type="warning" data-title="" id="-pabbzd_1142"><p id="-pabbzd_1143">Все роли и табличные пространства должны быть создания заранее!!!</p></aside><p id="-pabbzd_1144">Если формат поддерживает частичное восстановление, то для просмотра оглавления используем:</p><div class="code-block" data-lang="bash">
+pg_restore --list filenamebak
+</div><p id="-pabbzd_1146">Результат</p><div class="code-block" data-lang="plaintext">
+pg_restore --list database_devschemaeav2_20240505_0134_bakup.custom
+;
+; Archive created at 2024-05-05 01:34:40 MSK
+;     dbname: devschemaeav2
+;     TOC Entries: 45
+;     Compression: none
+;     Dump Version: 1.15-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 16.2
+;     Dumped by pg_dump version: 16.2
+;
+;
+; Selected TOC Entries:
+;
+216; 1259 522407 TABLE public productcodenames postgres
+4810; 0 0 COMMENT public TABLE productcodenames postgres
+
+</div><p id="-pabbzd_1148">Если формат поддерживает параллельное восстановление, можно использовать ключ <span class="control" id="-pabbzd_1149">--jobs</span> для ускорения восстановления.</p></section><section class="chapter"><h2 id="-pabbzd_1150" data-toc="-pabbzd_1150">Форматы при логическом копировании и восстановлении</h2><div class="table-wrapper"><table class="wide" id="-pabbzd_1151"><thead><tr class="ijRowHead" id="-pabbzd_1152"><th id="-pabbzd_1153"></th><th id="-pabbzd_1154"><p>plain</p></th><th id="-pabbzd_1155"><p>custom</p></th><th id="-pabbzd_1156"><p>directory</p></th><th id="-pabbzd_1157"><p>tar</p></th></tr></thead><tbody><tr id="-pabbzd_1158"><td id="-pabbzd_1159"><p>утилита восстановления</p></td><td id="-pabbzd_1160"><p>psql</p></td><td id="-pabbzd_1161" colspan="3"><p>pg_restore</p></td></tr><tr id="-pabbzd_1162"><td id="-pabbzd_1163"><p>сжатие</p></td><td id="-pabbzd_1164" colspan="3"><p>zlib</p></td><td id="-pabbzd_1165"></td></tr><tr id="-pabbzd_1166"><td id="-pabbzd_1167"><p>выборочное восстановление</p></td><td id="-pabbzd_1168"></td><td id="-pabbzd_1169"><p>да</p></td><td id="-pabbzd_1170"><p>да</p></td><td id="-pabbzd_1171"><p>да</p></td></tr><tr id="-pabbzd_1172"><td id="-pabbzd_1173"><p>параллельное резервирование</p></td><td id="-pabbzd_1174"></td><td id="-pabbzd_1175"></td><td id="-pabbzd_1176"><p>да</p></td><td id="-pabbzd_1177"></td></tr><tr id="-pabbzd_1178"><td id="-pabbzd_1179"><p>параллельное восстановление</p></td><td id="-pabbzd_1180"></td><td id="-pabbzd_1181"><p>да</p></td><td id="-pabbzd_1182"><p>да</p></td><td id="-pabbzd_1183"></td></tr></tbody></table></div></section><section class="chapter"><h2 id="-pabbzd_1184" data-toc="-pabbzd_1184">Выбор стратегии резервного копирования и восстановления</h2><p id="-pabbzd_1185">При использовании логического резервирования необходимо учитывать размеры баз, форматы создания резервной копии, наличие дополнительных расширений и множества других факторов.</p><p id="-pabbzd_1186">В простом случае, если база данных относительно небольшого размера, достаточно простого логического копирования одной базы и дополнительных объектов сервера.</p><p id="-pabbzd_1187">Логическое резервирование хорошо подходит для:</p><ul class="list _bullet" id="-pabbzd_1188"><li class="list__item" id="-pabbzd_1189"><p>долгосрочного хранения данных</p></li><li class="list__item" id="-pabbzd_1190"><p>переноса данных на другие сервера, другие платформы, разные версии Postgres</p></li><li class="list__item" id="-pabbzd_1191"><p>копирования данных для переноса между базами</p></li></ul><aside class="prompt" data-type="warning" data-title="" id="-pabbzd_1192"><p id="-pabbzd_1193">Обязательно проверяйте возможность восстановления созданных резервных копий!</p></aside><p id="-pabbzd_1194">Используйте bash или powershell скрипты для автоматизации резервного копирования и восстановления.</p><p id="-pabbzd_1195">К слову - а почему <span class="control" id="-pabbzd_1196">powershell?</span></p><ul class="list _bullet" id="-pabbzd_1197"><li class="list__item" id="-pabbzd_1198"><p>bash доступен только для nix систем, powershell - nix и windows</p></li><li class="list__item" id="-pabbzd_1199"><p>powershell в nix можно рассматривать как расширение функционала bash скриптов</p></li></ul><p id="-pabbzd_1200">А зачем использовать утилиты терминала <span class="control" id="-pabbzd_1201">dp_dump, dp_dumpall, pg_restore</span> - можно сделать тоже самое с GUI приложениях с большим удобством?</p><ul class="list _bullet" id="-pabbzd_1202"><li class="list__item" id="-pabbzd_1203"><p>Не всегда будут эти самые утилиты, на серверах обычно будет доступен только терминал</p></li><li class="list__item" id="-pabbzd_1204"><p>Не все опции могут быть доступны</p></li><li class="list__item" id="-pabbzd_1205"><p>Не все GUI утилиты могут похвалится наличием автоматизации задач</p></li><li class="list__item" id="-pabbzd_1206"><p>В конечном итоге GUI утилиты будут выполнять вызов <span class="control" id="-pabbzd_1207">dp_dump, dp_dumpall, pg_restore</span></p></li></ul><section class="chapter"><h3 id="-pabbzd_1208" data-toc="-pabbzd_1208">Советы по настройке резервирования</h3><ul class="list _bullet" id="-pabbzd_1209"><li class="list__item" id="-pabbzd_1210"><p>для небольших баз оптимально использовать <span class="control" id="-pabbzd_1211">plain</span> формат</p></li><li class="list__item" id="-pabbzd_1212"><p>не забывать делать резервную копию объектов сервера</p></li><li class="list__item" id="-pabbzd_1213"><p>для больших баз оптимален формат <span class="control" id="-pabbzd_1214">custom</span> и <span class="control" id="-pabbzd_1215">directory</span></p></li><li class="list__item" id="-pabbzd_1216"><p>не выгружайте лишнего - если вам не нужны некоторые большие таблицы, то исключите их</p></li><li class="list__item" id="-pabbzd_1217"><p>используйте флаг --no-unlogged-table-data</p></li><li class="list__item" id="-pabbzd_1218"><p>для автоматизации задач использовать планировщик cron, стандартный планировщик windows или любой другой</p></li><li class="list__item" id="-pabbzd_1219"><p>обязательно проверяйте возможность восстановления созданной резервной копии</p></li><li class="list__item" id="-pabbzd_1220"><p>выполняйте резервное копирование в период минимальной нагрузки на сервер</p></li><li class="list__item" id="-pabbzd_1221"><p>не пренебрегайте <span class="control" id="-pabbzd_1222">pipeline</span></p></li><li class="list__item" id="-pabbzd_1223"><p>автоматизируйте резервирование скриптами <span class="control" id="-pabbzd_1224">bash</span> или <span class="control" id="-pabbzd_1225">powershell</span></p></li></ul><p id="-pabbzd_1226">Рекомендуется сначала проверить резервное копирование в формате <span class="control" id="-pabbzd_1227">plain</span>, подобрать все необходимые вам опции, возможно более удобным будет использовать комбинированные варианты, например:</p><div class="table-wrapper"><table class="" id="-pabbzd_1228"><thead><tr class="ijRowHead" id="-pabbzd_1229"><th id="-pabbzd_1230"><p>План резервирования</p></th></tr></thead><tbody><tr id="-pabbzd_1231"><td id="-pabbzd_1232"><p>резервирование только структуры базы</p></td></tr><tr id="-pabbzd_1233"><td id="-pabbzd_1234"><p>резервирование только данных</p></td></tr><tr id="-pabbzd_1235"><td id="-pabbzd_1236"><p>резервирование объектов сервера</p></td></tr></tbody></table></div><p id="-pabbzd_1237">или</p><div class="table-wrapper"><table class="" id="-pabbzd_1238"><thead><tr class="ijRowHead" id="-pabbzd_1239"><th id="-pabbzd_1240"><p>План резервирования</p></th></tr></thead><tbody><tr id="-pabbzd_1241"><td id="-pabbzd_1242"><p>резервирование с опциями --clean --create --if-exists --column-inserts</p></td></tr><tr id="-pabbzd_1243"><td id="-pabbzd_1244"><p>резервирование объектов сервера</p></td></tr></tbody></table></div><p id="-pabbzd_1245">или</p><div class="table-wrapper"><table class="" id="-pabbzd_1246"><thead><tr class="ijRowHead" id="-pabbzd_1247"><th id="-pabbzd_1248"><p>План резервирования</p></th></tr></thead><tbody><tr id="-pabbzd_1249"><td id="-pabbzd_1250"><p>резервирование объектов сервера</p></td></tr><tr id="-pabbzd_1251"><td id="-pabbzd_1252"><p>резервирование только структуры необходимых баз</p></td></tr><tr id="-pabbzd_1253"><td id="-pabbzd_1254"><p>выборочное резервирование таблиц по критерию объема - небольшие таблицы</p></td></tr><tr id="-pabbzd_1255"><td id="-pabbzd_1256"><p>выборочное резервирование таблиц по критерию объема - большие таблицы</p></td></tr><tr id="-pabbzd_1257"><td id="-pabbzd_1258"><p>копирование резервных копии на другой сервер/облако</p></td></tr></tbody></table></div><p id="-pabbzd_1259">Затем использовать форматы <span class="control" id="-pabbzd_1260">custom</span> или <span class="control" id="-pabbzd_1261">directory</span> на постоянной основе, которые имеют важные преимущества перед <span class="control" id="-pabbzd_1262">plain</span> форматом.</p></section></section><section class="chapter"><h2 id="linux-lz4" data-toc="linux-lz4">Linux lz4</h2><p id="-pabbzd_1263"><a href="https://github.com/lz4/lz4" id="-pabbzd_1264" data-external="true" rel="noopener noreferrer">lz4 на Github</a> <a href="https://lz4.org" id="-pabbzd_1265" data-external="true" rel="noopener noreferrer">lz4.org</a></p><p id="-pabbzd_1266">При использовании сжатия lz4 средствами Postgres в nix системе может отсутствовать необходимый архиватор.</p><section class="chapter"><h3 id="-pabbzd_1267" data-toc="-pabbzd_1267">Установка архиватора</h3><div class="code-block" data-lang="bash">
+sudo apt-get update
+</div><div class="code-block" data-lang="bash">
+sudo apt-get -y install lz4
+</div></section></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="wsl-devpostgres.html" class="navigation-links__prev">Использование WSL2 для тестирования и разработки PostgreSql</a><a href="postgres-backup-fiz.html" class="navigation-links__next">Холодное копирование</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

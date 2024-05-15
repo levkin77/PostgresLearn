@@ -1,0 +1,91 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T06:54:49.4339138"><title>Простая реализация EVA с учетом факта времени | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-6ey6g6_380","level":0,"title":"Таблицы","anchor":"#-6ey6g6_380"},{"id":"-6ey6g6_388","level":0,"title":"Скрипты создания таблиц и первоначальное заполнения данными","anchor":"#-6ey6g6_388"},{"id":"-6ey6g6_394","level":0,"title":"Примеры запросов получения данных","anchor":"#-6ey6g6_394"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Простая реализация EVA с учетом факта времени | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/db-design-simpleeavfa.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Простая реализация EVA с учетом факта времени | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/db-design-simpleeavfa.html#webpage",
+    "url": "writerside-documentation/db-design-simpleeavfa.html",
+    "name": "Простая реализация EVA с учетом факта времени | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="db-design-simpleeavfa" data-main-title="Простая реализация EVA с учетом факта времени" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///db-design.md|Проектирование баз данных"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="db-design-simpleeavfa" id="db-design-simpleeavfa.md">Простая реализация EVA с учетом факта времени</h1><p id="-6ey6g6_376">Данная модель основана на <a href="db-design-simpleeav.html" id="-6ey6g6_377" data-tooltip="Очень простая модель для представления. Принцип модели позволяет решит наиболее распостраненную задачу:">модели простой EVA</a></p><p id="-6ey6g6_378">Данная модель позволяет сделать дополнительный свойства основного объекта зависимыми от времени, что позволяет хранить историю изменения значений дополнительных свойств и соответственно получать необходимый резаультат на нужную дату.</p><figure id="-6ey6g6_379"><img alt="simple_eva2.png" src="images/simple_eva2.png" title="simple_eva2.png" width="1089" height="524"></figure><section class="chapter"><h2 id="-6ey6g6_380" data-toc="-6ey6g6_380">Таблицы</h2><ol class="list _decimal" id="-6ey6g6_381" type="1"><li class="list__item" id="-6ey6g6_382"><p><span class="control" id="-6ey6g6_383">products</span> - товары</p></li><li class="list__item" id="-6ey6g6_384"><p><span class="control" id="-6ey6g6_385">productcodenames</span> - наименования дополнительных свойств (атрибутов)</p></li><li class="list__item" id="-6ey6g6_386"><p><span class="control" id="-6ey6g6_387">productcodes</span> - значения дополнительных свойств (атрибутов)</p></li></ol></section><section class="chapter"><h2 id="-6ey6g6_388" data-toc="-6ey6g6_388">Скрипты создания таблиц и первоначальное заполнения данными</h2><p id="-6ey6g6_389"><a data-external="true" id="-6ey6g6_390" href="resources/postgres16_localhost-devschemaeav2.sql" target="_blank" rel="noopener noreferrer">Скрипт создания таблиц</a></p><p id="-6ey6g6_391">Таблица <span class="control" id="-6ey6g6_392">productcodes</span></p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="create table public.productcodes (">
+create table public.productcodes (
+  id integer primary key not null, -- Идентификатор
+  produc_id integer not null, -- Идентификатор товара
+  code_id integer not null, -- Идентификатор дополнительного свойства
+  date_actual timestamp(6) with time zone not null default now(), -- Дата актуальности
+  vint integer, -- Целое значение
+  vtext text, -- Строка
+  vdate date, -- Дата
+  vnum double precision, -- Дробное
+  vmoney numeric(15,6), -- Денежное
+  vjson jsonb, -- Json
+  memo text, -- Описание
+  foreign key (code_id) references public.productcodenames (id)
+  match simple on update no action on delete no action,
+  foreign key (produc_id) references public.products (id)
+  match simple on update no action on delete no action
+);
+create unique index ix_productcodes_guard on productcodes using btree (produc_id, code_id, date_actual);
+comment on table public.productcodes is 'Значения дополнительных кодов';
+comment on column public.productcodes.id is 'Идентификатор';
+comment on column public.productcodes.produc_id is 'Идентификатор товара';
+comment on column public.productcodes.code_id is 'Идентификатор дополнительного свойства';
+comment on column public.productcodes.date_actual is 'Дата актуальности';
+comment on column public.productcodes.vint is 'Целое значение';
+comment on column public.productcodes.vtext is 'Строка';
+comment on column public.productcodes.vdate is 'Дата';
+comment on column public.productcodes.vnum is 'Дробное';
+comment on column public.productcodes.vmoney is 'Денежное';
+comment on column public.productcodes.vjson is 'Json';
+comment on column public.productcodes.memo is 'Описание';
+</div></section><section class="chapter"><h2 id="-6ey6g6_394" data-toc="-6ey6g6_394">Примеры запросов получения данных</h2><section class="chapter"><h3 id="-6ey6g6_395" data-toc="-6ey6g6_395">Данные о истории дополнительного одного дополнительного свойства</h3><div class="code-block" data-lang="sql">
+select p.id as product_id, p.name as produc_name,
+       pv.code_id, pn.name as pname, pv.date_actual::date, pv.vint
+from public.products p
+     inner join public.productcodes pv on p.id = pv.produc_id and pv.code_id=1
+     inner join public.productcodenames pn on pv.code_id = pn.id
+where p.id=1 order by pv.date_actual desc;
+</div><p id="-6ey6g6_397">Результат:</p><div class="table-wrapper"><table class="wide" id="-6ey6g6_398"><thead><tr class="ijRowHead" id="-6ey6g6_399"><th id="-6ey6g6_400"><p>product_id</p></th><th id="-6ey6g6_401"><p>produc_name</p></th><th id="-6ey6g6_402"><p>code_id</p></th><th id="-6ey6g6_403"><p>pname</p></th><th id="-6ey6g6_404"><p>date_actual</p></th><th id="-6ey6g6_405"><p>vint</p></th></tr></thead><tbody><tr id="-6ey6g6_406"><td id="-6ey6g6_407"><p>1</p></td><td id="-6ey6g6_408"><p>product 1</p></td><td id="-6ey6g6_409"><p>1</p></td><td id="-6ey6g6_410"><p>int value</p></td><td id="-6ey6g6_411"><p>2024-05-03</p></td><td id="-6ey6g6_412"><p>14</p></td></tr><tr id="-6ey6g6_413"><td id="-6ey6g6_414"><p>1</p></td><td id="-6ey6g6_415"><p>product 1</p></td><td id="-6ey6g6_416"><p>1</p></td><td id="-6ey6g6_417"><p>int value</p></td><td id="-6ey6g6_418"><p>2024-05-02</p></td><td id="-6ey6g6_419"><p>13</p></td></tr><tr id="-6ey6g6_420"><td id="-6ey6g6_421"><p>1</p></td><td id="-6ey6g6_422"><p>product 1</p></td><td id="-6ey6g6_423"><p>1</p></td><td id="-6ey6g6_424"><p>int value</p></td><td id="-6ey6g6_425"><p>2024-05-01</p></td><td id="-6ey6g6_426"><p>12</p></td></tr><tr id="-6ey6g6_427"><td id="-6ey6g6_428"><p>1</p></td><td id="-6ey6g6_429"><p>product 1</p></td><td id="-6ey6g6_430"><p>1</p></td><td id="-6ey6g6_431"><p>int value</p></td><td id="-6ey6g6_432"><p>2024-04-30</p></td><td id="-6ey6g6_433"><p>11</p></td></tr></tbody></table></div></section><section class="chapter"><h3 id="-6ey6g6_434" data-toc="-6ey6g6_434">Максимальная дата для указанного дополнительного свойства</h3><div class="code-block" data-lang="sql">
+with maxtd as (select max(date_actual) as lastdt from public.productcodes where produc_id=1 and code_id=1)
+select lastdt from maxtd;
+</div></section><section class="chapter"><h3 id="-6ey6g6_436" data-toc="-6ey6g6_436">Актуальное на максимальную дата значение дополнительного свойства</h3><div class="code-block" data-lang="sql">
+with maxtd as
+    (select produc_id, code_id, max(date_actual) as lastdt
+        from public.productcodes
+        where produc_id=1
+        group by produc_id, code_id
+    )
+select p.*, pc.code_id, pc.date_actual, pc.vint
+from
+    products p left join
+        public.productcodes pc on p.id = pc.produc_id
+        inner join maxtd on pc.code_id=maxtd.code_id and pc.produc_id=maxtd.produc_id
+where pc.produc_id=1 and pc.code_id=1 and pc.date_actual = maxtd.lastdt;
+</div></section><section class="chapter"><h3 id="-6ey6g6_438" data-toc="-6ey6g6_438">Значения всех дополнительных свойств для одного объекта</h3><div class="code-block" data-lang="sql">
+with maxtd as
+    (select produc_id, code_id, max(date_actual) as lastdt
+        from public.productcodes
+        where produc_id=1
+        group by produc_id, code_id
+    ),
+maxtid as
+    (select cn2.id, cn2.code_id from maxtd inner join public.productcodes cn2 on
+    cn2.date_actual=maxtd.lastdt
+    and cn2.produc_id=maxtd.produc_id
+    and cn2.code_id = maxtd.code_id
+              )
+select coalesce(pc.produc_id, 1) as product_id, cn.kind, cn.name as codename, cn.code,
+       pc.id as propid, coalesce(pc.code_id, cn.id) as code_id ,pc.date_actual,
+       pc.vint, pc.vtext, pc.vdate, pc.vnum,
+       pc.vmoney, pc.vjson, pc.memo as propmemo
+       from
+             public.productcodenames cn
+                 left join maxtid on cn.id=maxtid.code_id
+                 left join public.productcodes pc on maxtid.id=pc.id;
+</div><p id="-6ey6g6_440">результат:</p><div class="table-wrapper"><table class="wide" id="-6ey6g6_441"><thead><tr class="ijRowHead" id="-6ey6g6_442"><th id="-6ey6g6_443"><p>product_id</p></th><th id="-6ey6g6_444"><p>kind</p></th><th id="-6ey6g6_445"><p>codename</p></th><th id="-6ey6g6_446"><p>code</p></th><th id="-6ey6g6_447"><p>propid</p></th><th id="-6ey6g6_448"><p>code_id</p></th><th id="-6ey6g6_449"><p>date_actual</p></th><th id="-6ey6g6_450"><p>vint</p></th><th id="-6ey6g6_451"><p>vtext</p></th><th id="-6ey6g6_452"><p>vdate</p></th><th id="-6ey6g6_453"><p>vnum</p></th><th id="-6ey6g6_454"><p>vmoney</p></th><th id="-6ey6g6_455"><p>vjson</p></th><th id="-6ey6g6_456"><p>propmemo</p></th></tr></thead><tbody><tr id="-6ey6g6_457"><td id="-6ey6g6_458"><p>1</p></td><td id="-6ey6g6_459"><p>5</p></td><td id="-6ey6g6_460"><p>money values</p></td><td id="-6ey6g6_461"><p>val_money</p></td><td id="-6ey6g6_462"><p>17</p></td><td id="-6ey6g6_463"><p>5</p></td><td id="-6ey6g6_464"><p>2024-05-01</p></td><td id="-6ey6g6_465"><p>null</p></td><td id="-6ey6g6_466"><p>null</p></td><td id="-6ey6g6_467"><p>null</p></td><td id="-6ey6g6_468"><p>null</p></td><td id="-6ey6g6_469"><p>35.000000</p></td><td id="-6ey6g6_470"><p>null</p></td><td id="-6ey6g6_471"><p>null</p></td></tr><tr id="-6ey6g6_472"><td id="-6ey6g6_473"><p>1</p></td><td id="-6ey6g6_474"><p>3</p></td><td id="-6ey6g6_475"><p>date value</p></td><td id="-6ey6g6_476"><p>val_date</p></td><td id="-6ey6g6_477"><p>15</p></td><td id="-6ey6g6_478"><p>3</p></td><td id="-6ey6g6_479"><p>2024-05-01</p></td><td id="-6ey6g6_480"><p>null</p></td><td id="-6ey6g6_481"><p>null</p></td><td id="-6ey6g6_482"><p>2024-04-30</p></td><td id="-6ey6g6_483"><p>null</p></td><td id="-6ey6g6_484"><p>null</p></td><td id="-6ey6g6_485"><p>null</p></td><td id="-6ey6g6_486"><p>null</p></td></tr><tr id="-6ey6g6_487"><td id="-6ey6g6_488"><p>1</p></td><td id="-6ey6g6_489"><p>4</p></td><td id="-6ey6g6_490"><p>num values</p></td><td id="-6ey6g6_491"><p>val_num</p></td><td id="-6ey6g6_492"><p>16</p></td><td id="-6ey6g6_493"><p>4</p></td><td id="-6ey6g6_494"><p>2024-05-01</p></td><td id="-6ey6g6_495"><p>null</p></td><td id="-6ey6g6_496"><p>null</p></td><td id="-6ey6g6_497"><p>null</p></td><td id="-6ey6g6_498"><p>11.025</p></td><td id="-6ey6g6_499"><p>null</p></td><td id="-6ey6g6_500"><p>null</p></td><td id="-6ey6g6_501"><p>null</p></td></tr><tr id="-6ey6g6_502"><td id="-6ey6g6_503"><p>1</p></td><td id="-6ey6g6_504"><p>6</p></td><td id="-6ey6g6_505"><p>json value</p></td><td id="-6ey6g6_506"><p>val_json</p></td><td id="-6ey6g6_507"><p>18</p></td><td id="-6ey6g6_508"><p>6</p></td><td id="-6ey6g6_509"><p>2024-05-01</p></td><td id="-6ey6g6_510"><p>null</p></td><td id="-6ey6g6_511"><p>null</p></td><td id="-6ey6g6_512"><p>null</p></td><td id="-6ey6g6_513"><p>null</p></td><td id="-6ey6g6_514"><p>null</p></td><td id="-6ey6g6_515"><p>\[&quot;test&quot;, &quot;ttest2&quot;, &quot;test3&quot;\]</p></td><td id="-6ey6g6_516"><p>null</p></td></tr><tr id="-6ey6g6_517"><td id="-6ey6g6_518"><p>1</p></td><td id="-6ey6g6_519"><p>2</p></td><td id="-6ey6g6_520"><p>text value</p></td><td id="-6ey6g6_521"><p>val_text</p></td><td id="-6ey6g6_522"><p>14</p></td><td id="-6ey6g6_523"><p>2</p></td><td id="-6ey6g6_524"><p>2024-05-01</p></td><td id="-6ey6g6_525"><p>null</p></td><td id="-6ey6g6_526"><p>value text on 0501</p></td><td id="-6ey6g6_527"><p>null</p></td><td id="-6ey6g6_528"><p>null</p></td><td id="-6ey6g6_529"><p>null</p></td><td id="-6ey6g6_530"><p>null</p></td><td id="-6ey6g6_531"><p>null</p></td></tr><tr id="-6ey6g6_532"><td id="-6ey6g6_533"><p>1</p></td><td id="-6ey6g6_534"><p>1</p></td><td id="-6ey6g6_535"><p>int value</p></td><td id="-6ey6g6_536"><p>val_int</p></td><td id="-6ey6g6_537"><p>26</p></td><td id="-6ey6g6_538"><p>1</p></td><td id="-6ey6g6_539"><p>2024-05-03</p></td><td id="-6ey6g6_540"><p>14</p></td><td id="-6ey6g6_541"><p>null</p></td><td id="-6ey6g6_542"><p>null</p></td><td id="-6ey6g6_543"><p>null</p></td><td id="-6ey6g6_544"><p>null</p></td><td id="-6ey6g6_545"><p>null</p></td><td id="-6ey6g6_546"><p>null</p></td></tr><tr id="-6ey6g6_547"><td id="-6ey6g6_548"><p>1</p></td><td id="-6ey6g6_549"><p>1</p></td><td id="-6ey6g6_550"><p>Qty</p></td><td id="-6ey6g6_551"><p>val_qty</p></td><td id="-6ey6g6_552"><p>null</p></td><td id="-6ey6g6_553"><p>7</p></td><td id="-6ey6g6_554"><p>null</p></td><td id="-6ey6g6_555"><p>null</p></td><td id="-6ey6g6_556"><p>null</p></td><td id="-6ey6g6_557"><p>null</p></td><td id="-6ey6g6_558"><p>null</p></td><td id="-6ey6g6_559"><p>null</p></td><td id="-6ey6g6_560"><p>null</p></td><td id="-6ey6g6_561"><p>null</p></td></tr></tbody></table></div></section></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="db-design-simpleeav.html" class="navigation-links__prev">Простая реализация EVA</a><a href="db-design-trees.html" class="navigation-links__next">Деревья и иерархии</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
