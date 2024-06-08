@@ -1,0 +1,49 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:59.6628612"><title>Важные файлы конфигурации | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"postgresql-conf","level":0,"title":"postgresql.conf","anchor":"#postgresql-conf"},{"id":"postgresql-auto-conf","level":0,"title":"postgresql.auto.conf","anchor":"#postgresql-auto-conf"},{"id":"pg-ident-conf","level":0,"title":"pg_ident.conf","anchor":"#pg-ident-conf"},{"id":"pg-hba-conf","level":0,"title":"pg_hba.conf","anchor":"#pg-hba-conf"},{"id":"-jwpwx0_28","level":0,"title":"Просмотр настроек","anchor":"#-jwpwx0_28"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Важные файлы конфигурации | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-mainsrvfile.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Важные файлы конфигурации | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-mainsrvfile.html#webpage",
+    "url": "writerside-documentation/howto-mainsrvfile.html",
+    "name": "Важные файлы конфигурации | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-mainsrvfile" data-main-title="Важные файлы конфигурации" data-article-props="{&quot;seeAlso&quot;:[{&quot;title&quot;:&quot;&quot;,&quot;links&quot;:[{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/config-setting&quot;,&quot;text&quot;:&quot;Параметры&quot;},{&quot;url&quot;:&quot;https://postgrespro.ru/docs/postgrespro/16/runtime-config-file-locations&quot;,&quot;text&quot;:&quot;Расположение файлов&quot;}]}],&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-mainsrvfile" id="howto-mainsrvfile.md">Важные файлы конфигурации</h1><p id="-jwpwx0_2">Файлы <code class="code" id="-jwpwx0_3">postgresql.conf</code> и <code class="code" id="-jwpwx0_4">postgresql.auto.conf</code> находятся в основном каталоге данных.</p><section class="chapter"><h2 id="postgresql-conf" data-toc="postgresql-conf">postgresql.conf</h2><p id="-jwpwx0_5">Основной файл настроек конфигурации сервера.</p><aside class="prompt" data-type="warning" data-title="" id="-jwpwx0_6"><p id="-jwpwx0_7">В большинстве случаев его <span class="control" id="-jwpwx0_8">НЕ НАДО</span> править руками используйте <code class="code" id="-jwpwx0_9">ALTER SYSTEM</code></p></aside><section class="chapter"><h3 id="alter-system" data-toc="alter-system">Примеры использования <code class="code" id="-jwpwx0_11">alter system</code></h3><p id="-jwpwx0_12">Просмотр значения конфигурации</p><div class="code-block" data-lang="sql">
+show client_min_messages;
+</div><p id="-jwpwx0_14">Для просмотра также можно использовать:</p><div class="code-block" data-lang="sql">
+SELECT * FROM pg_settings where name ='client_min_messages';
+</div><p id="-jwpwx0_16">Изменение конфигурации:</p><div class="code-block" data-lang="sql">
+ALTER SYSTEM SET client_min_messages to 'log';
+select pg_reload_conf();
+show client_min_messages;
+</div><p id="-jwpwx0_18">Для сброса в начальное состояние:</p><div class="code-block" data-lang="sql">
+ALTER SYSTEM reset client_min_messages;
+select pg_reload_conf();
+show client_min_messages;
+</div><p id="-jwpwx0_20">Для логических значений значения могут задаваться строками<br><span class="control" id="-jwpwx0_22">on, off, true, false, yes, no, 1, 0</span><br> (регистр не имеет значения), либо как достаточно однозначный префикс одной из этих строк.</p></section></section><section class="chapter"><h2 id="postgresql-auto-conf" data-toc="postgresql-auto-conf">postgresql.auto.conf</h2><p id="-jwpwx0_24">Дополнительный файл конфигурации сервера.</p><div class="code-block" data-lang="plaintext">
+# Do not edit this file manually!
+# It will be overwritten by the ALTER SYSTEM command.
+shared_preload_libraries = 'pg_stat_statements, auto_explain'
+auto_explain.log_analyze = 'on'
+auto_explain.log_buffers = 'on'
+auto_explain.log_timing = 'off'
+auto_explain.log_triggers = 'on'
+auto_explain.log_verbose = 'on'
+auto_explain.log_nested_statements = 'on'
+auto_explain.sample_rate = '1'
+</div><p id="-jwpwx0_26">В данном файле содержится дополнительная информация при выполнении <code class="code" id="-jwpwx0_27">ALTER SYSTEM</code> и является дополнением к основному файлу конфигурации.</p></section><section class="chapter"><h2 id="pg-ident-conf" data-toc="pg-ident-conf">pg_ident.conf</h2></section><section class="chapter"><h2 id="pg-hba-conf" data-toc="pg-hba-conf">pg_hba.conf</h2></section><section class="chapter"><h2 id="-jwpwx0_28" data-toc="-jwpwx0_28">Просмотр настроек</h2><section class="chapter"><h3 id="-jwpwx0_29" data-toc="-jwpwx0_29">Текущие настройки параметров времени выполнения</h3><div class="code-block" data-lang="sql">
+SHOW ALL
+</div><p id="-jwpwx0_31">или</p><div class="code-block" data-lang="sql">
+table pg_settings;
+</div><p id="-jwpwx0_33">или</p><div class="code-block" data-lang="sql">
+select * from pg_settings;
+</div></section><section class="chapter"><h3 id="postgresql-conf_1" data-toc="postgresql-conf_1">Чтобы прочитать, что хранится в postgresql.conf и postgresql.auto.conf</h3><div class="code-block" data-lang="sql">
+table pg_file_settings;
+</div><p id="-jwpwx0_36">или</p><div class="code-block" data-lang="sql">
+select * from pg_file_settings
+</div></section></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-mainclientfile.html" class="navigation-links__prev">Важные файлы которые нужно настроить для клиентских утилит</a><a href="howto-srvqury.html" class="navigation-links__next">Полезные запросы на уровне сервера</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.3291077"><title>Использование generate_series | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"gtbved_302","level":0,"title":"Простое использование","anchor":"#gtbved_302"},{"id":"gtbved_309","level":0,"title":"Генерация для разных типов данных","anchor":"#gtbved_309"},{"id":"gtbved_313","level":0,"title":"Генерация последовательности по датам","anchor":"#gtbved_313"},{"id":"gtbved_374","level":0,"title":"Последовательность по дням","anchor":"#gtbved_374"},{"id":"gtbved_390","level":0,"title":"Последовательность на первое число месяца","anchor":"#gtbved_390"},{"id":"gtbved_406","level":0,"title":"Последовательность по часам","anchor":"#gtbved_406"},{"id":"gtbved_426","level":0,"title":"Последовательность по часам и минутам","anchor":"#gtbved_426"},{"id":"gtbved_428","level":0,"title":"Последовательность и рандомные данные","anchor":"#gtbved_428"},{"id":"gtbved_436","level":0,"title":"Использование последовательности для определения значения на каждый день","anchor":"#gtbved_436"},{"id":"gtbved_438","level":0,"title":"Последний день месяца","anchor":"#gtbved_438"},{"id":"gtbved_440","level":0,"title":"Использование в циклах","anchor":"#gtbved_440"},{"id":"gtbved_442","level":0,"title":"Данные последовательности в таблицу","anchor":"#gtbved_442"},{"id":"cross-join","level":0,"title":"Использование в CROSS JOIN","anchor":"#cross-join"},{"id":"gtbved_447","level":0,"title":"Поиск пропущенных значений","anchor":"#gtbved_447"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование generate_series | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-genser.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование generate_series | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:58.6738607"><title>Использование generate_series | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"-td01i1_2","level":0,"title":"Простое использование","anchor":"#-td01i1_2"},{"id":"-td01i1_9","level":0,"title":"Генерация для разных типов данных","anchor":"#-td01i1_9"},{"id":"-td01i1_13","level":0,"title":"Генерация последовательности по датам","anchor":"#-td01i1_13"},{"id":"-td01i1_74","level":0,"title":"Последовательность по дням","anchor":"#-td01i1_74"},{"id":"-td01i1_90","level":0,"title":"Последовательность на первое число месяца","anchor":"#-td01i1_90"},{"id":"-td01i1_106","level":0,"title":"Последовательность по часам","anchor":"#-td01i1_106"},{"id":"-td01i1_126","level":0,"title":"Последовательность по часам и минутам","anchor":"#-td01i1_126"},{"id":"-td01i1_128","level":0,"title":"Последовательность и рандомные данные","anchor":"#-td01i1_128"},{"id":"-td01i1_136","level":0,"title":"Использование последовательности для определения значения на каждый день","anchor":"#-td01i1_136"},{"id":"-td01i1_138","level":0,"title":"Последний день месяца","anchor":"#-td01i1_138"},{"id":"-td01i1_140","level":0,"title":"Использование в циклах","anchor":"#-td01i1_140"},{"id":"-td01i1_142","level":0,"title":"Данные последовательности в таблицу","anchor":"#-td01i1_142"},{"id":"cross-join","level":0,"title":"Использование в CROSS JOIN","anchor":"#cross-join"},{"id":"-td01i1_147","level":0,"title":"Поиск пропущенных значений","anchor":"#-td01i1_147"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Использование generate_series | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-genser.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Использование generate_series | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-genser.html#webpage",
@@ -13,49 +13,49 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-genser" data-main-title="Использование generate_series" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-genser" id="howto-genser.md">Использование generate_series</h1><section class="chapter"><h2 id="gtbved_302" data-toc="gtbved_302">Простое использование</h2><p id="gtbved_303">Генерация последовательности от 1 до 15</p><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="howto-genser" data-main-title="Использование generate_series" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-genser" id="howto-genser.md">Использование generate_series</h1><section class="chapter"><h2 id="-td01i1_2" data-toc="-td01i1_2">Простое использование</h2><p id="-td01i1_3">Генерация последовательности от 1 до 15</p><div class="code-block" data-lang="sql">
 select generate_series(1, 15);
-</div><p id="gtbved_305">Генерация последовательности с указанным шагом</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_5">Генерация последовательности с указанным шагом</p><div class="code-block" data-lang="sql">
 select * from generate_series(2, 10, 2);
 </div><div class="code-block" data-lang="sql">
 select * from generate_series(1, 10, 2);
 </div><div class="code-block" data-lang="sql">
 select * from generate_series(-10, 10, 3);
-</div></section><section class="chapter"><h2 id="gtbved_309" data-toc="gtbved_309">Генерация для разных типов данных</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_9" data-toc="-td01i1_9">Генерация для разных типов данных</h2><div class="code-block" data-lang="sql">
 select generate_series(1.1, 10.1, 3.0)::float;
 </div><div class="code-block" data-lang="sql">
 select generate_series(1.1, 10.1, 3.0)::money;
 </div><div class="code-block" data-lang="sql">
 select generate_series(1.1, 10.1, 3.0)::numeric(10,6);
-</div></section><section class="chapter"><h2 id="gtbved_313" data-toc="gtbved_313">Генерация последовательности по датам</h2><p id="gtbved_314">По возрастанию</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_13" data-toc="-td01i1_13">Генерация последовательности по датам</h2><p id="-td01i1_14">По возрастанию</p><div class="code-block" data-lang="sql">
 select date '2024-01-01' + (interval '1' month * generate_series(0, 11)) as month;
-</div><p id="gtbved_316">Результат:</p><div class="table-wrapper"><table class="" id="gtbved_317"><thead><tr class="ijRowHead" id="gtbved_318"><th id="gtbved_319"><p>month</p></th></tr></thead><tbody><tr id="gtbved_320"><td id="gtbved_321"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="gtbved_322"><td id="gtbved_323"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="gtbved_324"><td id="gtbved_325"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="gtbved_326"><td id="gtbved_327"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="gtbved_328"><td id="gtbved_329"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="gtbved_330"><td id="gtbved_331"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="gtbved_332"><td id="gtbved_333"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="gtbved_334"><td id="gtbved_335"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="gtbved_336"><td id="gtbved_337"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="gtbved_338"><td id="gtbved_339"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="gtbved_340"><td id="gtbved_341"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="gtbved_342"><td id="gtbved_343"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div><p id="gtbved_344">По убыванию</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_16">Результат:</p><div class="table-wrapper"><table class="" id="-td01i1_17"><thead><tr class="ijRowHead" id="-td01i1_18"><th id="-td01i1_19"><p>month</p></th></tr></thead><tbody><tr id="-td01i1_20"><td id="-td01i1_21"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="-td01i1_22"><td id="-td01i1_23"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="-td01i1_24"><td id="-td01i1_25"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="-td01i1_26"><td id="-td01i1_27"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="-td01i1_28"><td id="-td01i1_29"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="-td01i1_30"><td id="-td01i1_31"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="-td01i1_32"><td id="-td01i1_33"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="-td01i1_34"><td id="-td01i1_35"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="-td01i1_36"><td id="-td01i1_37"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="-td01i1_38"><td id="-td01i1_39"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="-td01i1_40"><td id="-td01i1_41"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="-td01i1_42"><td id="-td01i1_43"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div><p id="-td01i1_44">По убыванию</p><div class="code-block" data-lang="sql">
 select date '20241201' - (interval '1' month * generate_series(0, 11)) as month;
-</div><p id="gtbved_346">Результат</p><div class="table-wrapper"><table class="" id="gtbved_347"><thead><tr class="ijRowHead" id="gtbved_348"><th id="gtbved_349"><p>month</p></th></tr></thead><tbody><tr id="gtbved_350"><td id="gtbved_351"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="gtbved_352"><td id="gtbved_353"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="gtbved_354"><td id="gtbved_355"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="gtbved_356"><td id="gtbved_357"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="gtbved_358"><td id="gtbved_359"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="gtbved_360"><td id="gtbved_361"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="gtbved_362"><td id="gtbved_363"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="gtbved_364"><td id="gtbved_365"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="gtbved_366"><td id="gtbved_367"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="gtbved_368"><td id="gtbved_369"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="gtbved_370"><td id="gtbved_371"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="gtbved_372"><td id="gtbved_373"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="gtbved_374" data-toc="gtbved_374">Последовательность по дням</h2><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_46">Результат</p><div class="table-wrapper"><table class="" id="-td01i1_47"><thead><tr class="ijRowHead" id="-td01i1_48"><th id="-td01i1_49"><p>month</p></th></tr></thead><tbody><tr id="-td01i1_50"><td id="-td01i1_51"><p>2024-01-01 00:00:00.000000</p></td></tr><tr id="-td01i1_52"><td id="-td01i1_53"><p>2024-02-01 00:00:00.000000</p></td></tr><tr id="-td01i1_54"><td id="-td01i1_55"><p>2024-03-01 00:00:00.000000</p></td></tr><tr id="-td01i1_56"><td id="-td01i1_57"><p>2024-04-01 00:00:00.000000</p></td></tr><tr id="-td01i1_58"><td id="-td01i1_59"><p>2024-05-01 00:00:00.000000</p></td></tr><tr id="-td01i1_60"><td id="-td01i1_61"><p>2024-06-01 00:00:00.000000</p></td></tr><tr id="-td01i1_62"><td id="-td01i1_63"><p>2024-07-01 00:00:00.000000</p></td></tr><tr id="-td01i1_64"><td id="-td01i1_65"><p>2024-08-01 00:00:00.000000</p></td></tr><tr id="-td01i1_66"><td id="-td01i1_67"><p>2024-09-01 00:00:00.000000</p></td></tr><tr id="-td01i1_68"><td id="-td01i1_69"><p>2024-10-01 00:00:00.000000</p></td></tr><tr id="-td01i1_70"><td id="-td01i1_71"><p>2024-11-01 00:00:00.000000</p></td></tr><tr id="-td01i1_72"><td id="-td01i1_73"><p>2024-12-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="-td01i1_74" data-toc="-td01i1_74">Последовательность по дням</h2><div class="code-block" data-lang="sql">
 select generate_series(date '20240501', '20240801', '1 day')::date as day;
-</div><p id="gtbved_376">Результат</p><div class="table-wrapper"><table class="" id="gtbved_377"><thead><tr class="ijRowHead" id="gtbved_378"><th id="gtbved_379"><p>day</p></th></tr></thead><tbody><tr id="gtbved_380"><td id="gtbved_381"><p>2024-05-01</p></td></tr><tr id="gtbved_382"><td id="gtbved_383"><p>2024-05-02</p></td></tr><tr id="gtbved_384"><td id="gtbved_385"><p>2024-05-03</p></td></tr><tr id="gtbved_386"><td id="gtbved_387"><p>2024-05-04</p></td></tr><tr id="gtbved_388"><td id="gtbved_389"><p>2024-05-05</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="gtbved_390" data-toc="gtbved_390">Последовательность на первое число месяца</h2><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_76">Результат</p><div class="table-wrapper"><table class="" id="-td01i1_77"><thead><tr class="ijRowHead" id="-td01i1_78"><th id="-td01i1_79"><p>day</p></th></tr></thead><tbody><tr id="-td01i1_80"><td id="-td01i1_81"><p>2024-05-01</p></td></tr><tr id="-td01i1_82"><td id="-td01i1_83"><p>2024-05-02</p></td></tr><tr id="-td01i1_84"><td id="-td01i1_85"><p>2024-05-03</p></td></tr><tr id="-td01i1_86"><td id="-td01i1_87"><p>2024-05-04</p></td></tr><tr id="-td01i1_88"><td id="-td01i1_89"><p>2024-05-05</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="-td01i1_90" data-toc="-td01i1_90">Последовательность на первое число месяца</h2><div class="code-block" data-lang="sql">
 select generate_series(timestamp '20210101'
          , timestamp '20210530'
          , interval '1 month');
-</div><p id="gtbved_392">Результат</p><div class="table-wrapper"><table class="" id="gtbved_393"><thead><tr class="ijRowHead" id="gtbved_394"><th id="gtbved_395"><p>generate_series</p></th></tr></thead><tbody><tr id="gtbved_396"><td id="gtbved_397"><p>2021-01-01 00:00:00.000000</p></td></tr><tr id="gtbved_398"><td id="gtbved_399"><p>2021-02-01 00:00:00.000000</p></td></tr><tr id="gtbved_400"><td id="gtbved_401"><p>2021-03-01 00:00:00.000000</p></td></tr><tr id="gtbved_402"><td id="gtbved_403"><p>2021-04-01 00:00:00.000000</p></td></tr><tr id="gtbved_404"><td id="gtbved_405"><p>2021-05-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="gtbved_406" data-toc="gtbved_406">Последовательность по часам</h2><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_92">Результат</p><div class="table-wrapper"><table class="" id="-td01i1_93"><thead><tr class="ijRowHead" id="-td01i1_94"><th id="-td01i1_95"><p>generate_series</p></th></tr></thead><tbody><tr id="-td01i1_96"><td id="-td01i1_97"><p>2021-01-01 00:00:00.000000</p></td></tr><tr id="-td01i1_98"><td id="-td01i1_99"><p>2021-02-01 00:00:00.000000</p></td></tr><tr id="-td01i1_100"><td id="-td01i1_101"><p>2021-03-01 00:00:00.000000</p></td></tr><tr id="-td01i1_102"><td id="-td01i1_103"><p>2021-04-01 00:00:00.000000</p></td></tr><tr id="-td01i1_104"><td id="-td01i1_105"><p>2021-05-01 00:00:00.000000</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="-td01i1_106" data-toc="-td01i1_106">Последовательность по часам</h2><div class="code-block" data-lang="sql">
 select generate_series(
                date_trunc('hour', now()) - '1 day'::interval,
                date_trunc('hour', now()),
                '1 hour'::interval
        ) as hour;
-</div><p id="gtbved_408">Результат:</p><div class="table-wrapper"><table class="" id="gtbved_409"><thead><tr class="ijRowHead" id="gtbved_410"><th id="gtbved_411"><p>hour</p></th></tr></thead><tbody><tr id="gtbved_412"><td id="gtbved_413"><p>2024-04-05 15:00:00.000000 +03:00</p></td></tr><tr id="gtbved_414"><td id="gtbved_415"><p>2024-04-05 16:00:00.000000 +03:00</p></td></tr><tr id="gtbved_416"><td id="gtbved_417"><p>2024-04-05 17:00:00.000000 +03:00</p></td></tr><tr id="gtbved_418"><td id="gtbved_419"><p>2024-04-05 18:00:00.000000 +03:00</p></td></tr><tr id="gtbved_420"><td id="gtbved_421"><p>2024-04-05 19:00:00.000000 +03:00</p></td></tr><tr id="gtbved_422"><td id="gtbved_423"><p>2024-04-05 20:00:00.000000 +03:00</p></td></tr></tbody></table></div><p id="gtbved_424">Варианты</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_108">Результат:</p><div class="table-wrapper"><table class="" id="-td01i1_109"><thead><tr class="ijRowHead" id="-td01i1_110"><th id="-td01i1_111"><p>hour</p></th></tr></thead><tbody><tr id="-td01i1_112"><td id="-td01i1_113"><p>2024-04-05 15:00:00.000000 +03:00</p></td></tr><tr id="-td01i1_114"><td id="-td01i1_115"><p>2024-04-05 16:00:00.000000 +03:00</p></td></tr><tr id="-td01i1_116"><td id="-td01i1_117"><p>2024-04-05 17:00:00.000000 +03:00</p></td></tr><tr id="-td01i1_118"><td id="-td01i1_119"><p>2024-04-05 18:00:00.000000 +03:00</p></td></tr><tr id="-td01i1_120"><td id="-td01i1_121"><p>2024-04-05 19:00:00.000000 +03:00</p></td></tr><tr id="-td01i1_122"><td id="-td01i1_123"><p>2024-04-05 20:00:00.000000 +03:00</p></td></tr></tbody></table></div><p id="-td01i1_124">Варианты</p><div class="code-block" data-lang="sql">
 select *
 from generate_series(
         '2021-01-01',
         '2021-01-02', interval '1 hour'
      );
-</div></section><section class="chapter"><h2 id="gtbved_426" data-toc="gtbved_426">Последовательность по часам и минутам</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_126" data-toc="-td01i1_126">Последовательность по часам и минутам</h2><div class="code-block" data-lang="sql">
 select *
 from generate_series(
         '2021-01-01', '2021-01-02',
         interval '1 hour 25 minutes'
      );
-</div></section><section class="chapter"><h2 id="gtbved_428" data-toc="gtbved_428">Последовательность и рандомные данные</h2><p id="gtbved_429">Можно использовать для всяких теств и заполнения данными</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_128" data-toc="-td01i1_128">Последовательность и рандомные данные</h2><p id="-td01i1_129">Можно использовать для всяких тестов и заполнения данными</p><div class="code-block" data-lang="sql">
 select random() * 100 as CPU, *
 from generate_series(1, 5);
 </div><div class="code-block" data-lang="sql">
@@ -66,7 +66,7 @@ from generate_series(
              interval '1 hour'
      ) as time,
      generate_series(1, 4) device_id;
-</div><p id="gtbved_432">Увеличение объемов данных за счет изменение диапазона дат</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_132">Увеличение объемов данных за счет изменение диапазона дат</p><div class="code-block" data-lang="sql">
 select time, device_id, random() * 100 as cpu_usage
 from generate_series(
              now() - interval '6 months',
@@ -74,14 +74,14 @@ from generate_series(
              interval '1 hour'
      ) as time,
      generate_series(1, 4) device_id;
-</div><p id="gtbved_434">Использование дополнительных функций для реалистичности данных с использование round() и floor()</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_134">Использование дополнительных функций для реалистичности данных с использованием round() и floor()</p><div class="code-block" data-lang="sql">
 select time,
        device_id,
        round((random() * (100 - 3) + 3)::numeric, 4) as cpu,
        floor(random() * (83 - 28) + 28)::integer     as tempc
 from generate_series(now() - interval '1 hour', now(), interval '1 minute') as time,
      generate_series(1, 10, 1) as device_id;
-</div></section><section class="chapter"><h2 id="gtbved_436" data-toc="gtbved_436">Использование последовательности для определения значения на каждый день</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_136" data-toc="-td01i1_136">Использование последовательности для определения значения на каждый день</h2><div class="code-block" data-lang="sql">
 drop table if exists user_balance;
 create temporary table user_balance
 (
@@ -105,12 +105,12 @@ from generate_series('20210101','20210103', '1 day'::interval) as d(ondate)
     left join user_balance b on  b.as_of_date&lt;=d.ondate
 group by b.usr_id, d.ondate
 order by b.usr_id, d.ondate desc;
-</div></section><section class="chapter"><h2 id="gtbved_438" data-toc="gtbved_438">Последний день месяца</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_138" data-toc="-td01i1_138">Последний день месяца</h2><div class="code-block" data-lang="sql">
 select last_day + interval '1 month - 1 day' as last_day_of_mon
 from generate_series(timestamp '20210101'
          , timestamp '20210130'
          , interval '1 month') last_day;
-</div></section><section class="chapter"><h2 id="gtbved_440" data-toc="gtbved_440">Использование в циклах</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_140" data-toc="-td01i1_140">Использование в циклах</h2><div class="code-block" data-lang="sql">
 do
 $$
     declare
@@ -122,7 +122,7 @@ $$
             end loop;
     end;
 $$;
-</div></section><section class="chapter"><h2 id="gtbved_442" data-toc="gtbved_442">Данные последовательности в таблицу</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_142" data-toc="-td01i1_142">Данные последовательности в таблицу</h2><div class="code-block" data-lang="sql">
 drop table if exists seriestmp;
 create temporary table seriestmp
 (
@@ -146,7 +146,7 @@ from generate_series(5, 9) -- пять записей
 select *
 from generate_series(5, 9) as g1-- пять записей
          cross join generate_series(5, g1) as g2;
-</div></section><section class="chapter"><h2 id="gtbved_447" data-toc="gtbved_447">Поиск пропущенных значений</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="-td01i1_147" data-toc="-td01i1_147">Поиск пропущенных значений</h2><div class="code-block" data-lang="sql">
 drop table if exists seriestmp;
 create temporary table seriestmp
 (
@@ -163,9 +163,9 @@ with a as
     (select generate_series(min(series_id), max(series_id)) as row_num from
     seriestmp)
 select * from a left join seriestmp t on t.series_id= a.row_num where t.series_id is null;
-</div><p id="gtbved_449">как вариант последний батч</p><div class="code-block" data-lang="sql">
+</div><p id="-td01i1_149">как вариант последний батч</p><div class="code-block" data-lang="sql">
 select * from
 (select generate_series(min(series_id), max(series_id)) as row_num from
     seriestmp) as a
     left join seriestmp t on t.series_id= a.row_num where t.series_id is null;
-</div></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-customgeneric.html" class="navigation-links__prev">Общее</a><a href="howto-windowsfn.html" class="navigation-links__next">Использование оконных функций</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
+</div></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-customgeneric.html" class="navigation-links__prev">Общее</a><a href="howto-windowsfn.html" class="navigation-links__next">Использование оконных функций</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

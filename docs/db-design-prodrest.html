@@ -1,0 +1,375 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:59.6748638"><title>Реализация хранимых остатков для товарного учета | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"i2bvxca_8","level":0,"title":"Схема данных","anchor":"#i2bvxca_8"},{"id":"i2bvxca_52","level":0,"title":"Данные для таблиц","anchor":"#i2bvxca_52"},{"id":"i2bvxca_70","level":0,"title":"Расчет остатков","anchor":"#i2bvxca_70"},{"id":"i2bvxca_84","level":0,"title":"Расчет с применением \"хранимых остатков\" и данные прошлого периода","anchor":"#i2bvxca_84"},{"id":"i2bvxca_161","level":0,"title":"Расчет с применением \"хранимых остатков\" и данные на сейчас","anchor":"#i2bvxca_161"},{"id":"i2bvxca_188","level":0,"title":"Проблема изменения данных в прошлых периодах","anchor":"#i2bvxca_188"},{"id":"i2bvxca_210","level":0,"title":"Оптимизация запросов по хранимым остаткам","anchor":"#i2bvxca_210"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Реализация хранимых остатков для товарного учета | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/db-design-prodrest.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Реализация хранимых остатков для товарного учета | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/db-design-prodrest.html#webpage",
+    "url": "writerside-documentation/db-design-prodrest.html",
+    "name": "Реализация хранимых остатков для товарного учета | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="db-design-prodrest" data-main-title="Реализация хранимых остатков для товарного учета" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///db-design.md|Проектирование баз данных"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="db-design-prodrest" id="db-design-prodrest.md">Реализация хранимых остатков для товарного учета</h1><p id="i2bvxca_2">При разработке и учете товаров рано или поздно назревает вопрос ускорения расчета остатков - это объективная проблема поскольку с увеличением количества данных расчеты на лету по данным оперативного учета оперируют значительным объемом данных.</p><p id="i2bvxca_3">Предлагаемый вариант &quot;ускорения&quot; расчета остатков:</p><ul class="list _bullet" id="i2bvxca_4"><li class="list__item" id="i2bvxca_5"><p>расчет остатков на начало каждого месяца</p></li><li class="list__item" id="i2bvxca_6"><p>агрегированные данные по движению товара</p></li><li class="list__item" id="i2bvxca_7"><p>конечный расчет остатков на необходимую дату</p></li></ul><section class="chapter"><h2 id="i2bvxca_8" data-toc="i2bvxca_8">Схема данных</h2><p id="i2bvxca_9"><code class="code" id="i2bvxca_10">journal</code> - журнал операций, определяющий оперативное движение товара.</p><div class="code-block" data-lang="sql">
+create table public.journal (
+  id integer primary key not null, -- Идентификатор
+  datevalue timestamp without time zone not null, -- Дата операции
+  productid integer not null, -- Идентификатор товара
+  kind smallint not null, -- Тип операции. 1-приход, 2-возврат &quot;нам&quot;, 2-расход, 3 - разврат от &quot;нас&quot;
+  qty numeric(15,5) not null default 0
+);
+create index journal_productid_index on journal using btree (productid);
+</div><p id="i2bvxca_12">Обратите внимание на столбец <code class="code" id="i2bvxca_13">kind</code> - тип операции</p><div class="table-wrapper"><table class="wide" id="i2bvxca_14"><thead><tr class="ijRowHead" id="i2bvxca_15"><th id="i2bvxca_16"><p>Значение</p></th><th id="i2bvxca_17"><p>Описание</p></th><th id="i2bvxca_18"><p>Группа операции</p></th></tr></thead><tbody><tr id="i2bvxca_19"><td id="i2bvxca_20"><p>1</p></td><td id="i2bvxca_21"><p>приход</p></td><td id="i2bvxca_22"><p>+</p></td></tr><tr id="i2bvxca_23"><td id="i2bvxca_24"><p>2</p></td><td id="i2bvxca_25"><p>возврат &quot;нам&quot;</p></td><td id="i2bvxca_26"><p>+</p></td></tr><tr id="i2bvxca_27"><td id="i2bvxca_28"><p>3</p></td><td id="i2bvxca_29"><p>расход</p></td><td id="i2bvxca_30"><p>-</p></td></tr><tr id="i2bvxca_31"><td id="i2bvxca_32"><p>4</p></td><td id="i2bvxca_33"><p>разврат от &quot;нас&quot;</p></td><td id="i2bvxca_34"><p>-</p></td></tr></tbody></table></div><p id="i2bvxca_35">В зависимости от группы операции <code class="code" id="i2bvxca_36">+</code> или <code class="code" id="i2bvxca_37">-</code> мы воспринимаем значение в колонке <code class="code" id="i2bvxca_38">qty</code> с положительным знаком или с отрицательным, в сомой таблице значение <code class="code" id="i2bvxca_39">qty</code> - всегда положительны.</p><p id="i2bvxca_40"><code class="code" id="i2bvxca_41">products</code> - товары</p><div class="code-block" data-lang="sql">
+create table public.products (
+  id integer primary key not null, -- Идентификатор
+  name text not null -- Наименование товара
+);
+</div><p id="i2bvxca_43"><code class="code" id="i2bvxca_44">restdatevalues</code> - вспомогательная таблица c датами</p><div class="code-block" data-lang="sql">
+create table public.restdatevalues (
+  dt date primary key not null, -- Дата
+  yvalue integer not null, -- Год
+  mvalue integer not null, -- Месяц
+  monthend date not null,
+  monthnext date not null,
+  prevmonth date not null,
+  nextmonthtm timestamp without time zone not null,
+  prevmonthtm timestamp without time zone not null
+);
+</div><p id="i2bvxca_46"><code class="code" id="i2bvxca_47">restbyrange</code> - остатки по месяцам</p><div class="code-block" data-lang="sql">
+create table public.restbyrange (
+  id integer primary key not null, -- Идентификатор
+  storeid integer not null, -- Идентификатор склада
+  datevalue date not null, -- Дата
+  productid integer not null, -- Идентификатор товара
+  qty numeric(15,5) not null -- Количество
+);
+</div><p id="i2bvxca_49"><code class="code" id="i2bvxca_50">restmovement</code> - движение товара в агрегированном вида по дням</p><div class="code-block" data-lang="sql">
+create table public.restmovement (
+  id integer primary key not null, -- Идентификатор
+  datevalue timestamp without time zone not null, -- Дата
+  productid integer not null, -- Идентификатор товара
+  qtyin numeric(15,5) not null default 0, -- Приход
+  qtyout numeric(15,5) not null default 0 -- Расход
+);
+create unique index restmovement_datevalue_idx on restmovement using btree (datevalue, productid);
+</div></section><section class="chapter"><h2 id="i2bvxca_52" data-toc="i2bvxca_52">Данные для таблиц</h2><p id="i2bvxca_53">Данные для таблицы products</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="products">
+INSERT INTO public.products (id, name) VALUES (1, 'Молоко');
+INSERT INTO public.products (id, name) VALUES (2, 'Кефир');
+INSERT INTO public.products (id, name) VALUES (3, 'Сметана');
+INSERT INTO public.products (id, name) VALUES (4, 'Ряженка');
+INSERT INTO public.products (id, name) VALUES (5, 'Йогурт');
+INSERT INTO public.products (id, name) VALUES (6, 'Творог');
+INSERT INTO public.products (id, name) VALUES (7, 'Сыворотка');
+INSERT INTO public.products (id, name) VALUES (8, 'Простокваша');
+INSERT INTO public.products (id, name) VALUES (9, 'Тан');
+INSERT INTO public.products (id, name) VALUES (10, 'Сыр');
+INSERT INTO public.products (id, name) VALUES (11, 'Кумыс');
+INSERT INTO public.products (id, name) VALUES (12, 'Творожная масса');
+INSERT INTO public.products (id, name) VALUES (13, 'Сметана 10%');
+INSERT INTO public.products (id, name) VALUES (14, 'Сметана 15%');
+INSERT INTO public.products (id, name) VALUES (15, 'Сметана 20%');
+INSERT INTO public.products (id, name) VALUES (16, 'Сметана 25%');
+INSERT INTO public.products (id, name) VALUES (17, 'Молоко 1%');
+INSERT INTO public.products (id, name) VALUES (18, 'Молоко 2%');
+INSERT INTO public.products (id, name) VALUES (19, 'Молоко 2.5%');
+INSERT INTO public.products (id, name) VALUES (20, 'Кефир 1%');
+INSERT INTO public.products (id, name) VALUES (21, 'Кефир 2%');
+INSERT INTO public.products (id, name) VALUES (22, 'Ряженка 2%');
+INSERT INTO public.products (id, name) VALUES (23, 'Ряженка 1%');
+INSERT INTO public.products (id, name) VALUES (24, 'Сливки');
+INSERT INTO public.products (id, name) VALUES (25, 'Сметанный продукт');
+INSERT INTO public.products (id, name) VALUES (26, 'Творожный продукт');
+INSERT INTO public.products (id, name) VALUES (27, 'Масло сливочное');
+INSERT INTO public.products (id, name) VALUES (28, 'Масло сливочное 72%');
+INSERT INTO public.products (id, name) VALUES (29, 'Масло сливочное 82%');
+INSERT INTO public.products (id, name) VALUES (30, 'Маргарин');
+</div><p id="i2bvxca_55">Данные для таблицы restdatevalues</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="restdatevalues">
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-01-01', 2023, 1, '2023-01-31', '2023-02-01', '2022-12-31', '2023-02-01 00:00:00.000000', '2022-12-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-02-01', 2023, 2, '2023-02-28', '2023-03-01', '2023-01-31', '2023-03-01 00:00:00.000000', '2023-01-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-03-01', 2023, 3, '2023-03-31', '2023-04-01', '2023-02-28', '2023-04-01 00:00:00.000000', '2023-02-28 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-04-01', 2023, 4, '2023-04-30', '2023-05-01', '2023-03-31', '2023-05-01 00:00:00.000000', '2023-03-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-05-01', 2023, 5, '2023-05-31', '2023-06-01', '2023-04-30', '2023-06-01 00:00:00.000000', '2023-04-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-06-01', 2023, 6, '2023-06-30', '2023-07-01', '2023-05-31', '2023-07-01 00:00:00.000000', '2023-05-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-07-01', 2023, 7, '2023-07-31', '2023-08-01', '2023-06-30', '2023-08-01 00:00:00.000000', '2023-06-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-08-01', 2023, 8, '2023-08-31', '2023-09-01', '2023-07-31', '2023-09-01 00:00:00.000000', '2023-07-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-09-01', 2023, 9, '2023-09-30', '2023-10-01', '2023-08-31', '2023-10-01 00:00:00.000000', '2023-08-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-10-01', 2023, 10, '2023-10-31', '2023-11-01', '2023-09-30', '2023-11-01 00:00:00.000000', '2023-09-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-11-01', 2023, 11, '2023-11-30', '2023-12-01', '2023-10-31', '2023-12-01 00:00:00.000000', '2023-10-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2023-12-01', 2023, 12, '2023-12-31', '2024-01-01', '2023-11-30', '2024-01-01 00:00:00.000000', '2023-11-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-01-01', 2024, 1, '2024-01-31', '2024-02-01', '2023-12-31', '2024-02-01 00:00:00.000000', '2023-12-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-02-01', 2024, 2, '2024-02-29', '2024-03-01', '2024-01-31', '2024-03-01 00:00:00.000000', '2024-01-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-03-01', 2024, 3, '2024-03-31', '2024-04-01', '2024-02-29', '2024-04-01 00:00:00.000000', '2024-02-29 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-04-01', 2024, 4, '2024-04-30', '2024-05-01', '2024-03-31', '2024-05-01 00:00:00.000000', '2024-03-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-05-01', 2024, 5, '2024-05-31', '2024-06-01', '2024-04-30', '2024-06-01 00:00:00.000000', '2024-04-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-06-01', 2024, 6, '2024-06-30', '2024-07-01', '2024-05-31', '2024-07-01 00:00:00.000000', '2024-05-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-07-01', 2024, 7, '2024-07-31', '2024-08-01', '2024-06-30', '2024-08-01 00:00:00.000000', '2024-06-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-08-01', 2024, 8, '2024-08-31', '2024-09-01', '2024-07-31', '2024-09-01 00:00:00.000000', '2024-07-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-09-01', 2024, 9, '2024-09-30', '2024-10-01', '2024-08-31', '2024-10-01 00:00:00.000000', '2024-08-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-10-01', 2024, 10, '2024-10-31', '2024-11-01', '2024-09-30', '2024-11-01 00:00:00.000000', '2024-09-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-11-01', 2024, 11, '2024-11-30', '2024-12-01', '2024-10-31', '2024-12-01 00:00:00.000000', '2024-10-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2024-12-01', 2024, 12, '2024-12-31', '2025-01-01', '2024-11-30', '2025-01-01 00:00:00.000000', '2024-11-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-01-01', 2025, 1, '2025-01-31', '2025-02-01', '2024-12-31', '2025-02-01 00:00:00.000000', '2024-12-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-02-01', 2025, 2, '2025-02-28', '2025-03-01', '2025-01-31', '2025-03-01 00:00:00.000000', '2025-01-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-03-01', 2025, 3, '2025-03-31', '2025-04-01', '2025-02-28', '2025-04-01 00:00:00.000000', '2025-02-28 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-04-01', 2025, 4, '2025-04-30', '2025-05-01', '2025-03-31', '2025-05-01 00:00:00.000000', '2025-03-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-05-01', 2025, 5, '2025-05-31', '2025-06-01', '2025-04-30', '2025-06-01 00:00:00.000000', '2025-04-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-06-01', 2025, 6, '2025-06-30', '2025-07-01', '2025-05-31', '2025-07-01 00:00:00.000000', '2025-05-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-07-01', 2025, 7, '2025-07-31', '2025-08-01', '2025-06-30', '2025-08-01 00:00:00.000000', '2025-06-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-08-01', 2025, 8, '2025-08-31', '2025-09-01', '2025-07-31', '2025-09-01 00:00:00.000000', '2025-07-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-09-01', 2025, 9, '2025-09-30', '2025-10-01', '2025-08-31', '2025-10-01 00:00:00.000000', '2025-08-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-10-01', 2025, 10, '2025-10-31', '2025-11-01', '2025-09-30', '2025-11-01 00:00:00.000000', '2025-09-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-11-01', 2025, 11, '2025-11-30', '2025-12-01', '2025-10-31', '2025-12-01 00:00:00.000000', '2025-10-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2025-12-01', 2025, 12, '2025-12-31', '2026-01-01', '2025-11-30', '2026-01-01 00:00:00.000000', '2025-11-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-01-01', 2026, 1, '2026-01-31', '2026-02-01', '2025-12-31', '2026-02-01 00:00:00.000000', '2025-12-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-02-01', 2026, 2, '2026-02-28', '2026-03-01', '2026-01-31', '2026-03-01 00:00:00.000000', '2026-01-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-03-01', 2026, 3, '2026-03-31', '2026-04-01', '2026-02-28', '2026-04-01 00:00:00.000000', '2026-02-28 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-04-01', 2026, 4, '2026-04-30', '2026-05-01', '2026-03-31', '2026-05-01 00:00:00.000000', '2026-03-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-05-01', 2026, 5, '2026-05-31', '2026-06-01', '2026-04-30', '2026-06-01 00:00:00.000000', '2026-04-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-06-01', 2026, 6, '2026-06-30', '2026-07-01', '2026-05-31', '2026-07-01 00:00:00.000000', '2026-05-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-07-01', 2026, 7, '2026-07-31', '2026-08-01', '2026-06-30', '2026-08-01 00:00:00.000000', '2026-06-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-08-01', 2026, 8, '2026-08-31', '2026-09-01', '2026-07-31', '2026-09-01 00:00:00.000000', '2026-07-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-09-01', 2026, 9, '2026-09-30', '2026-10-01', '2026-08-31', '2026-10-01 00:00:00.000000', '2026-08-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-10-01', 2026, 10, '2026-10-31', '2026-11-01', '2026-09-30', '2026-11-01 00:00:00.000000', '2026-09-30 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-11-01', 2026, 11, '2026-11-30', '2026-12-01', '2026-10-31', '2026-12-01 00:00:00.000000', '2026-10-31 23:59:59.999999');
+INSERT INTO public.restdatevalues (dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm) VALUES ('2026-12-01', 2026, 12, '2026-12-31', '2027-01-01', '2026-11-30', '2027-01-01 00:00:00.000000', '2026-11-30 23:59:59.999999');
+
+</div><p id="i2bvxca_57">или сгенерировать данные:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="restdatevalues generate">
+with d as (select *
+           from generate_series(
+                        '2023-01-01 00:00:00'::timestamp,
+                        '2026-12-31 00:00:00'::timestamp,
+                        '1 month'::interval
+                ) as v)
+insert into restdatevalues(dt, yvalue, mvalue, monthend, monthnext, prevmonth, nextmonthtm, prevmonthtm)
+select d.v::date as dt, date_part('year', d.v) as yvalue, date_part('month', d.v) as mvalue,
+       (d.v::date + interval '1 month - 1 day')::date as monthend,
+       (d.v::date + interval '1 month')::date as monthnext,
+       (d.v::date - interval '1 day')::date as prevmonth,
+(date_trunc('month', d.v) + interval '1 month')::timestamp as nextmonthtm,
+(date_trunc('month', d.v) - interval '1 microseconds')::timestamp as prevmonthtm
+from d
+order by d;
+
+select * from restdatevalues;
+</div><p id="i2bvxca_59">Данные для таблицы <code class="code" id="i2bvxca_60">journal</code> - сгенерированы в диапазоне одного года за 2024, количество записей в тестовой таблице - 11 006 000, с приблизительно равномерным распределением по 800 000 - 1 000 000 данных в месяц, в разрезе типа <code class="code" id="i2bvxca_61">kind</code> - по 150 000 - 350 000.</p><p id="i2bvxca_62">Данные для таблицы <code class="code" id="i2bvxca_63">restmovement</code> и <code class="code" id="i2bvxca_64">restbyrange</code> - являются расчетными на основании данных <code class="code" id="i2bvxca_65">journal</code>.</p><section class="chapter"><h3 id="i2bvxca_66" data-toc="i2bvxca_66">Запросы по проверке данных</h3><div class="code-block" data-lang="sql">
+select count(*) from journal j;
+</div><div class="code-block" data-lang="sql">
+select count(*), extract('MONTH' from j.datevalue ) as m
+from journal j group by m
+order by m;
+</div><div class="code-block" data-lang="sql">
+select count(*), extract('MONTH' from j.datevalue ) as m, j.kind
+from journal j group by m, j.kind
+order by m, j.kind;
+</div></section></section><section class="chapter"><h2 id="i2bvxca_70" data-toc="i2bvxca_70">Расчет остатков</h2><p id="i2bvxca_71">Расчет остатка товара по одному товару</p><div class="code-block" data-lang="sql">
+select 1 as storeid,
+       j.productid,
+       sum(case when kind&lt;3 then qty
+                when kind&gt;2 then -qty
+           end) as qtyMoveSumm
+from journal j
+where productid=1
+  and datevalue&lt;'20240302'
+group by j.productid
+</div><p id="i2bvxca_73">Среднее время выполнения: <br><code class="code" id="i2bvxca_75">Planning Time: 0.168 ms</code><br><code class="code" id="i2bvxca_77">Execution Time: 377.888 ms</code></p><p id="i2bvxca_78">Модифицированный запрос для более удобного представления:</p><div class="code-block" data-lang="sql">
+do
+$$
+    declare
+         -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        prodId int=1;
+        resValue numeric(15,5);
+    begin
+        resValue:=(select sum(case when kind&lt;3 then qty
+            when kind&gt;2 then -qty
+       end) as qtyMoveSumm
+        from journal j
+        where productid=prodId and datevalue&lt;dtOn
+        );
+
+        raise notice 'Остаток товара: %',resValue;
+        -- резульат = 24378.15115
+    end;
+$$;
+</div><p id="i2bvxca_80">Для проверки движения товара c <code class="code" id="i2bvxca_81">20240301</code> по <code class="code" id="i2bvxca_82">20240302</code>:</p><div class="code-block" data-lang="sql">
+select sum(case when kind&lt;3 then qty
+            when kind&gt;2 then -qty
+       end) as qtyMoveSumm
+from journal j
+where productid=1 and datevalue&gt;'20240301' and datevalue&lt;'20240302';
+</div></section><section class="chapter"><h2 id="i2bvxca_84" data-toc="i2bvxca_84">Расчет с применением &quot;хранимых остатков&quot; и данные прошлого периода</h2><p id="i2bvxca_85">Перед применением расчетов по данным &quot;хранимых остатков&quot; - рассчитаем предварительные данных</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="расчет restbyrange">
+truncate table restbyrange;
+insert into restbyrange(storeid, datevalue, productid, qty)
+select 1 as storeid, dt.monthnext, j.productid,
+       sum(case when kind&lt;3 then qty
+            when kind&gt;2 then -qty
+        end) as qtyMoveSumm
+    from journal j inner join
+        restdatevalues dt on j.datevalue&lt;dt.nextmonthtm
+    where dt.yvalue=2024
+group by dt.monthnext, j.productid
+order by dt.monthnext, productid;
+</div><p id="i2bvxca_87">Обращаем внимание на <code class="code" id="i2bvxca_88">datevalue</code> - дата, соответствует первому дню месяца и означает <span class="control" id="i2bvxca_89">&quot;остаток товара на начало месяца не включая данный день&quot;</span></p><div class="table-wrapper"><table class="wide" id="i2bvxca_90"><thead><tr class="ijRowHead" id="i2bvxca_91"><th id="i2bvxca_92"><p>id</p></th><th id="i2bvxca_93"><p>storeid</p></th><th id="i2bvxca_94"><p>datevalue</p></th><th id="i2bvxca_95"><p>productid</p></th><th id="i2bvxca_96"><p>qty</p></th></tr></thead><tbody><tr id="i2bvxca_97"><td id="i2bvxca_98"><p>433</p></td><td id="i2bvxca_99"><p>1</p></td><td id="i2bvxca_100"><p>2024-02-01</p></td><td id="i2bvxca_101"><p>1</p></td><td id="i2bvxca_102"><p>-20420.15434</p></td></tr><tr id="i2bvxca_103"><td id="i2bvxca_104"><p>439</p></td><td id="i2bvxca_105"><p>1</p></td><td id="i2bvxca_106"><p>2024-03-01</p></td><td id="i2bvxca_107"><p>1</p></td><td id="i2bvxca_108"><p>23202.66787</p></td></tr><tr id="i2bvxca_109"><td id="i2bvxca_110"><p>445</p></td><td id="i2bvxca_111"><p>1</p></td><td id="i2bvxca_112"><p>2024-04-01</p></td><td id="i2bvxca_113"><p>1</p></td><td id="i2bvxca_114"><p>38898.28853</p></td></tr></tbody></table></div><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="расчет restmovement">
+insert into restmovement(datevalue, productid, qtyin, qtyout)
+select j.datevalue::date as datevalue,
+        j.productid,
+        coalesce(sum(case when kind &lt; 3 then qty end),0) as InQtym,
+        coalesce(sum(case when kind &gt; 2 then qty end),0) as OutQty
+from journal j
+group by j.datevalue::date, j.productid;
+</div><p id="i2bvxca_116">Обращаем внимание на <code class="code" id="i2bvxca_117">datevalue</code> - дата без учета времени!</p><div class="table-wrapper"><table class="wide" id="i2bvxca_118"><thead><tr class="ijRowHead" id="i2bvxca_119"><th id="i2bvxca_120"><p>id</p></th><th id="i2bvxca_121"><p>datevalue</p></th><th id="i2bvxca_122"><p>productid</p></th><th id="i2bvxca_123"><p>qtyin</p></th><th id="i2bvxca_124"><p>qtyout</p></th></tr></thead><tbody><tr id="i2bvxca_125"><td id="i2bvxca_126"><p>10306768</p></td><td id="i2bvxca_127"><p>2024-01-01 00:00:00.000000</p></td><td id="i2bvxca_128"><p>1</p></td><td id="i2bvxca_129"><p>76215.14778</p></td><td id="i2bvxca_130"><p>74837.76702</p></td></tr><tr id="i2bvxca_131"><td id="i2bvxca_132"><p>10308320</p></td><td id="i2bvxca_133"><p>2024-01-02 00:00:00.000000</p></td><td id="i2bvxca_134"><p>1</p></td><td id="i2bvxca_135"><p>353945.33889</p></td><td id="i2bvxca_136"><p>354868.46538</p></td></tr><tr id="i2bvxca_137"><td id="i2bvxca_138"><p>10308479</p></td><td id="i2bvxca_139"><p>2024-01-03 00:00:00.000000</p></td><td id="i2bvxca_140"><p>1</p></td><td id="i2bvxca_141"><p>76509.58894</p></td><td id="i2bvxca_142"><p>74847.74025</p></td></tr></tbody></table></div><p id="i2bvxca_143">Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице journal</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов">
+-- Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов
+-- по таблице journal
+do
+$$
+    declare
+        -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        fdayInMonth date = (select date_trunc('month', dtOn));
+        prodId int=1;
+        resValueStart numeric(15,5);
+        resValueMove numeric(15,5);
+    begin
+        resValueStart:=(select qty from restbyrange
+            where productid=prodId and datevalue&lt;=fdayInMonth
+            order by datevalue desc limit 1);
+        raise notice 'Остаток товара на начало: %',resValueStart;
+
+        resValueMove:=(select sum(case when kind&lt;3 then qty
+            when kind&gt;2 then -qty
+                   end) as qtyMoveSumm
+            from journal j
+            where productid=prodId and datevalue&gt;fdayInMonth and datevalue&lt;dtOn
+        );
+
+        raise notice 'Иоговово движение товара: %',resValueMove;
+        -- резульат = 1175.48328
+        raise notice 'Остаток товара: %',resValueStart+resValueMove;
+    end;
+$$;
+</div><p id="i2bvxca_145">К сожалению время выполнение данного запроса осталось почти прежним: <span class="control" id="i2bvxca_146">300 - 400 ms</span>.</p><p id="i2bvxca_147">Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице restmovement:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице restmovement">
+-- Расчет остатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице restmovement
+do
+$$
+    declare
+        -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        fdayInMonth timestamp = (select date_trunc('month', dtOn) -interval '1 microseconds');
+        prodId int=1;
+        resValueStart numeric(15,5);
+        resValueMove numeric(15,5);
+    begin
+        resValueStart:=(select qty from restbyrange
+            where productid=prodId and datevalue&lt;=dtOn
+            order by datevalue desc limit 1);
+        raise notice 'Остаток товара на начало: %',resValueStart;
+
+        resValueMove:=(select sum(qtyin-qtyout)
+            from restmovement r
+            where r.productid=prodId and r.datevalue&gt;fdayInMonth
+              and r.datevalue&lt; dtOn
+        );
+
+        raise notice 'Итоговово движение товара: %',resValueMove;
+        -- резульат = 1175.48328
+        raise notice 'Остаток товара: %',resValueStart+resValueMove;
+    end;
+$$;
+</div><p id="i2bvxca_149">Время выполнения данного запроса составляет <span class="control" id="i2bvxca_150">8-10 ms</span>.</p><p id="i2bvxca_151">Примеры запросов для нескольких товаров:</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Расчет остатков по реальной таблице движения товаров journal">
+-- Расчет остатков по реальной таблице движения товаров journal
+do
+$$
+    declare
+         -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        prodId integer[] = array[1,2];-- (select array_agg(id) from products where id in(1,2));
+        resValue numeric(15,5);
+    begin
+        drop table if exists  _prodrest;
+        create temporary table _prodrest
+        as
+        select j.productid, sum(case when j.kind&lt;3 then qty
+            when j.kind&gt;2 then -qty
+       end) as qty
+        from journal j
+        where j.productid = any(prodId) and j.datevalue&lt;dtOn
+        group by j.productid;
+
+    end;
+$$;
+select * from _prodrest;
+</div><p id="i2bvxca_153">Время выполнения: <span class="control" id="i2bvxca_154">450-550ms</span>.</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Расчет осатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице journal">
+-- Расчет осатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице journal
+do
+$$
+    declare
+        -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        fdayInMonth date = (select date_trunc('month', dtOn));
+        prodId integer[] = array[1,2];
+        maxDateOnMonthRest date = (select max(datevalue) from restbyrange where datevalue&lt;=dtOn);
+    begin
+        drop table if exists  _prodrest;
+        create temporary table _prodrest
+        as
+        ( select v.productid, sum(qty) as qty from
+          (
+            (select distinct on(productid) productid, qty
+             from restbyrange
+             where productid = any (prodId)
+                   and datevalue &lt;= maxDateOnMonthRest
+             order by productid, datevalue desc)
+            union all
+            (select productid,
+                    sum(case when kind &lt; 3 then qty
+                        when kind &gt; 2 then -qty end) as qty
+             from journal j
+             where productid = any (prodId)
+               and datevalue &gt; fdayInMonth
+               and datevalue &lt; dtOn
+             group by productid)
+          ) as v group by v.productid
+        );
+
+    end;
+$$;
+select * from _prodrest;
+</div><p id="i2bvxca_156">Время выполнения: <span class="control" id="i2bvxca_157">400-500ms</span>.</p><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="-- Расчет осатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице restmovement">
+-- Расчет осатка товара по данных хранимых остатков на конец месяца и анализа оборотов по таблице restmovement
+do
+$$
+    declare
+        -- на какой день считаем остатки
+        dtOn date='20240302'::date;
+        fdayInMonth timestamp = (select date_trunc('month', dtOn) -interval '1 microseconds');
+        prodId integer[] = array[1,2];
+        maxDateOnMonthRest date = (select max(datevalue) from restbyrange where datevalue&lt;=dtOn);
+    begin
+        raise notice 'fdayInMonth: %',fdayInMonth;
+        raise notice 'maxDateOnMonthRest: %',maxDateOnMonthRest;
+        drop table if exists  _prodrest;
+        create temporary table _prodrest
+        as
+          (select v.productid, sum(qty) as qty from
+          (
+            (select distinct on (productid) productid, qty
+            from restbyrange
+            where productid = any (prodId) and datevalue &lt;= maxDateOnMonthRest
+            order by productid, datevalue desc)
+            union all
+            (select productid, sum(qtyin-qtyout)
+             from restmovement r
+             where r.productid= any (prodId) and r.datevalue&gt;fdayInMonth
+                and r.datevalue&lt; dtOn
+             group by productid
+             )
+
+            ) as v group by v.productid
+        );
+    end;
+$$;
+select * from _prodrest;
+</div><p id="i2bvxca_159">Время выполнения: <span class="control" id="i2bvxca_160">20ms</span>.</p></section><section class="chapter"><h2 id="i2bvxca_161" data-toc="i2bvxca_161">Расчет с применением &quot;хранимых остатков&quot; и данные на сейчас</h2><p id="i2bvxca_162">Общий алгоритм для расчета остатка по предварительно рассчитанным данным по полному движению: <br> расчет по таблице <code class="code" id="i2bvxca_164">restbyrange</code> плюс данные по таблице <code class="code" id="i2bvxca_165">restmovement</code></p><p id="i2bvxca_166">Общий алгоритм для расчета остатка по предварительно рассчитанным данным по полному движению: <br> расчет по таблице <code class="code" id="i2bvxca_168">restbyrange</code> плюс данные по таблице <code class="code" id="i2bvxca_169">restmovement</code><br> расчет по таблице оперативного движения <code class="code" id="i2bvxca_171">journal</code> с учетом оперирования данными за небольшой период, поскольку данные в таблице <code class="code" id="i2bvxca_172">restmovement</code> можно поддерживать в достаточно актуальном виде со сдвигом с <span class="emphasis" id="i2bvxca_173">несколько дней назад</span> относительно <span class="emphasis" id="i2bvxca_174">сегодня</span>.</p><p id="i2bvxca_175">Путем сдвига необходимой даты в запросах к таблице <code class="code" id="i2bvxca_176">restmovement</code> можно повысить точность необходимых расчетов с учетом времени:</p><ul class="list _bullet" id="i2bvxca_177"><li class="list__item" id="i2bvxca_178"><p>данные на начало месяца по данным <code class="code" id="i2bvxca_179">restbyrange</code></p></li><li class="list__item" id="i2bvxca_180"><p>данные на необходимый день по <code class="code" id="i2bvxca_181">restmovement</code> в диапазоне <span class="emphasis" id="i2bvxca_182">&quot;от начала месяца&quot;</span> до <span class="emphasis" id="i2bvxca_183">&quot;даты начала интересущего дня&quot;</span></p></li><li class="list__item" id="i2bvxca_184"><p>данные по <code class="code" id="i2bvxca_185">journal</code> в диапазоне <span class="emphasis" id="i2bvxca_186">&quot;даты начала интересущего дня&quot;</span> и <span class="emphasis" id="i2bvxca_187">&quot;даты начала интересущего дня с учетом времени&quot;</span></p></li></ul></section><section class="chapter"><h2 id="i2bvxca_188" data-toc="i2bvxca_188">Проблема изменения данных в прошлых периодах</h2><p id="i2bvxca_189">Для <span class="control" id="i2bvxca_190">хранимых остатков</span> изменения в прошлых периодах приведет к необходимости полного перерасчета данных. <span class="control" id="i2bvxca_191">Радикально - запретить изменения в прошлых периодах</span>. Это не всегда возможно, но в большинстве случаев можно найти компромиссное решение:</p><ul class="list _bullet" id="i2bvxca_192"><li class="list__item" id="i2bvxca_193"><p>не менять данные за большой промежуток времени в прошлом</p></li><li class="list__item" id="i2bvxca_194"><p>адекватная оценка периода возможных изменений, например не более 3-5 дней в прошлом периоде</p></li><li class="list__item" id="i2bvxca_195"><p>применение служебных типов &quot;вид операции&quot;, которые фактически проводятся <span class="emphasis" id="i2bvxca_196">сегодня</span>, но влияют на данные прошлого периода. Например, таблица оперативного движения содержит поле <code class="code" id="i2bvxca_197">datevalue</code>, которое логически отражает <span class="control" id="i2bvxca_198">дату документа</span>. Если логически представить данный атрибут как &quot;фактическое время&quot;</p></li></ul><section class="chapter"><h3 id="i2bvxca_199" data-toc="i2bvxca_199">Как сделать корректировку для данных расчета без полного перерасчета</h3><p id="i2bvxca_200">Для корректировки значений в прошлых периодах для таблиц <code class="code" id="i2bvxca_201">restbyrange</code> и <code class="code" id="i2bvxca_202">restmovement</code> можно предусмотреть дополнительные таблицы <code class="code" id="i2bvxca_203">restbyrangecorr</code> и <code class="code" id="i2bvxca_204">restmovementcorr</code> В таблицах - данные в виде дополнительных строк, которые необходимо учитывать при подсчете агрегации результата для соответствующего расчета. Данные в этих таблицах существуют временно - до момента полного перерасчета, после - таблицы очищаются.</p></section><section class="chapter"><h3 id="i2bvxca_205" data-toc="i2bvxca_205">Как сделать расчет без учета какой-либо операции</h3><p id="i2bvxca_206">Операция однозначно определяется по ключу <code class="code" id="i2bvxca_207">id</code> таблицы <code class="code" id="i2bvxca_208">journal</code>. Достаточно исключить необходимое количество из расчета простым сложением или вычитанием в зависимости от типа <code class="code" id="i2bvxca_209">kind</code> операции.</p></section></section><section class="chapter"><h2 id="i2bvxca_210" data-toc="i2bvxca_210">Оптимизация запросов по хранимым остаткам</h2><p id="i2bvxca_211">Некоторые запросы приведенные в качестве примеров для получения остатков реализованы с использованием временной таблицы - только в целях отладки. В конечном виде реализация с использованием cte будет более быстрой в плане скорости.</p><p id="i2bvxca_212">При реализации конечных функций для отчетов - время в большинстве случаем не должно учитываться, поскольку интересовать будут данные именно на начало дня.</p><p id="i2bvxca_213">При реализации функции остатков можно добиться дополнительной оптимизации, если не учитывать данные по таблице <code class="code" id="i2bvxca_214">journal</code> для &quot;исключения необходимой операции&quot; или &quot;точности с учетом времени&quot;</p></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="db-design-monetary.html" class="navigation-links__prev">Денежные данные и операции</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

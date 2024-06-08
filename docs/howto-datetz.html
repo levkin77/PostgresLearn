@@ -1,0 +1,58 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:58.6488634"><title>Даты и timestamptz | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"isok0y_2884","level":0,"title":"Как просмотреть настройки текущей зоны:","anchor":"#isok0y_2884"},{"id":"isok0y_2886","level":0,"title":"Переключение текущей зоны:","anchor":"#isok0y_2886"},{"id":"isok0y_2889","level":0,"title":"Сбросить на значение по умолчанию","anchor":"#isok0y_2889"},{"id":"isok0y_2891","level":0,"title":"Пример работы с функциями дат","anchor":"#isok0y_2891"},{"id":"isok0y_2909","level":0,"title":"Переводим время в нужную таймзону","anchor":"#isok0y_2909"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Даты и timestamptz | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-datetz.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Даты и timestamptz | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-datetz.html#webpage",
+    "url": "writerside-documentation/howto-datetz.html",
+    "name": "Даты и timestamptz | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-datetz" data-main-title="Даты и timestamptz" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее///howto-dateinterval.md|Даты и интервалы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-datetz" id="howto-datetz.md">Даты и timestamptz</h1><section class="chapter"><h2 id="isok0y_2884" data-toc="isok0y_2884">Как просмотреть настройки текущей зоны:</h2><div class="code-block" data-lang="sql">
+show timezone;
+</div></section><section class="chapter"><h2 id="isok0y_2886" data-toc="isok0y_2886">Переключение текущей зоны:</h2><div class="code-block" data-lang="sql">
+set timezone to 'Europe/Moscow';
+show timezone;
+</div><div class="code-block" data-lang="sql">
+set timezone to 'UTC';
+show timezone;
+</div></section><section class="chapter"><h2 id="isok0y_2889" data-toc="isok0y_2889">Сбросить на значение по умолчанию</h2><div class="code-block" data-lang="sql">
+reset timezone;
+show timezone;
+</div></section><section class="chapter"><h2 id="isok0y_2891" data-toc="isok0y_2891">Пример работы с функциями дат</h2><div class="code-block" data-lang="sql">
+select now(), now()::timestamp,
+       localtimestamp,
+       localtimestamp::timestamptz;
+</div><div class="table-wrapper"><table class="wide" id="isok0y_2893"><thead><tr class="ijRowHead" id="isok0y_2894"><th id="isok0y_2895"><p>UTC</p></th><th id="isok0y_2896"><p>Europe/Moscow</p></th></tr></thead><tbody><tr id="isok0y_2897"><td id="isok0y_2898"><p>2024-06-02 04:20:44.462499 +00:00</p></td><td id="isok0y_2899"><p>2024-06-02 07:20:44.462499 +03:00</p></td></tr><tr id="isok0y_2900"><td id="isok0y_2901"><p>2024-06-02 04:20:44.462499</p></td><td id="isok0y_2902"><p>2024-06-02 07:20:44.462499</p></td></tr><tr id="isok0y_2903"><td id="isok0y_2904"><p>2024-06-02 04:20:44.462499</p></td><td id="isok0y_2905"><p>2024-06-02 07:20:44.462499</p></td></tr><tr id="isok0y_2906"><td id="isok0y_2907"><p>2024-06-02 04:20:44.462499 +00:00</p></td><td id="isok0y_2908"><p>2024-06-02 07:20:44.462499 +03:00</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="isok0y_2909" data-toc="isok0y_2909">Переводим время в нужную таймзону</h2><div class="code-block" data-lang="sql">
+select localtimestamp::timestamptz at time zone 'Europe/Rome',
+localtimestamp::timestamptz at time zone 'Europe/Moscow'
+</div><div class="code-block" data-lang="sql">
+do
+$$
+declare
+    dt timestamptz = (select localtimestamp);
+    curzone text = (SELECT current_setting('TIMEZONE'));
+begin
+  drop table if exists timetableZone;
+  create temp table timetableZone(zone text, timeval timestamp );
+
+  insert into timetableZone(zone, timeval)
+  values
+      ('timezone = ' || curzone, dt::timestamptz),
+      ('Europe/Moscow', dt::timestamptz at time zone 'Europe/Moscow'),
+      ('Europe/Rome', dt::timestamptz at time zone 'Europe/Rome'),
+      ('UTC', dt::timestamptz at time zone 'UTC'),
+      ('O', dt::timestamptz at time zone '0'),
+      ('-3', dt::timestamptz at time zone '-3'),
+      ('-2', dt::timestamptz at time zone '-2');
+end;
+$$;
+
+select * from timetableZone;
+drop table if exists timetableZone;
+</div><aside class="prompt" data-type="warning" data-title="" id="isok0y_2912"><p id="isok0y_2913">При работе с типом <code class="code" id="isok0y_2914">timestamptz</code> требуется соблюдать осторожность! Не забывайте правильно устанавливать/учитывать <code class="code" id="isok0y_2915">timezone</code> для текущей сессии в настройках соединения</p></aside><aside class="prompt" data-type="warning" data-title="" id="isok0y_2916"><p id="isok0y_2917">AT TIME ZONE. Оператор AT TIME ZONE меняет тип значения &mdash; в данном случае с timestamptz на timestamp</p></aside><p id="isok0y_2918">Конструкция AT TIME ZONE 'UTC+3' не переводит переданное в неё время в определённую тайм-зону? <br><span class="control" id="isok0y_2920">Переводит!</span></p><p id="isok0y_2921">Просто это юниксовые таймзоны, и так получилось исторически, что поддержку их писали пиндосы &mdash; потому они взяли себе (т.е. к западу от Гринвича) таймзоны с +.</p><p id="isok0y_2922">При указании таймзоны через AT TIME ZONE используется соглашение о формате, имеющее распространение в Северной Америке. В отличие от европейского (ISO), где &quot;UTC+3&quot; означает &quot;на три часовых пояса восточнее&quot;, в США это будет обозначать &quot;на три часовых пояса западнее&quot;. Меняйте знак короче говоря на обратный.</p><p id="isok0y_2923">И сейчас любая таймзона вида '&lt;любой текст&gt;+n' &mdash; это западнее Гринвича на n часов. А то, что у нормальных людей описывается как '+03' (т.е. восточнее) &mdash; это '&lt;любой текст&gt;-03'. Кстати, этот любой текст &mdash; это считается название таймзоны, потому лучше туда UTC не писать.</p><p id="isok0y_2924">Особого трэша и неудобства доставляет, что ISO-стиль времени &mdash; это куда более нормальный обратный вариант. И именно он пишется почти всегда в выводах таймзоны. Потому пишешь одно, получаешь другое...</p><p id="isok0y_2925">Таймзоны без текста, т.е. просто '+n' &mdash; в обычных юниксах вообще не воспринимаются и печатаются в UTC, а в постгресовых таймзонах воспринимаются как западнее на n часов в <code class="code" id="isok0y_2926">AT TIME ZONE</code> и восточнее на n часов в <code class="code" id="isok0y_2927">SET timezone TO</code></p></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-dateinterval.html" class="navigation-links__prev">Даты и интервалы</a><a href="howto-mvcc.html" class="navigation-links__next">Псевдо колонка XMIN</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-05-15T09:21:07.3171073"><title>Работа с табличным простраством | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"i8ob2ti_270","level":0,"title":"Просмотр табличных пространств","anchor":"#i8ob2ti_270"},{"id":"i8ob2ti_281","level":0,"title":"Расположение на диске табличных пространств","anchor":"#i8ob2ti_281"},{"id":"i8ob2ti_283","level":0,"title":"Размер табличного простраства","anchor":"#i8ob2ti_283"},{"id":"i8ob2ti_285","level":0,"title":"Создание табличного простраства","anchor":"#i8ob2ti_285"},{"id":"i8ob2ti_327","level":0,"title":"Переименование табличного пространства","anchor":"#i8ob2ti_327"},{"id":"i8ob2ti_329","level":0,"title":"Удаление табличного пространства","anchor":"#i8ob2ti_329"},{"id":"i8ob2ti_334","level":0,"title":"Информация о текущем пространстве","anchor":"#i8ob2ti_334"},{"id":"i8ob2ti_339","level":0,"title":"Изменение табличного пространства на уровне базы","anchor":"#i8ob2ti_339"},{"id":"i8ob2ti_347","level":0,"title":"Изменение табличного пространства по умолчанию для новых баз","anchor":"#i8ob2ti_347"},{"id":"i8ob2ti_351","level":0,"title":"Изменение табличного пространства на уровне сессии","anchor":"#i8ob2ti_351"},{"id":"temp","level":0,"title":"Просмотр данных о временном (TEMP) пространстве","anchor":"#temp"},{"id":"temp_1","level":0,"title":"Изменение temp пространства","anchor":"#temp_1"},{"id":"i8ob2ti_366","level":0,"title":"Как изменить владельца пространства","anchor":"#i8ob2ti_366"},{"id":"i8ob2ti_370","level":0,"title":"Перемещение таблиц, индексов в табличные пространства","anchor":"#i8ob2ti_370"},{"id":"i8ob2ti_375","level":0,"title":"Перемещение базы в табличное пространство","anchor":"#i8ob2ti_375"},{"id":"i8ob2ti_380","level":0,"title":"Полезные запросы при работе с табличным пространством","anchor":"#i8ob2ti_380"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Работа с табличным простраством | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-tablespachome.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Работа с табличным простраством | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:58.6568635"><title>Работа с табличным простраством | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"wc8l4f_14","level":0,"title":"Просмотр табличных пространств","anchor":"#wc8l4f_14"},{"id":"wc8l4f_25","level":0,"title":"Расположение на диске табличных пространств","anchor":"#wc8l4f_25"},{"id":"wc8l4f_27","level":0,"title":"Размер табличного простраства","anchor":"#wc8l4f_27"},{"id":"wc8l4f_29","level":0,"title":"Создание табличного простраства","anchor":"#wc8l4f_29"},{"id":"wc8l4f_71","level":0,"title":"Переименование табличного пространства","anchor":"#wc8l4f_71"},{"id":"wc8l4f_73","level":0,"title":"Удаление табличного пространства","anchor":"#wc8l4f_73"},{"id":"wc8l4f_78","level":0,"title":"Информация о текущем пространстве","anchor":"#wc8l4f_78"},{"id":"wc8l4f_83","level":0,"title":"Изменение табличного пространства на уровне базы","anchor":"#wc8l4f_83"},{"id":"wc8l4f_91","level":0,"title":"Изменение табличного пространства по умолчанию для новых баз","anchor":"#wc8l4f_91"},{"id":"wc8l4f_95","level":0,"title":"Изменение табличного пространства на уровне сессии","anchor":"#wc8l4f_95"},{"id":"temp","level":0,"title":"Просмотр данных о временном (TEMP) пространстве","anchor":"#temp"},{"id":"temp_1","level":0,"title":"Изменение temp пространства","anchor":"#temp_1"},{"id":"wc8l4f_110","level":0,"title":"Как изменить владельца пространства","anchor":"#wc8l4f_110"},{"id":"wc8l4f_114","level":0,"title":"Перемещение таблиц, индексов в табличные пространства","anchor":"#wc8l4f_114"},{"id":"wc8l4f_119","level":0,"title":"Перемещение базы в табличное пространство","anchor":"#wc8l4f_119"},{"id":"wc8l4f_124","level":0,"title":"Полезные запросы при работе с табличным пространством","anchor":"#wc8l4f_124"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Работа с табличным простраством | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-tablespachome.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Работа с табличным простраством | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/howto-tablespachome.html#webpage",
@@ -13,13 +13,13 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Postgres Полезные русурсы Help"
-}</script><!-- End Schema.org --></head><body data-id="howto-tablespachome" data-main-title="Работа с табличным простраством" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-tablespachome" id="howto-tablespachome.md">Работа с табличным простраством</h1><p id="i8ob2ti_258"><span class="control" id="i8ob2ti_259">Pg_global</span> - PGDATA/global - данные кластера и системный каталог Pg_default - PGDATA/base directory - данные баз</p><p id="i8ob2ti_260">Для просмотра данных PGDATA</p><div class="code-block" data-lang="sql">
+}</script><!-- End Schema.org --></head><body data-id="howto-tablespachome" data-main-title="Работа с табличным простраством" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-tablespachome" id="howto-tablespachome.md">Работа с табличным простраством</h1><p id="wc8l4f_2"><span class="control" id="wc8l4f_3">Pg_global</span> - PGDATA/global - данные кластера и системный каталог Pg_default - PGDATA/base directory - данные баз</p><p id="wc8l4f_4">Для просмотра данных PGDATA</p><div class="code-block" data-lang="sql">
 show data_directory;
-</div><p id="i8ob2ti_262">для psql</p><div class="code-block" data-lang="bash">
+</div><p id="wc8l4f_6">для psql</p><div class="code-block" data-lang="bash">
 psql -c &quot;show data_directory&quot;;
 </div><div class="code-block" data-lang="bash">
 sudo -u postgres psql -c &quot;show data_directory;&quot;
-</div><p id="i8ob2ti_265">По умолчанию данные расположены</p><p id="i8ob2ti_266">для linux: /var/lib/postgresql/[version]/data/</p><p id="i8ob2ti_267">для windows: C:\Program Files\PostgreSQL\[version]\data</p><p id="i8ob2ti_268">Данные зависят от дистрибутива и установки! Для просмотра текущих значений проверяем файл postgresql.conf</p><div class="code-block" data-lang="plaintext">
+</div><p id="wc8l4f_9">По умолчанию данные расположены</p><p id="wc8l4f_10">для linux: /var/lib/postgresql/[version]/data/</p><p id="wc8l4f_11">для windows: C:\Program Files\PostgreSQL\[version]\data</p><p id="wc8l4f_12">Данные зависят от дистрибутива и установки! Для просмотра текущих значений проверяем файл postgresql.conf</p><div class="code-block" data-lang="plaintext">
 
 #------------------------------------------------------------------------------
 # FILE LOCATIONS
@@ -30,18 +30,18 @@ sudo -u postgres psql -c &quot;show data_directory;&quot;
 
 #data_directory = 'ConfigDir'		# use data in another directory
 					# (change requires restart)
-</div><section class="chapter"><h2 id="i8ob2ti_270" data-toc="i8ob2ti_270">Просмотр табличных пространств</h2><div class="code-block" data-lang="sql">
+</div><section class="chapter"><h2 id="wc8l4f_14" data-toc="wc8l4f_14">Просмотр табличных пространств</h2><div class="code-block" data-lang="sql">
 select * from pg_tablespace;
-</div><p id="i8ob2ti_272">для psql</p><div class="code-block" data-lang="bash">
+</div><p id="wc8l4f_16">для psql</p><div class="code-block" data-lang="bash">
 psql -c &quot;\db+&quot;
-</div><p id="i8ob2ti_274">результат</p><div class="code-block" data-lang="plaintext">
+</div><p id="wc8l4f_18">результат</p><div class="code-block" data-lang="plaintext">
                              Список табличных пространств
     Имя     | Владелец | Расположение | Права доступа | Параметры | Размер  | Описание
 ------------+----------+--------------+---------------+-----------+---------+----------
  pg_default | postgres |              |               |           | 6008 MB |
  pg_global  | postgres |              |               |           | 616 kB  |
 (2 строки)
-</div><p id="i8ob2ti_276">При наличии дополнительных пространств результат бы выглядел:</p><div class="code-block" data-lang="plaintext">
+</div><p id="wc8l4f_20">При наличии дополнительных пространств результат бы выглядел:</p><div class="code-block" data-lang="plaintext">
                                       Список табличных пространств
      Имя      | Владелец |         Расположение         | Права доступа | Параметры | Размер  | Описание
 --------------+----------+------------------------------+---------------+-----------+---------+----------
@@ -50,7 +50,7 @@ psql -c &quot;\db+&quot;
  ts_postgres  | postgres | D:\PGDATABASE\ts_postgres    |               |           | 0 bytes |
  ts_postgres2 | postgres | D:\PGDATABASE2\ts_postgresv2 |               |           | 0 bytes |
 (4 строки)
-</div><p id="i8ob2ti_278">информация аналогичная <span class="control" id="i8ob2ti_279">\db+</span></p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_22">информация аналогичная <span class="control" id="wc8l4f_23">\db+</span></p><div class="code-block" data-lang="sql">
 select spcname                                                       as &quot;Name&quot;,
        pg_catalog.pg_get_userbyid(spcowner)                          as &quot;Owner&quot;,
        pg_catalog.pg_tablespace_location(oid)                        as &quot;Location&quot;,
@@ -60,14 +60,14 @@ select spcname                                                       as &quot;Na
        pg_catalog.shobj_description(oid, 'pg_tablespace')            as &quot;Description&quot;
 from pg_catalog.pg_tablespace
 order by 1;
-</div></section><section class="chapter"><h2 id="i8ob2ti_281" data-toc="i8ob2ti_281">Расположение на диске табличных пространств</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_25" data-toc="wc8l4f_25">Расположение на диске табличных пространств</h2><div class="code-block" data-lang="sql">
 select spcname,pg_tablespace_location(oid)
 from pg_tablespace;
-</div></section><section class="chapter"><h2 id="i8ob2ti_283" data-toc="i8ob2ti_283">Размер табличного простраства</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_27" data-toc="wc8l4f_27">Размер табличного простраства</h2><div class="code-block" data-lang="sql">
 select pg_size_pretty(pg_tablespace_size('pg_default'));
-</div></section><section class="chapter"><h2 id="i8ob2ti_285" data-toc="i8ob2ti_285">Создание табличного простраства</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_29" data-toc="wc8l4f_29">Создание табличного простраства</h2><div class="code-block" data-lang="sql">
 create tablespace ts_postgres location '/Library/PostgreSQL/TEST/TS_POSTGRES';
-</div><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_287"><p id="i8ob2ti_288">Путь при создании - полный и должен существовать</p></aside><p id="i8ob2ti_289">пример для windows:</p><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_290"><p id="i8ob2ti_291">результат выполнения</p><div class="code-block" data-lang="sql">show data_directory;</div><div class="code-block" data-lang="plaintext">
+</div><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_31"><p id="wc8l4f_32">Путь при создании - полный и должен существовать</p></aside><p id="wc8l4f_33">пример для windows:</p><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_34"><p id="wc8l4f_35">результат выполнения</p><div class="code-block" data-lang="sql">show data_directory;</div><div class="code-block" data-lang="plaintext">
 devtesttablespace=# show data_directory;
 data_directory
 ----------------
@@ -75,55 +75,55 @@ D:/PGDATABASE
 (1 строка)
 </div><p> т.е. наш основной каталог D:/PGDATABASE, и мы будем размещать дополнительное простраство где в другом месте, диске или каталоге. создаем папку ts_postgres в каталоге D:\PGDATABASE\</p></aside><div class="code-block" data-lang="sql">
 create tablespace ts_postgres location 'D:\PGDATABASE\ts_postgres';
-</div><p id="i8ob2ti_295">результат проверки<br><span class="control" id="i8ob2ti_297">select * from pg_tablespace;</span></p><div class="table-wrapper"><table class="wide" id="i8ob2ti_298"><thead><tr class="ijRowHead" id="i8ob2ti_299"><th id="i8ob2ti_300"><p>oid</p></th><th id="i8ob2ti_301"><p>spcname</p></th><th id="i8ob2ti_302"><p>spcowner</p></th><th id="i8ob2ti_303"><p>spcacl</p></th><th id="i8ob2ti_304"><p>spcoptions</p></th></tr></thead><tbody><tr id="i8ob2ti_305"><td id="i8ob2ti_306"><p>1663</p></td><td id="i8ob2ti_307"><p>pg_default</p></td><td id="i8ob2ti_308"><p>10</p></td><td id="i8ob2ti_309"><p>null</p></td><td id="i8ob2ti_310"><p>null</p></td></tr><tr id="i8ob2ti_311"><td id="i8ob2ti_312"><p>1664</p></td><td id="i8ob2ti_313"><p>pg_global</p></td><td id="i8ob2ti_314"><p>10</p></td><td id="i8ob2ti_315"><p>null</p></td><td id="i8ob2ti_316"><p>null</p></td></tr><tr id="i8ob2ti_317"><td id="i8ob2ti_318"><p>474196</p></td><td id="i8ob2ti_319"><p>ts_postgres</p></td><td id="i8ob2ti_320"><p>10</p></td><td id="i8ob2ti_321"><p>null</p></td><td id="i8ob2ti_322"><p>null</p></td></tr></tbody></table></div><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_323"><p id="i8ob2ti_324">Нет большого смысла создавать дополнительный табличные простраства если они не находятся например на других физических дисках</p></aside><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_325"><p id="i8ob2ti_326">Если вы используете дополнительны табличные пространства, имейте в виду, что при переносе каталога данных PGDATA нужно учесть и каталоги дополнительных пространств!</p></aside></section><section class="chapter"><h2 id="i8ob2ti_327" data-toc="i8ob2ti_327">Переименование табличного пространства</h2><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_39">результат проверки<br><span class="control" id="wc8l4f_41">select * from pg_tablespace;</span></p><div class="table-wrapper"><table class="wide" id="wc8l4f_42"><thead><tr class="ijRowHead" id="wc8l4f_43"><th id="wc8l4f_44"><p>oid</p></th><th id="wc8l4f_45"><p>spcname</p></th><th id="wc8l4f_46"><p>spcowner</p></th><th id="wc8l4f_47"><p>spcacl</p></th><th id="wc8l4f_48"><p>spcoptions</p></th></tr></thead><tbody><tr id="wc8l4f_49"><td id="wc8l4f_50"><p>1663</p></td><td id="wc8l4f_51"><p>pg_default</p></td><td id="wc8l4f_52"><p>10</p></td><td id="wc8l4f_53"><p>null</p></td><td id="wc8l4f_54"><p>null</p></td></tr><tr id="wc8l4f_55"><td id="wc8l4f_56"><p>1664</p></td><td id="wc8l4f_57"><p>pg_global</p></td><td id="wc8l4f_58"><p>10</p></td><td id="wc8l4f_59"><p>null</p></td><td id="wc8l4f_60"><p>null</p></td></tr><tr id="wc8l4f_61"><td id="wc8l4f_62"><p>474196</p></td><td id="wc8l4f_63"><p>ts_postgres</p></td><td id="wc8l4f_64"><p>10</p></td><td id="wc8l4f_65"><p>null</p></td><td id="wc8l4f_66"><p>null</p></td></tr></tbody></table></div><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_67"><p id="wc8l4f_68">Нет большого смысла создавать дополнительный табличные простраства если они не находятся например на других физических дисках</p></aside><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_69"><p id="wc8l4f_70">Если вы используете дополнительны табличные пространства, имейте в виду, что при переносе каталога данных PGDATA нужно учесть и каталоги дополнительных пространств!</p></aside></section><section class="chapter"><h2 id="wc8l4f_71" data-toc="wc8l4f_71">Переименование табличного пространства</h2><div class="code-block" data-lang="sql">
 alter tablespace ts_postgres rename to ts_postgresnew;
-</div></section><section class="chapter"><h2 id="i8ob2ti_329" data-toc="i8ob2ti_329">Удаление табличного пространства</h2><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_330"><p id="i8ob2ti_331">Перед удаление удоствоверьтель что табличное пространство <span class="control" id="i8ob2ti_332">пусто</span></p></aside><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_73" data-toc="wc8l4f_73">Удаление табличного пространства</h2><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_74"><p id="wc8l4f_75">Перед удаление удоствоверьтель что табличное пространство <span class="control" id="wc8l4f_76">пусто</span></p></aside><div class="code-block" data-lang="sql">
 drop tablespace ts_postgresnew;
-</div></section><section class="chapter"><h2 id="i8ob2ti_334" data-toc="i8ob2ti_334">Информация о текущем пространстве</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_78" data-toc="wc8l4f_78">Информация о текущем пространстве</h2><div class="code-block" data-lang="sql">
 show default_tablespace;
-</div><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_336"><p id="i8ob2ti_337">Если результат пустой - это соответствует пространству <span class="control" id="i8ob2ti_338">pg_default</span></p></aside></section><section class="chapter"><h2 id="i8ob2ti_339" data-toc="i8ob2ti_339">Изменение табличного пространства на уровне базы</h2><div class="code-block" data-lang="sql">
+</div><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_80"><p id="wc8l4f_81">Если результат пустой - это соответствует пространству <span class="control" id="wc8l4f_82">pg_default</span></p></aside></section><section class="chapter"><h2 id="wc8l4f_83" data-toc="wc8l4f_83">Изменение табличного пространства на уровне базы</h2><div class="code-block" data-lang="sql">
 alter system set default_tablespace=ts_postgres;
-</div><p id="i8ob2ti_341">Далее необходимо перегрузить конфигурацию</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_85">Далее необходимо перегрузить конфигурацию</p><div class="code-block" data-lang="sql">
 select pg_reload_conf();
-</div><p id="i8ob2ti_343">и проверить результат</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_87">и проверить результат</p><div class="code-block" data-lang="sql">
 show default_tablespace;
-</div><p id="i8ob2ti_345">или</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_89">или</p><div class="code-block" data-lang="sql">
 select name, setting
 from pg_settings
 where name = 'default_tablespace';
-</div></section><section class="chapter"><h2 id="i8ob2ti_347" data-toc="i8ob2ti_347">Изменение табличного пространства по умолчанию для новых баз</h2><p id="i8ob2ti_348">Новые базы создаются на основе базы <span class="control" id="i8ob2ti_349">template1</span>, что бы новые базы создавались в новом/другом пространстве необходимо поменять пространство по умолчанию для базы <span class="control" id="i8ob2ti_350">template1</span>.</p></section><section class="chapter"><h2 id="i8ob2ti_351" data-toc="i8ob2ti_351">Изменение табличного пространства на уровне сессии</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_91" data-toc="wc8l4f_91">Изменение табличного пространства по умолчанию для новых баз</h2><p id="wc8l4f_92">Новые базы создаются на основе базы <span class="control" id="wc8l4f_93">template1</span>, что бы новые базы создавались в новом/другом пространстве необходимо поменять пространство по умолчанию для базы <span class="control" id="wc8l4f_94">template1</span>.</p></section><section class="chapter"><h2 id="wc8l4f_95" data-toc="wc8l4f_95">Изменение табличного пространства на уровне сессии</h2><div class="code-block" data-lang="sql">
 set default_tablespace=ts_postgres;
 </div></section><section class="chapter"><h2 id="temp" data-toc="temp">Просмотр данных о временном (TEMP) пространстве</h2><div class="code-block" data-lang="sql">
 select name, setting
 from pg_settings
 where name = 'temp_tablespaces';
-</div><p id="i8ob2ti_354">или</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_98">или</p><div class="code-block" data-lang="sql">
 show temp_tablespaces
-</div><p id="i8ob2ti_356">для psql</p><div class="code-block" data-lang="bash">
+</div><p id="wc8l4f_100">для psql</p><div class="code-block" data-lang="bash">
 psql -c &quot;show temp_tablespaces&quot;;
-</div><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_358"><p id="i8ob2ti_359">Если результат <span class="control" id="i8ob2ti_360">пустой</span>, то используется простраство по умолчанию</p></aside></section><section class="chapter"><h2 id="temp_1" data-toc="temp_1">Изменение temp пространства</h2><div class="code-block" data-lang="sql">
+</div><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_102"><p id="wc8l4f_103">Если результат <span class="control" id="wc8l4f_104">пустой</span>, то используется простраство по умолчанию</p></aside></section><section class="chapter"><h2 id="temp_1" data-toc="temp_1">Изменение temp пространства</h2><div class="code-block" data-lang="sql">
 alter system set temp_tablespaces=TS_TEMP;
-</div><p id="i8ob2ti_362">после изменений необходимо перегрузить конфигурацию</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_106">после изменений необходимо перегрузить конфигурацию</p><div class="code-block" data-lang="sql">
  select pg_reload_conf();
-</div><p id="i8ob2ti_364">и соответственно проверить</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_108">и соответственно проверить</p><div class="code-block" data-lang="sql">
 show temp_tablespaces;
-</div></section><section class="chapter"><h2 id="i8ob2ti_366" data-toc="i8ob2ti_366">Как изменить владельца пространства</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_110" data-toc="wc8l4f_110">Как изменить владельца пространства</h2><div class="code-block" data-lang="sql">
 alter tablespace ts_postgres owner to dev_adminuser;
-</div><p id="i8ob2ti_368">и соответственно проверим</p><div class="code-block" data-lang="bash">
+</div><p id="wc8l4f_112">и соответственно проверим</p><div class="code-block" data-lang="bash">
 psql -c &quot;\db+&quot;
-</div></section><section class="chapter"><h2 id="i8ob2ti_370" data-toc="i8ob2ti_370">Перемещение таблиц, индексов в табличные пространства</h2><p id="i8ob2ti_371">Для перемещения таблицы:</p><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_114" data-toc="wc8l4f_114">Перемещение таблиц, индексов в табличные пространства</h2><p id="wc8l4f_115">Для перемещения таблицы:</p><div class="code-block" data-lang="sql">
 alter table testtable8 set tablespace pg_crm;
-</div><p id="i8ob2ti_373">Для перемещение индекса</p><div class="code-block" data-lang="sql">
+</div><p id="wc8l4f_117">Для перемещение индекса</p><div class="code-block" data-lang="sql">
 alter index test_index_name set tablespace pg_crm;
-</div></section><section class="chapter"><h2 id="i8ob2ti_375" data-toc="i8ob2ti_375">Перемещение базы в табличное пространство</h2><div class="code-block" data-lang="sql">
+</div></section><section class="chapter"><h2 id="wc8l4f_119" data-toc="wc8l4f_119">Перемещение базы в табличное пространство</h2><div class="code-block" data-lang="sql">
 alter database prod_crm_dbname set tablespace crm_tblspc_prod;
-</div><aside class="prompt" data-type="tip" data-title="" id="i8ob2ti_377"><p id="i8ob2ti_378">Удостоверьтесь что нет активных соединений с базой! Для убийства сессий используем</p><div class="code-block" data-lang="sql"> 
+</div><aside class="prompt" data-type="tip" data-title="" id="wc8l4f_121"><p id="wc8l4f_122">Удостоверьтесь что нет активных соединений с базой! Для убийства сессий используем</p><div class="code-block" data-lang="sql"> 
 select pg_terminate_backend(pid) from pg_stat_activity where datname='DB_NAME';
-</div></aside></section><section class="chapter"><h2 id="i8ob2ti_380" data-toc="i8ob2ti_380">Полезные запросы при работе с табличным пространством</h2><section class="chapter"><h3 id="i8ob2ti_381" data-toc="i8ob2ti_381">Физическое расположение данных</h3><div class="code-block" data-lang="sql">
+</div></aside></section><section class="chapter"><h2 id="wc8l4f_124" data-toc="wc8l4f_124">Полезные запросы при работе с табличным пространством</h2><section class="chapter"><h3 id="wc8l4f_125" data-toc="wc8l4f_125">Физическое расположение данных</h3><div class="code-block" data-lang="sql">
 select spcname as tbl_name,
        coalesce(nullif(pg_tablespace_location(oid), ''), (current_setting('data_directory') || '/base')) as tbl_location
 from pg_tablespace
-</div></section><section class="chapter"><h3 id="i8ob2ti_383" data-toc="i8ob2ti_383">Мониторинг использования временных файлов</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="with tablespaces as (select spcname                                                  as tbl_name,">
+</div></section><section class="chapter"><h3 id="wc8l4f_127" data-toc="wc8l4f_127">Мониторинг использования временных файлов</h3><div class="code-collapse" data-lang="sql" data-is-expanded="false" data-synopsis="with tablespaces as (select spcname                                                  as tbl_name,">
 with tablespaces as (select spcname                                                  as tbl_name,
                             coalesce(nullif(pg_tablespace_location(oid), ''),
                                      (current_setting('data_directory') || '/base')) as tbl_location
@@ -162,4 +162,4 @@ from pg_stat_activity as a
          left join stat on a.pid = stat.pid::int
 where a.pid != pg_backend_pid()
 order by temp_size_written desc;
-</div></section></section><div class="last-modified">Last modified: 15 мая 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-listpartitiontable.html" class="navigation-links__prev">Список partitioned таблиц</a><a href="howto-temptablespases.html" class="navigation-links__next">Простраство temp_tablespaces</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
+</div></section></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-listpartitiontable.html" class="navigation-links__prev">Список partitioned таблиц</a><a href="howto-temptablespases.html" class="navigation-links__next">Простраство temp_tablespaces</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>

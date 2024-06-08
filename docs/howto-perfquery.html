@@ -1,0 +1,207 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2024-06-08T10:04:58.8228617"><title>Оптимизация запросов | Postgres Полезные русурсы</title><script type="application/json" id="virtual-toc-data">[{"id":"i2e4xwz_55","level":0,"title":"Оптимизация с использованием индексов и частичных индексов.","anchor":"#i2e4xwz_55"},{"id":"i2e4xwz_61","level":0,"title":"Включение или отключение индекса","anchor":"#i2e4xwz_61"},{"id":"cost","level":0,"title":"Изменение cost параметров","anchor":"#cost"},{"id":"offset-0","level":0,"title":"Использование OFFSET 0 для принудительного выполнения порядка соединение","anchor":"#offset-0"},{"id":"t","level":0,"title":"Использование СTЕ для принудительного выполнения порядка соединения","anchor":"#t"},{"id":"cross-join","level":0,"title":"Правильное использование CROSS JOIN","anchor":"#cross-join"},{"id":"group-by-cte","level":0,"title":"Агрегации, Group By и CTE","anchor":"#group-by-cte"},{"id":"i2e4xwz_103","level":0,"title":"Использование подзапросов","anchor":"#i2e4xwz_103"},{"id":"order-by-distinct-hashe-join","level":0,"title":"Оптимизация ORDER BY, DISTINCT и Hashe Join","anchor":"#order-by-distinct-hashe-join"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="frontend/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="icon" type="image/png" sizes="32x32" href="writerside_32.png"><link rel="icon" type="image/png" sizes="64x64" href="writerside_64.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Оптимизация запросов | Postgres Полезные русурсы"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Postgres Полезные русурсы Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/howto-perfquery.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Оптимизация запросов | Postgres Полезные русурсы"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/howto-perfquery.html#webpage",
+    "url": "writerside-documentation/howto-perfquery.html",
+    "name": "Оптимизация запросов | Postgres Полезные русурсы",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Postgres Полезные русурсы Help"
+}</script><!-- End Schema.org --></head><body data-id="howto-perfquery" data-main-title="Оптимизация запросов" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Default-topic.md|Postgres - полезные ресурсы, руководства подсказки, советы///How-to.md|Советы///howto-customgeneric.md|Общее"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Postgres Полезные русурсы  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="howto-perfquery" id="howto-perfquery.md">Оптимизация запросов</h1><p id="i2e4xwz_2"><span class="control" id="i2e4xwz_3">&quot;Короткий запрос&quot;</span> - оперирует небольшим количеством данных. <br><span class="control" id="i2e4xwz_5">&quot;Длинный запрос&quot;</span> - оперирует большим количеством данных.</p><p id="i2e4xwz_6">Оптимизация <span class="control" id="i2e4xwz_7">длинных</span> и <span class="control" id="i2e4xwz_8">коротких</span> запросов отличается! Можно сказать что <span class="control" id="i2e4xwz_9">длинные</span> запросы более распространены в OLAP нагрузке, но они также встречаются и в OLTP.</p><p id="i2e4xwz_10">Тип запроса не относится к общему размеру таблицы, а подразумевает процент от данных исходной таблицы, например:</p><ul class="list _bullet" id="i2e4xwz_11"><li class="list__item" id="i2e4xwz_12"><p>если мы имеем пару таблиц в 1 млн строк и 2 млн строк и собираемся выбрать 30 данных на основе <code class="code" id="i2e4xwz_13">join</code> - это &quot;длинный запрос&quot;</p></li><li class="list__item" id="i2e4xwz_14"><p>если мы собираемся выбрать 1-2 строки по данным первой таблицы, то это &quot;короткий запрос&quot;</p></li><li class="list__item" id="i2e4xwz_15"><p>если мы собираемся выбрать 1-2 строки по данным первой таблицы и 50% данных второй таблицы, то это &quot;длинный запрос&quot;</p></li></ul><p id="i2e4xwz_16">Подход к оптимизации запроса требует хорошее понимание именно данных которыми вы оперируете - это позволит создать правильные индексы и более корректные запросы.</p><p id="i2e4xwz_17">Для оптимизации запросов используется <code class="code" id="i2e4xwz_18">explain (verbose, analyse, buffers, timing)</code></p><p id="i2e4xwz_19">Не забывайте про анализ таблиц <code class="code" id="i2e4xwz_20">ANALYZE my_table</code></p><p id="i2e4xwz_21">Настройка запросов часто не является простой задачей.</p><ul class="list _bullet" id="i2e4xwz_22"><li class="list__item" id="i2e4xwz_23"><p>если стратегия неоптимального join выбрана из-за неправильной оценки, постарайтесь улучшить эту оценку. <code class="code" id="i2e4xwz_24">ANALYZE my_table</code>, возможно, с увеличением <code class="code" id="i2e4xwz_25">default_statistics_target</code>, (<a href="https://postgrespro.ru/docs/postgresql/16/runtime-config-query#RUNTIME-CONFIG-QUERY-OTHER" id="i2e4xwz_26" data-external="true" rel="noopener noreferrer">Другие параметры планировщика</a> и посмотрите, имеет ли это значение. Попробуйте переписать запрос с помощью более простых условий WHERE, чтобы облегчить задачу оптимизатора.</p></li><li class="list__item" id="i2e4xwz_27"><p>Попробуйте увеличить work_mem и посмотрите, получите ли вы более дешевое хэш-присоединение.</p></li><li class="list__item" id="i2e4xwz_28"><p>Настройте параметры, которые сообщают PostgreSQL о вашем оборудовании и ресурсах: <a href="https://postgrespro.ru/docs/postgresql/16/runtime-config-query" id="i2e4xwz_29" data-external="true" rel="noopener noreferrer">random_page_cost</a>, <a href="https://postgrespro.ru/docs/postgresql/16/runtime-config-query#GUC-EFFECTIVE-CACHE-SIZE" id="i2e4xwz_30" data-external="true" rel="noopener noreferrer">effective_cache_size</a> - от 50% доступной оперативной памяти</p><br><p> и <a href="https://postgrespro.ru/docs/postgresql/16/runtime-config-resource.html#GUC-EFFECTIVE-IO-CONCURRENCY" id="i2e4xwz_32" data-external="true" rel="noopener noreferrer">effective_io_concurrency</a>. Это позволит ему правильно оценить сканирование индекса.</p></li><li class="list__item" id="i2e4xwz_33"><p>Вы можете ускорить nested loop и merge joins с помощью index-only scans. Для этого вы должны добавить все необходимые столбцы в индекс (в идеале с предложением ВКЛЮЧИТЬ) и убедиться, что таблица достаточно часто вакуумируется.</p></li></ul><div class="table-wrapper"><table class="wide" id="i2e4xwz_34"><thead><tr class="ijRowHead" id="i2e4xwz_35"><th id="i2e4xwz_36"></th><th id="i2e4xwz_37"><p>Nested Loop Join</p></th><th id="i2e4xwz_38"><p>Hash Join</p></th><th id="i2e4xwz_39"><p>Merge Join</p></th></tr></thead><tbody><tr id="i2e4xwz_40"><td id="i2e4xwz_41"><p>Алгоритм</p></td><td id="i2e4xwz_42"><p>Для каждой внешней строки отношения сканируется внутреннее отношение</p></td><td id="i2e4xwz_43"><p>Создается хеш из внутреннего отношения, сканируется внешнее отношение, проверка хеш</p></td><td id="i2e4xwz_44"><p>Сортировать оба отношения и объединить строки</p></td></tr><tr id="i2e4xwz_45"><td id="i2e4xwz_46"><p>Индексы, которые должны помочь</p></td><td id="i2e4xwz_47"><p>Индекс на ключах внешнего (inner) отношения</p></td><td id="i2e4xwz_48"><p>Нет</p></td><td id="i2e4xwz_49"><p>Индекс ключей соединения обоих отношений</p></td></tr><tr id="i2e4xwz_50"><td id="i2e4xwz_51"><p>Стратегия является хорошей, если</p></td><td id="i2e4xwz_52"><p>внешная таблица небольшая</p></td><td id="i2e4xwz_53"><p>хэш-таблица вписывается в work_mem</p></td><td id="i2e4xwz_54"><p>Обе таблицы большие</p></td></tr></tbody></table></div><section class="chapter"><h2 id="i2e4xwz_55" data-toc="i2e4xwz_55">Оптимизация с использованием индексов и частичных индексов.</h2><p id="i2e4xwz_56">Частичный индекс - тот в котором используется <code class="code" id="i2e4xwz_57">where</code> для фильтрации. <br> Данный индекс дает хорошие результаты если на основе условия <code class="code" id="i2e4xwz_59">where</code> будет отфильтровано большое количество данных.</p><div class="code-block" data-lang="sql">
+CREATE INDEX idx_name_blah ON tbl_name_blah (factory_key) WHERE (NOT relevant);
+</div></section><section class="chapter"><h2 id="i2e4xwz_61" data-toc="i2e4xwz_61">Включение или отключение индекса</h2><div class="code-block" data-lang="sql">
+update pg_index set indisvalid = false where indexrelid = 'test_pkey'::regclass
+</div><p id="i2e4xwz_63">Операция поддерживается в транзакции:</p><div class="code-block" data-lang="sql">
+begin;
+update pg_index set indisvalid = false where indexrelid = 'journal_productid_datevalue_index'::regclass;
+--update pg_index set indisvalid = false where indexrelid = 'journal_productid_datevalue_index2'::regclass;
+explain (verbose, analyse, buffers, timing)
+select sum(case when kind&lt;3 then qty
+            when kind&gt;2 then -qty
+       end) as qtyMoveSumm
+from journal j
+where productid=1;
+rollback;
+</div></section><section class="chapter"><h2 id="cost" data-toc="cost">Изменение cost параметров</h2><p id="i2e4xwz_65">Нельзя явно указать использования тех или иных индексов, но избегать выполнения определенных типов сканирования (если это возможно), можно установив соответствующие параметры elanbve_ выключенными. <span class="emphasis" id="i2e4xwz_66">На самом деле это функция, предназначенная только для отладки</span></p><div class="code-block" data-lang="sql">
+SET enable_seqscan = off;
+</div><p id="i2e4xwz_68">Варианты на уровне запроса:</p><div class="code-block" data-lang="sql">
+SET enable_hashjoin = off;
+SET enable_mergejoin = off;
+SET enable_nestloop = off;
+</div><p id="i2e4xwz_70">Обратите внимание, что вы не можете отключить вложенные соединения циклов, а только отговариваете PostgreSQL от их использования. Если нет условия соединения с оператором =, единственным способом является соединение вложенного цикла.</p><section class="chapter"><h3 id="random-page-cost" data-toc="random-page-cost">Изменение параметра random_page_cost</h3><div class="code-block" data-lang="sql">
+SET random_page_cost = 1.1
+</div><p id="i2e4xwz_72">Это подскажет PostgreSQL, что случайный ввод-вывод лишь немного дороже последовательного ввода-вывода. Обычно это справедливо для систем с SSD или там, где большая часть БД кэшируется в ОЗУ. В этом случае будет более вероятно выбран индекс.</p><p id="i2e4xwz_73">Конечно, если случайный ввод-вывод вашей системы на самом деле дороже, то использование индекса, скорее всего, будет медленнее.</p></section><section class="chapter"><h3 id="join-collapse-limit-from-collapse-limit" data-toc="join-collapse-limit-from-collapse-limit">Изменение параметров join_collapse_limit и from_collapse_limit</h3><p id="i2e4xwz_74">Параметры from_collapse_limit и join_collapse_limit называются похоже, потому что они делают практически одно и то же: первый параметр определяет, когда планировщик будет &laquo;сносить&raquo; в предложение FROM подзапросы, а второй &mdash; явные соединения. Обычно join_collapse_limit устанавливается равным from_collapse_limit (чтобы явные соединения и подзапросы обрабатывались одинаково) или 1 (если требуется управлять порядком соединений). Но вы можете задать другие значения, чтобы добиться оптимального соотношения времени планирования и времени выполнения запросов.</p><p id="i2e4xwz_75"><code class="code" id="i2e4xwz_76">join_collapse_limit = 8</code> - по умолчанию<br><code class="code" id="i2e4xwz_78">from_collapse_limit = 8</code> - по умолчанию</p><p id="i2e4xwz_79">Если в вашем запросе более <span class="control" id="i2e4xwz_80">8</span> таблиц (<span class="control" id="i2e4xwz_81">более</span> чем значение <span class="control" id="i2e4xwz_82">join_collapse_limit</span>) - то будет тот порядок соединении который указан в запросе, а не тот который предполагает оптимизатор.</p><p id="i2e4xwz_83"><a href="https://postgrespro.ru/docs/postgresql/16/explicit-joins" id="i2e4xwz_84" data-external="true" rel="noopener noreferrer">подробно...</a></p></section></section><section class="chapter"><h2 id="offset-0" data-toc="offset-0">Использование OFFSET 0 для принудительного выполнения порядка соединение</h2><p id="i2e4xwz_85">Чтобы PostgreSQL не оптимизировал соединения таблиц в запросе, мы можем использовать в подзапросе предложение OFFSET или LIMIT. Традиционный способ сделать это - использовать OFFSET 0, который не меняет результат подзапроса:</p><div class="code-block" data-lang="sql">
+
+EXPLAIN (COSTS OFF)
+SELECT subq.b_id, a.value
+FROM a JOIN
+   (SELECT a_id, b.b_id, c.c_id
+    FROM b
+       JOIN c USING (a_id)
+    WHERE c.c_id &lt; 300
+    OFFSET 0
+   ) AS subq
+      USING (a_id);
+</div></section><section class="chapter"><h2 id="t" data-toc="t">Использование СTЕ для принудительного выполнения порядка соединения</h2><p id="i2e4xwz_87">Используется именно cte <code class="code" id="i2e4xwz_88">as MATERIALIZED</code></p><div class="code-block" data-lang="sql">
+PgSQL
+EXPLAIN (COSTS OFF)
+WITH subq AS MATERIALIZED (
+   SELECT a_id, b.b_id, c.c_id
+   FROM b
+      JOIN c USING (a_id)
+   WHERE c.c_id &lt; 300
+)
+SELECT subq.b_id, a.value
+FROM a
+   JOIN subq USING (a_id);
+</div></section><section class="chapter"><h2 id="cross-join" data-toc="cross-join">Правильное использование CROSS JOIN</h2><section class="chapter"><h3 id="lateral-cross-join" data-toc="lateral-cross-join">Lateral cross join</h3><p id="i2e4xwz_90">В латеральном соединении отношение соединения (выражение или подзапрос) может относиться к более ранним записям в предложении FROM. Это очень часто используется в сочетании с табличными функциями: если вы хотите объединить строку со всеми принадлежащими ей результатами табличной функции, вы используете lateral соединение. В этом случае LATERAL уже подразумевает, что каждая строка соединена только с принадлежащими ей результатами функции, поэтому нет необходимости в дополнительном условии соединения.</p><p id="i2e4xwz_91">Пример:</p><div class="code-block" data-lang="sql">
+CREATE TABLE mytab (
+   id bigint PRIMARY KEY,
+   data jsonb
+);
+ 
+INSERT INTO mytab VALUES
+   (1, '{ 'key': ['five', 'six'] }'),
+   (2, '{ 'key': ['pick', 'up', 'sticks'] }');
+</div><div class="code-block" data-lang="sql">
+SELECT mytab.id, j.elem
+FROM mytab
+   CROSS JOIN LATERAL
+      jsonb_array_elements_text(
+         mytab.data -&gt; 'key'
+      ) AS j(elem);
+</div><p id="i2e4xwz_94">Еще одна интересная вещь, которую вы можете сделать - это создать индексный столбец из массива, используя ординальность. Затем у вас есть индексный ключ, который вы можете использовать</p><div class="code-block" data-lang="sql">
+SELECT mytab.id, j.elem, ordinality- 1 as index
+FROM mytab
+    CROSS JOIN LATERAL
+        jsonb_array_elements_text(
+            mytab.data -&gt; 'key'
+        ) with ordinality AS j(elem);
+</div></section><section class="chapter"><h3 id="i2e4xwz_96" data-toc="i2e4xwz_96">Соединение с переменной</h3><p id="i2e4xwz_97">Иногда у вас есть более сложное или дорогое выражение, которое вы хотите использовать в нескольких местах с одним запросом. В этом случае может быть хорошей идеей написать CTE. Вам необходимо использовать этот CTE в предложении FROM, обычно с перекрестным соединением:</p><div class="code-block" data-lang="sql">
+
+WITH config AS (
+   SELECT language, preview_lines
+   FROM config_data
+   WHERE username = current_user
+)
+SELECT d.line
+FROM description AS d
+   CROSS JOIN config AS c
+WHERE d.topic = 'SQL joins'
+  AND d.lang = c.language
+  AND d.line_nr &lt;= c.preview_lines
+ORDER BY d.line_nr;
+</div></section></section><section class="chapter"><h2 id="group-by-cte" data-toc="group-by-cte">Агрегации, Group By и CTE</h2><p id="i2e4xwz_99">В большинстве случаев запрос будет выглядеть так:</p><div class="code-block" data-lang="sql">
+SELECT name, count(*)
+FROM t_gender AS a, t_person AS b
+WHERE a.id = b.gender 
+GROUP BY 1;
+</div><p id="i2e4xwz_101">Попробуйте вариант с CTE и сравните планы:</p><div class="code-block" data-lang="sql">
+WITH x AS
+(
+   SELECT gender, count(*) AS res
+   FROM t_person AS a
+   GROUP BY 1
+)
+SELECT name, res
+FROM x, t_gender AS y
+WHERE x.gender = y.id;
+</div></section><section class="chapter"><h2 id="i2e4xwz_103" data-toc="i2e4xwz_103">Использование подзапросов</h2><p id="i2e4xwz_104">Иногда коррелированный подзапрос действительно может работать лучше, а иногда вы можете использовать коррелированный подзапрос, чтобы заставить оптимизатор использовать <code class="code" id="i2e4xwz_105">NESTED LOOP</code>, если вы уверены, что это правильная стратегия для использования.</p><ul class="list _bullet" id="i2e4xwz_106"><li class="list__item" id="i2e4xwz_107"><p>используйте некоррелированные подзапросы столько, сколько захотите, при условии, что они не затрудняют понимание запроса</p></li><li class="list__item" id="i2e4xwz_108"><p>избегайте коррелированных подзапросов везде, кроме предложений <code class="code" id="i2e4xwz_109">EXISTS</code>, <code class="code" id="i2e4xwz_110">NOT EXISTS</code> и <code class="code" id="i2e4xwz_111">IN</code></p></li><li class="list__item" id="i2e4xwz_112"><p>всегда переписывайте <code class="code" id="i2e4xwz_113">NOT IN</code> в <code class="code" id="i2e4xwz_114">NOT EXISTS</code></p></li></ul><section class="chapter"><h3 id="nested-loop-lateral-cross-join" data-toc="nested-loop-lateral-cross-join">Пример перезаписи запроса на использование <code class="code" id="i2e4xwz_116">nested loop</code> с <code class="code" id="i2e4xwz_117">lateral cross join</code></h3><div class="code-comparer" id="i2e4xwz_118" data-comparing="vertically"><div class="code-block" data-lang="sql" data-title="Before">
+SELECT a.col1, b.col2
+FROM a
+   JOIN b ON a.x = b.x;
+</div><div class="code-block" data-lang="sql" data-title="After">
+SELECT a.col1, sub.col2
+FROM a
+   CROSS JOIN LATERAL
+      (SELECT b.col2
+       FROM b
+       WHERE a.x = b.x) AS sub;
+</div></div></section><section class="chapter"><h3 id="in-exists" data-toc="in-exists">Пример замены <code class="code" id="i2e4xwz_122">IN</code> на <code class="code" id="i2e4xwz_123">EXISTS</code>:</h3><div class="code-comparer" id="i2e4xwz_124" data-comparing="vertically"><div class="code-block" data-lang="sql" data-title="Before">
+SELECT a.col1
+FROM a
+WHERE a.foo IN (SELECT b.col2
+FROM b
+WHERE a.x = b.x);
+    </div><div class="code-block" data-lang="sql" data-title="After">
+SELECT a.col1
+FROM a
+WHERE EXISTS (SELECT NULL
+FROM b
+WHERE a.x = b.x
+AND a.foo = b.col2);
+    </div></div><p id="i2e4xwz_127">Аналогично можно переписать <code class="code" id="i2e4xwz_128">NOT IN</code> на <code class="code" id="i2e4xwz_129">NOT EXISTS</code></p><aside class="prompt" data-type="warning" data-title="" id="i2e4xwz_130"><p id="i2e4xwz_131">Если подзапрос возвращает хотя бы одно <code class="code" id="i2e4xwz_132">NULL</code> зачение, <code class="code" id="i2e4xwz_133">NOT IN</code> никогда не будет <code class="code" id="i2e4xwz_134">TRUE</code></p></aside></section><section class="chapter"><h3 id="lateral-join" data-toc="lateral-join">Коррелированный lateral join</h3><div class="code-block" data-lang="sql">
+SELECT a.col1, sub.col2
+FROM a CROSS JOIN LATERAL
+    (SELECT b.col2
+    FROM b
+    WHERE b.x = a.x
+    ORDER BY b.sort
+    LIMIT 1) AS sub;
+</div><p id="i2e4xwz_136">для больших данных</p><div class="code-block" data-lang="sql">
+SELECT DISTINCT ON (a.pkey)
+ a.col1, b.col2
+FROM a JOIN b ON b.x = a.x
+ORDER BY a.pkey, b.sort;
+</div></section><section class="chapter"><h3 id="i2e4xwz_138" data-toc="i2e4xwz_138">Скалярные подзапросы</h3><aside class="prompt" data-type="warning" data-title="" id="i2e4xwz_139"><p id="i2e4xwz_140">Постарайтесь избегать коррелированных подзапросов со скалярным значением</p></aside><p id="i2e4xwz_141">В подзапросе вы можете использовать столбцы таблицы снаружи, например</p><div class="code-block" data-lang="sql">
+SELECT a.col1,
+       (SELECT b.col2 FROM b WHERE b.x = a.x)
+FROM a;
+</div><p id="i2e4xwz_143">Преобразуем в <code class="code" id="i2e4xwz_144">left join</code></p><div class="code-block" data-lang="sql">
+SELECT a.col1, b.col2
+FROM a LEFT JOIN b ON b.x = a.x;
+</div><p id="i2e4xwz_146">Вариант для проверки значения с использованием <code class="code" id="i2e4xwz_147">count</code>, <code class="code" id="i2e4xwz_148">sum</code> и других агрегатов</p><div class="code-block" data-lang="sql">
+SELECT a.col1 FROM a 
+WHERE 1 = (SELECT count(*) FROM b WHERE b.x = a.x);
+</div><p id="i2e4xwz_150">и в конечном виде:</p><div class="code-block" data-lang="sql">
+SELECT a.col1
+FROM a JOIN b ON b.x = a.x
+GROUP BY a.pkey, a.col1
+HAVING count(*) = 1;
+</div></section></section><section class="chapter"><h2 id="order-by-distinct-hashe-join" data-toc="order-by-distinct-hashe-join">Оптимизация ORDER BY, DISTINCT и Hashe Join</h2><p id="i2e4xwz_152">Для оптимизации операций <code class="code" id="i2e4xwz_153">order by</code> лучшей стратегией является увеличение <code class="code" id="i2e4xwz_154">work_mem</code>. <br> Рекомендуемая формула для расчета</p><div class="code-block" data-lang="plaintext">
+Total RAM * 0.25 / max_connections
+</div><p id="i2e4xwz_157">Что например, при 16Gb ОЗУ и 10 соединений соответствует 400Mb. По рекомендуемой формуле значение не слишком большое, и не очень оптимистичное<br> или корректное для многих случаев.</p><p id="i2e4xwz_159">Лучше подобрать данный параметр в соответствии для роли имеющей в работе большие таблицы и в соответветствии не по предлагаемой формуле, а на основе объема данных таблиц или индексов участвующих в соединениях, например:</p><div class="code-block" data-lang="sql">
+alter user test set work_mem='4GB';
+</div><p id="i2e4xwz_161">для роли <code class="code" id="i2e4xwz_162">test</code> на основании:</p><ul class="list _bullet" id="i2e4xwz_163"><li class="list__item" id="i2e4xwz_164"><p>что данная роль является основной ролью клиент-серверного приложения</p></li><li class="list__item" id="i2e4xwz_165"><p>суммарный объем используемых индексов для самых больших таблиц используемых в соединениях не превышает 4Gb.</p></li></ul><div class="code-block" data-lang="sql">
+show work_mem;
+</div><p id="i2e4xwz_167">Например, на сервере установлен данный параметр в 128Mb - в реальности это очень мало.</p><div class="code-block" data-lang="sql">
+SET work_mem TO '1 GB';
+</div><p id="i2e4xwz_169">Эксперимент для проверки <code class="code" id="i2e4xwz_170">work_mem</code>:</p><div class="code-block" data-lang="sql">
+create table t_test(x numeric);
+insert into t_test(x) select random()
+from generate_series(1, 5000000);
+analyze t_test;
+</div><p id="i2e4xwz_172">Сгенерированная таблица будет занимать чуть более 210Мб.</p><p id="i2e4xwz_173">Запрос для проверки</p><div class="code-block" data-lang="sql">
+explain analyze
+select * from t_test
+order by x;
+</div><p id="i2e4xwz_175">при <code class="code" id="i2e4xwz_176">work_mem=128Мб</code></p><div class="code-collapse" data-lang="plaintext" data-is-expanded="false" data-synopsis="Sort  (cost=688299.17..700799.17 rows=5000000 width=11) (actual time=3294.067..4091.299 rows=5000000 loops=1)">
+Sort  (cost=688299.17..700799.17 rows=5000000 width=11) (actual time=3294.067..4091.299 rows=5000000 loops=1)
+  Sort Key: x
+  Sort Method: external merge  Disk: 73400kB
+  -&gt;  Seq Scan on t_test  (cost=0.00..77028.00 rows=5000000 width=11) (actual time=0.031..336.604 rows=5000000 loops=1)
+Planning Time: 4.841 ms
+Execution Time: 4301.412 ms
+</div><p id="i2e4xwz_178">при <code class="code" id="i2e4xwz_179">work_mem=1Gb</code></p><div class="code-collapse" data-lang="plaintext" data-is-expanded="false" data-synopsis="Sort  (cost=633365.42..645865.42 rows=5000000 width=11) (actual time=2416.843..2624.779 rows=5000000 loops=1)">
+Sort  (cost=633365.42..645865.42 rows=5000000 width=11) (actual time=2416.843..2624.779 rows=5000000 loops=1)
+  Sort Key: x
+  Sort Method: quicksort  Memory: 313796kB
+  -&gt;  Seq Scan on t_test  (cost=0.00..77028.00 rows=5000000 width=11) (actual time=0.020..320.970 rows=5000000 loops=1)
+Planning Time: 0.064 ms
+Execution Time: 2833.478 ms
+</div><p id="i2e4xwz_181">Поднимем <code class="code" id="i2e4xwz_182">work_mem=2GB</code></p><div class="code-block" data-lang="sql">
+SET work_mem TO '2047MB'; --2097151kB
+</div><div class="code-collapse" data-lang="plaintext" data-is-expanded="false" data-synopsis="Sort  (cost=633365.42..645865.42 rows=5000000 width=11) (actual time=2441.350..2656.287 rows=5000000 loops=1)">
+Sort  (cost=633365.42..645865.42 rows=5000000 width=11) (actual time=2441.350..2656.287 rows=5000000 loops=1)
+  Sort Key: x
+  Sort Method: quicksort  Memory: 313796kB
+  -&gt;  Seq Scan on t_test  (cost=0.00..77028.00 rows=5000000 width=11) (actual time=0.025..327.247 rows=5000000 loops=1)
+Planning Time: 0.079 ms
+Execution Time: 2871.957 ms
+</div><p id="i2e4xwz_185"><span class="control" id="i2e4xwz_186">Результаты при различных значениях work_mem для таблицы размером в 210Мб</span></p><div class="table-wrapper"><table class="wide" id="i2e4xwz_187"><thead><tr class="ijRowHead" id="i2e4xwz_188"><th id="i2e4xwz_189"><p>work_mem</p></th><th id="i2e4xwz_190"><p>Время</p></th></tr></thead><tbody><tr id="i2e4xwz_191"><td id="i2e4xwz_192"><p>128Мб</p></td><td id="i2e4xwz_193"><p>4301.412 ms</p></td></tr><tr id="i2e4xwz_194"><td id="i2e4xwz_195"><p>250MB</p></td><td id="i2e4xwz_196"><p>2803.680 ms</p></td></tr><tr id="i2e4xwz_197"><td id="i2e4xwz_198"><p>1Гб</p></td><td id="i2e4xwz_199"><p>2833.478 ms</p></td></tr><tr id="i2e4xwz_200"><td id="i2e4xwz_201"><p>2Гб</p></td><td id="i2e4xwz_202"><p>2871.957 ms</p></td></tr></tbody></table></div></section><div class="last-modified">Last modified: 08 июня 2024</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="howto-perfview.html" class="navigation-links__prev">Важные представления для оптимизации</a><a href="howto-perfbatchupdate.html" class="navigation-links__next">Batch обновление данных</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="frontend/app.js"></script></body></html>
