@@ -1,1 +1,1 @@
-База данныз stackoverflow2010 для Postgres v17
+База данных stackoverflow2010 для Postgres v17
